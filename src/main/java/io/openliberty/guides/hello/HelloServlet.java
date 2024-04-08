@@ -1,0 +1,93 @@
+// tag::copyright[]
+/*******************************************************************************
+ * Copyright (c) 2017, 2022 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License 2.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *******************************************************************************/
+// end::copyright[]
+
+// package io.openliberty.guides.hello;
+
+// import java.io.IOException;
+
+// import jakarta.servlet.ServletException;
+// import jakarta.servlet.annotation.WebServlet;
+// import jakarta.servlet.http.HttpServlet;
+// import jakarta.servlet.http.HttpServletRequest;
+// import jakarta.servlet.http.HttpServletResponse;
+
+
+
+// @WebServlet(urlPatterns = "/servlet")
+// public class HelloServlet extends HttpServlet {
+//     private static final long serialVersionUID = 1L;
+
+//     /**
+//      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+//      */
+//     protected void doGet(HttpServletRequest request, HttpServletResponse response)
+//         throws ServletException, IOException {
+//         response.getWriter().append("Hello! How are you today?\n");
+//     }
+
+//     /**
+//      * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+//      */
+//     protected void doPost(HttpServletRequest request, HttpServletResponse response)
+//         throws ServletException, IOException {
+//         doGet(request, response);
+//     }
+// }
+
+
+package io.openliberty.guides.hello;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+@WebServlet(urlPatterns = "/servlet")
+public class HelloServlet extends HttpServlet {
+    private static final long serialVersionUID = 1L;
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+        try {
+            // Připojení k databázi
+            Connection connection = DatabaseUtil.getConnection();
+            
+            // Přidání zprávy do tabulky
+            String message = "Test message";
+            String query = "INSERT INTO test_table (message) VALUES (?)";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, message);
+            preparedStatement.executeUpdate();
+
+            // // Zpráva o úspěchu
+            response.getWriter().append("Pripojeni do databaze se povedlo\n");
+
+            // // Uzavření připojení
+            connection.close();
+        } catch (SQLException e) {
+            // Chyba při připojení k databázi nebo manipulaci s daty
+            e.printStackTrace();
+            response.getWriter().append("Chyba: Nepodarilo se pripojit k databázi nebo pridat data.\n");
+        }
+    }
+
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
+        doGet(request, response);
+    }
+}

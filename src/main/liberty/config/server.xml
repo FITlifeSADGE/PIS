@@ -1,0 +1,30 @@
+<server description="Sample Servlet server">
+    <featureManager>
+        <feature>servlet-6.0</feature>
+         <feature>jdbc-4.2</feature>
+    </featureManager>
+
+    <dataSource jndiName="jdbc/MySQLDataSource">
+        <jdbcDriver libraryRef="MySQLLib"/>
+        <properties serverName="localhost"
+                    portNumber="3306"
+                    databaseName="test_db"
+                    user="michal"
+                    password="average"/>
+    </dataSource>
+
+    <library id="MySQLLib">
+        <fileset dir="/mnt/c/Users/lukas/projects/school_projects/1mit/PIS/guide-maven-intro/start" includes="mysql-connector-java-8.3.0.jar"/>
+    </library>
+
+    <variable name="http.port" defaultValue="9080"/>
+    <variable name="https.port" defaultValue="9443"/>
+    <variable name="app.context.root" defaultValue="ServletSample"/>
+
+    <!-- tag::httpEndpoint[] -->
+    <httpEndpoint httpPort="${http.port}" 
+    httpsPort="${https.port}" id="defaultHttpEndpoint"  host="*" />
+    <!-- end::httpEndpoint[] -->
+    <webApplication id="ServletSample" location="ServletSample.war" contextRoot="${app.context.root}" />
+</server>
+
