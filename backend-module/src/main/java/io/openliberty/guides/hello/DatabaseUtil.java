@@ -11,10 +11,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+
 
 // Tato třída bude obsahovat metodu pro připojení k databázi
 public class DatabaseUtil {
-    public static Connection getConnection() throws SQLException {
+    public static Connection getConnection() throws SQLException 
+    {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (Exception e) {
@@ -25,8 +33,13 @@ public class DatabaseUtil {
         String password = "average";
         return DriverManager.getConnection(jdbcUrl, username, password);
     }
-    public static void initializeDatabase() throws SQLException, IOException {
+    public static void initializeDatabase() throws SQLException, IOException 
+    {
         try (Connection connection = getConnection()) {
+<<<<<<< Updated upstream:backend-module/src/main/java/io/openliberty/guides/hello/DatabaseUtil.java
+=======
+
+>>>>>>> Stashed changes:src/main/java/io/openliberty/guides/hello/DatabaseUtil.java
             InputStream inputStream = DatabaseUtil.class.getResourceAsStream("/db/init.sql");
             StringBuilder stringBuilder = new StringBuilder();
             try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
@@ -37,13 +50,68 @@ public class DatabaseUtil {
             }
             String sqlScript = stringBuilder.toString();
             Statement statement = connection.createStatement();
-            String[] sqlCommands = sqlScript.split(";");
-            for (String sqlCommand : sqlCommands) {
+            String[] sqlCommands1 = sqlScript.split(";");
+
+            for (String sqlCommand : (sqlCommands1)) {
                 sqlCommand = sqlCommand.trim(); // Odstranění bílých znaků ze začátku a konce řetězce
                 if (!sqlCommand.isEmpty()) { // Ignorovat prázdné příkazy
                     statement.execute(sqlCommand);
                 }
             }
+
+            InputStream inputStream2 = DatabaseUtil.class.getResourceAsStream("/db/init_data.sql");
+            StringBuilder stringBuilder2 = new StringBuilder();
+            try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream2))) {
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    stringBuilder2.append(line).append("\n");
+                }
+            }
+            String sqlScript2 = stringBuilder2.toString();
+            String[] sqlCommands2 = sqlScript2.split(";");
+
+            for (String sqlCommand : (sqlCommands2)) {
+                sqlCommand = sqlCommand.trim(); // Odstranění bílých znaků ze začátku a konce řetězce
+                if (!sqlCommand.isEmpty()) { // Ignorovat prázdné příkazy
+                    statement.execute(sqlCommand);
+                }
+            }
+
+        }
+    }
+
+    public static void Selecet() throws SQLException, IOException 
+    {
+        try (Connection connection = getConnection()) {
+            // Definujte SQL dotaz
+            String sqlQuery = "SELECT * FROM Person";
+            
+            // Pripravte príkaz na vykonanie dotazu
+            PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
+            
+            // Vykonajte dotaz a získajte výsledky
+            ResultSet resultSet = preparedStatement.executeQuery();
+            
+            // Spracovanie výsledkov dotazu
+            while (resultSet.next()) {
+                int personID = resultSet.getInt("PersonID");
+                String lastName = resultSet.getString("LastName");
+                String firstName = resultSet.getString("FirstName");
+                String email = resultSet.getString("Email");
+                String phoneNumber = resultSet.getString("PhoneNumber");
+                String documentNumber = resultSet.getString("DocumentNumber");
+                String dateOfBirth = resultSet.getString("dateOfBirth");
+                
+                // Tu môžete ďalej spracovať získané hodnoty, napríklad vypísať ich na konzolu
+                System.out.println("PersonID: " + personID + ", LastName: " + lastName + ", FirstName: " + firstName + ", Email: " + email + ", PhoneNumber: " + phoneNumber + ", DocumentNumber: " + documentNumber + ", DateOfBirth: " + dateOfBirth);
+            }
+            
+            // Uzavrite zdroje
+            resultSet.close();
+            preparedStatement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 }
