@@ -7,6 +7,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
 
 
 // Tato třída bude obsahovat metodu pro připojení k databázi
@@ -24,7 +27,15 @@ public class DatabaseUtil {
     }
     public static void initializeDatabase() throws SQLException, IOException {
         try (Connection connection = getConnection()) {
-            String sqlScript = new String(Files.readAllBytes(Paths.get("/mnt/c/Users/lukas/projects/school_projects/1mit/PIS/src/main/resources/db/init.sql")));
+            InputStream inputStream = DatabaseUtil.class.getResourceAsStream("/db/init.sql");
+            StringBuilder stringBuilder = new StringBuilder();
+            try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(line).append("\n");
+                }
+            }
+            String sqlScript = stringBuilder.toString();
             Statement statement = connection.createStatement();
             String[] sqlCommands = sqlScript.split(";");
             for (String sqlCommand : sqlCommands) {
