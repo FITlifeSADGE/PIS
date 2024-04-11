@@ -18,8 +18,9 @@
     <variable name="app.context.root" defaultValue="ServletSample"/>
 
     <!-- tag::httpEndpoint[] -->
-    <httpEndpoint httpPort="${http.port}" 
-    httpsPort="${https.port}" id="defaultHttpEndpoint"  host="*" />
+    <httpEndpoint httpPort="${http.port}" httpsPort="${https.port}" id="defaultHttpEndpoint" host="*">
+        <cors allow-origin="*" allow-methods="GET, POST, PUT, DELETE, OPTIONS" allow-headers="Content-Type" />
+    </httpEndpoint>
     <!-- end::httpEndpoint[] -->
     <webApplication id="ServletSample" location="ServletSample.war" contextRoot="${app.context.root}" />
 </server>

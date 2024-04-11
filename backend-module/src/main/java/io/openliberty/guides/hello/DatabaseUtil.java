@@ -1,16 +1,10 @@
 package io.openliberty.guides.hello;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.BufferedReader;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
@@ -36,10 +30,6 @@ public class DatabaseUtil {
     public static void initializeDatabase() throws SQLException, IOException 
     {
         try (Connection connection = getConnection()) {
-<<<<<<< Updated upstream:backend-module/src/main/java/io/openliberty/guides/hello/DatabaseUtil.java
-=======
-
->>>>>>> Stashed changes:src/main/java/io/openliberty/guides/hello/DatabaseUtil.java
             InputStream inputStream = DatabaseUtil.class.getResourceAsStream("/db/init.sql");
             StringBuilder stringBuilder = new StringBuilder();
             try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {
