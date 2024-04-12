@@ -36,10 +36,6 @@ public class DatabaseUtil {
     public static void initializeDatabase() throws SQLException, IOException 
     {
         try (Connection connection = getConnection()) {
-<<<<<<< Updated upstream:backend-module/src/main/java/io/openliberty/guides/hello/DatabaseUtil.java
-=======
-
->>>>>>> Stashed changes:src/main/java/io/openliberty/guides/hello/DatabaseUtil.java
             InputStream inputStream = DatabaseUtil.class.getResourceAsStream("/db/init.sql");
             StringBuilder stringBuilder = new StringBuilder();
             try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream))) {

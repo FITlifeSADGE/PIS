@@ -1,1 +1,3 @@
 backend-module/target
+backend-module/node
+backend-module/package-lock.json
