@@ -4,7 +4,7 @@
         <form @submit.prevent="login" class="login-form"> 
             <div class="form-field"> 
                 <label for="username" class="form-label">Username:</label> 
-                <input type="text" id="username" v-model="username" required class="form-input"> 
+                <input type="email" id="username" v-model="email" required class="form-input" placeholder="example@example.com"> 
             </div> 
             <div class="form-field"> 
                 <label for="password" class="form-label">Password:</label> 
@@ -30,7 +30,7 @@
 export default {
   data() {
     return {
-      username: 'example@example.com',
+      email: '',
       password: '',
       loginMessage: '' // Přidána data pro zprávu o přihlášení
     };
@@ -43,7 +43,7 @@ export default {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          username: this.username,
+          username: this.email,
           password: this.password
         })
       })

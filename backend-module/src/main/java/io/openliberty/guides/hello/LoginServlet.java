@@ -26,6 +26,7 @@ public class LoginServlet extends HttpServlet {
         LoginRequest loginRequest = mapper.readValue(request.getInputStream(), LoginRequest.class);
         String username = loginRequest.getUsername();
         String password = loginRequest.getPassword();
+        System.out.println(username);
         if (username != null && password != null) {
             try {
                 Connection connection = DatabaseUtil.getConnection();

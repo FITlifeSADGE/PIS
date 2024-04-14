@@ -2,7 +2,7 @@
     <div>
       <h1>Dobrej login bráško</h1>
       <router-link to="/Home/login">
-        <button>LogIn</button>
+        <button>LogOut</button>
         </router-link>
     </div>
   </template>
