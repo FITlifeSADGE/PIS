@@ -28,5 +28,8 @@
     <webApplication id="Login" location="Login.war" contextRoot="${app.context.root}/login" >
         <defaultServletsOverride value="false"/>
     </webApplication>
+    <webApplication id="LoginSuccess" location="LoginSuccess.war" contextRoot="${app.context.root}/success" >
+        <defaultServletsOverride value="false"/>
+    </webApplication>
 </server>
 

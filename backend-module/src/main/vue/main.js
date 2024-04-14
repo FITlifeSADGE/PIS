@@ -2,6 +2,7 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import LoginPage from './components/LoginPage.vue';
 import HomePage from './components/HomePage.vue';
+import LoginSuccess from './components/LoginSuccess.vue';
 
 Vue.use(VueRouter);
 
@@ -15,6 +16,10 @@ const router = new VueRouter({
     {
       path: '/Home/login',
       component: LoginPage
+    },
+    {
+      path: '/Home/success',
+      component: LoginSuccess
     }
   ]
 });

@@ -37,7 +37,7 @@ export default {
   },
   methods: {
     login() {
-      fetch('/login/loginVerify', {
+      fetch('/Home/loginVerify', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -49,7 +49,8 @@ export default {
       })
       .then(response => {
         if (response.ok) {
-          return response.text(); // Vrátit text odpovědi
+          console.log('Login successful');
+          this.$router.push('/Home/success');
         } else {
           throw new Error('Login failed');
         }
