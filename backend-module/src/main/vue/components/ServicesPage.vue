@@ -60,6 +60,17 @@
       },
       logout() {
         console.log('Logout');
+        fetch('/Home/logout', { method: 'POST' })
+        .then(response => {
+          if (response.ok) {
+            this.$router.push('/Home/login');
+          } else {
+            console.error('Logout failed:', response.statusText);
+          }
+        })
+        .catch(error => {
+          console.error('Error during logout:', error);
+        });
       },
       viewRooms() {
         this.$router.push('/Home/Rooms');
