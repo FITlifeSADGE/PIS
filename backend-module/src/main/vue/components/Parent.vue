@@ -2,6 +2,7 @@
 <div class="Services">
     <div class="header">
         <h1>Hotel Services</h1>
+        <p>{{ username }}</p>
         <div class="logout">
             <button class="button" @click="logout">Log out</button>
         </div>
@@ -21,7 +22,25 @@
 
 <script>
 export default {
+  data() {
+    return {
+      username: ''
+    };
+  },
+  mounted() {
+    this.fetchUserInformation(); // Volanie funkcie na načítanie údajov po načítaní komponentu
+  },
   methods: {
+    fetchUserInformation() {
+      fetch('/Home/UserInformation') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
+        .then(response => response.json())
+        .then(data => {
+          this.username = data.username; // Nastavenie údajov do premennej rooms
+        })
+        .catch(error => {
+          console.error('Error fetching rooms:', error);
+        });
+    },
     logout() {
       console.log('Logout');
       fetch('/Home/logout', { method: 'POST' })

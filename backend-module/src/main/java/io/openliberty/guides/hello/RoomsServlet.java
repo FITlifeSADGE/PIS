@@ -38,9 +38,6 @@ public class RoomsServlet extends HttpServlet {
             return;
         }
         
-        String username = (String) session.getAttribute("username");
-        System.out.println("Session found, username: " + username);
-
         try {
             // Získanie údajov zo servera (napr. z databázy)
             ResultSet resultSet = DatabaseUtil.Selecet("Room");
@@ -68,7 +65,6 @@ public class RoomsServlet extends HttpServlet {
             // Nastavenie typu obsahu a odoslanie JSON reťazca ako odpoveď
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
-            System.out.println(jsonString);
             response.getWriter().write(jsonString);
 
         } catch (SQLException e) {
