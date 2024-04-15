@@ -37,12 +37,13 @@ public class LoginServlet extends HttpServlet {
                 
                 if (resultSet.next()) {
                     String dbPassword = resultSet.getString("Password"); // Získat heslo z databáze
+                    String dbRole = resultSet.getString("Assignment"); // Získat heslo z databáze
                     if (password.equals(dbPassword)) {
                         // User found and password matched, login successful
 
                         HttpSession session = request.getSession(); // Create a session
                         session.setAttribute("username", username);
-                        session.setAttribute("role", "TBD");
+                        session.setAttribute("role", dbRole);
 
                         response.setStatus(HttpServletResponse.SC_OK);
                         response.getWriter().write("Login successful");

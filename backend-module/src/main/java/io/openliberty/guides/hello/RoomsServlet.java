@@ -68,6 +68,7 @@ public class RoomsServlet extends HttpServlet {
             // Nastavenie typu obsahu a odoslanie JSON reťazca ako odpoveď
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
+            System.out.println(jsonString);
             response.getWriter().write(jsonString);
 
         } catch (SQLException e) {
