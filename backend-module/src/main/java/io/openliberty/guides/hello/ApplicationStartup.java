@@ -1,6 +1,5 @@
 package io.openliberty.guides.hello;
 
-import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
 import jakarta.servlet.annotation.WebListener;
@@ -15,7 +14,6 @@ public class ApplicationStartup implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         try {
             DatabaseUtil.initializeDatabase();
-            DatabaseUtil.Selecet();
         } catch (SQLException | IOException e) {
             e.printStackTrace();
         }

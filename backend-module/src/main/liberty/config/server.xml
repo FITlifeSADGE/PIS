@@ -15,12 +15,18 @@
 
     <variable name="http.port" defaultValue="9080"/>
     <variable name="https.port" defaultValue="9443"/>
-    <variable name="app.context.root" defaultValue="ServletSample"/>
+    <variable name="app.context.root" defaultValue="Home"/>
 
     <!-- tag::httpEndpoint[] -->
-    <httpEndpoint httpPort="${http.port}" 
-    httpsPort="${https.port}" id="defaultHttpEndpoint"  host="*" />
+    <httpEndpoint httpPort="${http.port}" httpsPort="${https.port}" id="defaultHttpEndpoint" host="*">
+        <cors allow-origin="*" allow-methods="GET, POST, PUT, DELETE, OPTIONS" allow-headers="Content-Type" />
+    </httpEndpoint>
     <!-- end::httpEndpoint[] -->
-    <webApplication id="ServletSample" location="ServletSample.war" contextRoot="${app.context.root}" />
-</server>
+    <webApplication id="Home" location="Home.war" contextRoot="${app.context.root}" >
+        <defaultServletsOverride value="false"/>
+    </webApplication>
 
+    <applicationLocation id="Login" location="Login.war" contextRoot="${app.context.root}/login" />
+    <applicationLocation id="pokus" location="pokus.war" contextRoot="${app.context.root}/pokus" />
+    <applicationLocation id="LoginSuccess" location="LoginSuccess.war" contextRoot="${app.context.root}/success" />
+</server>
