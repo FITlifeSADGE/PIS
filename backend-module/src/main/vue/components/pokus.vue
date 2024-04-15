@@ -16,6 +16,9 @@
       <div class="table-container">
 
         <button class="button" @click="toggleTable">{{ buttonLabel }}</button>
+        <button class="button" @click="cancelEdit">Zrušit změny</button>
+        <!-- <span v-if="customer.validationError" class="error-message">{{ customer.validationError }}</span> -->
+
         <table v-if="editTable">
           <thead>
             <tr>
@@ -58,11 +61,19 @@
               <td>
                 <input v-model="customer.FirstName" @change="saveField(customer)" />
               </td>
-              <td>
-                <input v-model="customer.Email" @change="saveField(customer)" />
+                <!-- ------------------------------------------------------------------------------------------------ -->
+              <!-- <td>
+                <input type="email" v-model="customer.Email" @blur="validateEmail(customer)" />
               </td>
+              <span v-if="customer.validationError" class="error-message">{{ customer.validationError }}</span> -->
               <td>
-                <input v-model="customer.PhoneNumber" @change="saveField(customer)" />
+                <input type="email" v-model="customer.Email" @change="validateEmail(customer)" />
+                <span v-if="customer.validationError" class="error-message">{{ customer.validationError }}</span>
+              </td>
+              <!-- ------------------------------------------------------------------------------------------------ -->
+              <td>
+                <!-- @change="saveField(customer)"  -->
+                <input v-model="customer.PhoneNumber" @change="validatePhoneNumber(customer)" />
               </td>
               <td>
                 <input v-model="customer.DocumentNumber" @change="saveField(customer)" />
@@ -76,6 +87,7 @@
       </div>
     </div>
   </div>
+
 </template>
 
 <script>
@@ -93,18 +105,15 @@ export default {
   methods: {
     // ------------------------------------------------------------------------------------------------
     saveField(customer) {
-      // Here you can perform any save/update operation using customer data
       console.log("Updated customer:", customer);
-      // Example: Call an API to update customer data
-      // axios.put(`/api/customers/${customer.PersonID}`, customer);
+      
     },
     toggleTable() {
-      this.editTable = !this.editTable;
-      if (this.editTable) {
+      if(this.editTable == false)
         this.buttonLabel = 'Edit informations';
-      } else {
+      else
         this.buttonLabel = 'Safe changes';
-      }
+      this.editTable = !this.editTable;
     },
     // ------------------------------------------------------------------------------------------------
 
@@ -132,7 +141,45 @@ export default {
     },
     viewCustomers() {
       console.log('View Customers');
-    }
+    },
+
+    // -----------------------------------------------------------------------------------------------
+    validatePhoneNumber(customer){
+      const phoneNumber = customer.PhoneNumber;
+      if(!/\S+/.test(phoneNumber)){
+        customer.validationError = 'BAD';
+        return false;
+      }else{
+      customer.validationError = '';
+      return true;
+      }
+    },
+    validateEmail(customer) {
+      const email = customer.Email;
+      // if (!email) {
+      //   customer.validationError = 'Email is required';
+      //   return false;
+      // }
+      if (!/\S+@\S+/.test(email)) {
+        customer.validationError = 'Chybí @examle';
+        return false;
+      }else if(!/\S+\.\S+/.test(email)){
+        customer.validationError = 'Chybí .com';
+        return false;
+      }else if(!/\S+@\S+\.\S+/.test(email)){
+        customer.validationError = 'Chybí obsah emailu';
+        return false;
+      }
+      // Clear validation error if email is valid
+      customer.validationError = '';
+      return true;
+    },
+    cancelEdit() {
+      // TODO:
+      fetchCustomers();
+    },
+    // -----------------------------------------------------------------------------------------------
+
   }
 };
 </script>
