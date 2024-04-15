@@ -21,6 +21,58 @@ import jakarta.servlet.http.HttpServletResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
+// @WebServlet("/pokus")
+// public class PokusServlet extends HttpServlet {
+//     private static final long serialVersionUID = 1L;
+
+//     protected void safeChanges(HttpServletRequest request, HttpServletResponse response)
+//             throws ServletException, IOException {
+//         try {
+//             ResultSet resultSet = DatabaseUtil.Selecet("Person");
+//             String sql = "SELECT * FROM customers WHERE id = ?";
+
+//             // Set parameter value (example: customer ID)
+//             int customerId = 1;
+//             preparedStatement.setInt(1, customerId);
+
+//             // Execute the query
+//             resultSet = preparedStatement.executeQuery();
+
+//             // Process the query results
+//             while (resultSet.next()) {
+//                 int id = resultSet.getInt("id");
+//                 String firstName = resultSet.getString("first_name");
+//                 String lastName = resultSet.getString("last_name");
+//                 String email = resultSet.getString("email");
+
+//                 System.out.println("Customer ID: " + id);
+//                 System.out.println("First Name: " + firstName);
+//                 System.out.println("Last Name: " + lastName);
+//                 System.out.println("Email: " + email);
+//                 System.out.println();
+//             }
+//         } catch (SQLException e) {
+//             e.printStackTrace();
+//         } finally {
+//             // Close JDBC objects in reverse order
+//             try {
+//                 if (resultSet != null) {
+//                     resultSet.close();
+//                 }
+//                 if (preparedStatement != null) {
+//                     preparedStatement.close();
+//                 }
+//                 if (connection != null) {
+//                     connection.close();
+//                 }
+//             } catch (SQLException e) {
+//                 e.printStackTrace();
+//             }
+//         }
+//     }
+// }
+
+
 @WebServlet("/pokus")
 public class PokusServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -30,7 +82,7 @@ public class PokusServlet extends HttpServlet {
 
         try {
             // Získanie údajov zo servera (napr. z databázy)
-            ResultSet resultSet = DatabaseUtil.Selecet("Room");
+            ResultSet resultSet = DatabaseUtil.Selecet("Person");
 
             List<Map<String, Object>> rows = new ArrayList<>();
             ResultSetMetaData metaData = resultSet.getMetaData();

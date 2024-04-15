@@ -14,24 +14,63 @@
         <button class="button" @click="viewCustomers">Zobrazenie zoznamu zákazníkov</button>
       </div>
       <div class="table-container">
-        <table>
+
+        <button class="button" @click="toggleTable">{{ buttonLabel }}</button>
+        <table v-if="editTable">
           <thead>
             <tr>
-              <th>Type</th>
-              <th>Cost</th>
-              <th>Equipment</th>
-              <th>State</th>
-              <th>Beds</th>
+              <th>Last Name</th>
+              <th>First Name</th>
+              <th>Email</th>
+              <th>Phone Number</th>
+              <th>Document Number</th>
+              <th>Date of Birth</th>
             </tr>
           </thead>
-          <tbody v-if="rooms && rooms.length > 0">
-          <tr v-for="room in rooms" :key="room.RoomID">
-            <td>{{ room.TypeRoom }}</td>
-            <td>{{ room.Cost }}</td>
-            <td>{{ room.Equip }}</td>
-            <td>{{ room.State }}</td>
-            <td>{{ room.Beds }}</td>
-          </tr>
+          <tbody v-if="customers && customers.length > 0">
+            <tr v-for="customer in customers" :key="customer.PersonID">
+              <td>{{ customer.LastName }}</td>
+              <td>{{ customer.FirstName }}</td>
+              <td>{{ customer.Email }}</td>
+              <td>{{ customer.PhoneNumber }}</td>
+              <td>{{ customer.DocumentNumber }}</td>
+              <td>{{ customer.dateOfBirth }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <table v-if="!editTable">
+          <thead>
+            <tr>
+              <th>Last Name</th>
+              <th>First Name</th>
+              <th>Email</th>
+              <th>Phone Number</th>
+              <th>Document Number</th>
+              <th>Date of Birth</th>
+            </tr>
+          </thead>
+          <tbody v-if="customers && customers.length > 0">
+            <tr v-for="customer in customers" :key="customer.PersonID">
+              <td>
+                <input v-model="customer.LastName" @change="saveField(customer)" />
+              </td>
+              <td>
+                <input v-model="customer.FirstName" @change="saveField(customer)" />
+              </td>
+              <td>
+                <input v-model="customer.Email" @change="saveField(customer)" />
+              </td>
+              <td>
+                <input v-model="customer.PhoneNumber" @change="saveField(customer)" />
+              </td>
+              <td>
+                <input v-model="customer.DocumentNumber" @change="saveField(customer)" />
+              </td>
+              <td>
+                <input type="date" v-model="customer.dateOfBirth" @change="saveField(customer)" />
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -43,21 +82,40 @@
 export default {
   data() {
     return {
-      rooms: [] // pole na uchovávanie údajov
+      editTable: true,
+      customers: [], // pole na uchovávanie údajov
+      buttonLabel: 'Edit informations'
     };
   },
   mounted() {
-    this.fetchRooms(); // Volanie funkcie na načítanie údajov po načítaní komponentu
+    this.fetchCustomers(); // Volanie funkcie na načítanie údajov po načítaní komponentu
   },
   methods: {
-    fetchRooms() {
+    // ------------------------------------------------------------------------------------------------
+    saveField(customer) {
+      // Here you can perform any save/update operation using customer data
+      console.log("Updated customer:", customer);
+      // Example: Call an API to update customer data
+      // axios.put(`/api/customers/${customer.PersonID}`, customer);
+    },
+    toggleTable() {
+      this.editTable = !this.editTable;
+      if (this.editTable) {
+        this.buttonLabel = 'Edit informations';
+      } else {
+        this.buttonLabel = 'Safe changes';
+      }
+    },
+    // ------------------------------------------------------------------------------------------------
+
+    fetchCustomers() {
       fetch('/Home/pokus') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
         .then(response => response.json())
         .then(data => {
-          this.rooms = data; // Nastavenie údajov do premennej rooms
+          this.customers = data; // Nastavenie údajov do premennej customers
         })
         .catch(error => {
-          console.error('Error fetching rooms:', error);
+          console.error('Error fetching customers:', error);
         });
     },
     logout() {
