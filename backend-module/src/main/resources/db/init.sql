@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS Room(
 );
 
 CREATE TABLE IF NOT EXISTS Service(
+    ServiceID int not null primary key,
     Name varchar(255),
     Cost FLOAT,
     Availability varchar(255),

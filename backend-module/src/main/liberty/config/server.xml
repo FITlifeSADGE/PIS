@@ -27,6 +27,8 @@
     </webApplication>
 
     <applicationLocation id="Login" location="Login.war" contextRoot="${app.context.root}/login" />
-    <applicationLocation id="pokus" location="pokus.war" contextRoot="${app.context.root}/pokus" />
     <applicationLocation id="LoginSuccess" location="LoginSuccess.war" contextRoot="${app.context.root}/success" />
+    <applicationLocation id="RoomsPage" location="RoomsPage.war" contextRoot="${app.context.root}/Rooms" />
+    <applicationLocation id="ServicesPage" location="ServicesPage.war" contextRoot="${app.context.root}/Services" />
 </server>
+

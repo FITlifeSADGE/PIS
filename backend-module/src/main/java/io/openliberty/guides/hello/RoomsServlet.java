@@ -21,8 +21,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-@WebServlet("/pokus")
-public class PokusServlet extends HttpServlet {
+@WebServlet("/Rooms")
+public class RoomsServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
