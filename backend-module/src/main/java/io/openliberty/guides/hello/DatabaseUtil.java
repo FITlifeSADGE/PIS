@@ -74,16 +74,16 @@ public class DatabaseUtil {
     {
         Connection connection = getConnection();
 
-            // Definujte SQL dotaz
-            String sqlQuery = "SELECT * FROM " + Enitity;
-            
-            // Pripravte príkaz na vykonanie dotazu
-            PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
-            
-            // Vykonajte dotaz a získajte výsledky
-            ResultSet resultSet = preparedStatement.executeQuery();
-            
-            // Spracovanie výsledkov dotazu
-           return resultSet;
+        // Definujte SQL dotaz
+        String sqlQuery = "SELECT * FROM " + Enitity;
+        
+        // Pripravte príkaz na vykonanie dotazu
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
+        
+        // Vykonajte dotaz a získajte výsledky
+        ResultSet resultSet = preparedStatement.executeQuery();
+        
+        // Spracovanie výsledkov dotazu
+        return resultSet;
     }
 }

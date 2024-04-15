@@ -1,17 +1,17 @@
 <template>
-  <div class="hotel-management">
+  <div class="Rooms">
     <div class="header">
-      <h1>Hotel Management</h1>
+      <h1>Home Page</h1>
       <div class="logout">
-        <button class="button" @click="logout">Odhlásenie</button>
+        <button class="button" @click="logout">Log out</button>
       </div>
     </div>
     <div class="content">
       <div class="toolbar">
-        <button class="button" @click="manageHotelServices">Správa služieb hotela</button>
-        <button class="button" @click="createReservation">Vytvorenie rezervácie</button>
-        <button class="button" @click="viewReservations">Zobrazenie rezervácií</button>
-        <button class="button" @click="viewCustomers">Zobrazenie zoznamu zákazníkov</button>
+        <button class="button" @click="manageHotelServices">Hotel Services</button>
+        <button class="button" @click="createReservation">Create Reservation</button>
+        <button class="button" @click="viewReservations">View Reservations</button>
+        <button class="button" @click="viewCustomers">View Customers</button>
       </div>
       <div class="table-container">
         <table>
@@ -51,7 +51,7 @@ export default {
   },
   methods: {
     fetchRooms() {
-      fetch('/Home/pokus') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
+      fetch('/Home/Rooms') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
         .then(response => response.json())
         .then(data => {
           this.rooms = data; // Nastavenie údajov do premennej rooms
@@ -75,7 +75,7 @@ export default {
       });
     },
     manageHotelServices() {
-      console.log('Manage Hotel Services');
+      this.$router.push('/Home/Services');
     },
     createReservation() {
       console.log('Create Reservation');
