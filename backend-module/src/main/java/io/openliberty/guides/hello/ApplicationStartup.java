@@ -14,7 +14,6 @@ public class ApplicationStartup implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         try {
             DatabaseUtil.initializeDatabase();
-            DatabaseUtil.Selecet();
         } catch (SQLException | IOException e) {
             e.printStackTrace();
         }

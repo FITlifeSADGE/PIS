@@ -1,7 +1,7 @@
 <template>
     <div>
       <h1>Vítejte na homepage</h1>
-      <router-link to="/Home/login">
+      <router-link to="/Home/pokus">
         <button>LogIn</button>
         </router-link>
     </div>

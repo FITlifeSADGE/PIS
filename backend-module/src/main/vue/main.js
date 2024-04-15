@@ -3,6 +3,7 @@ import VueRouter from 'vue-router';
 import LoginPage from './components/LoginPage.vue';
 import HomePage from './components/HomePage.vue';
 import LoginSuccess from './components/LoginSuccess.vue';
+import pokus from './components/pokus.vue';
 
 Vue.use(VueRouter);
 
@@ -20,6 +21,10 @@ const router = new VueRouter({
     {
       path: '/Home/success',
       component: LoginSuccess
+    },
+    {
+      path: '/Home/pokus',
+      component: pokus
     }
   ]
 });

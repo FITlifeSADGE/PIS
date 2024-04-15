@@ -70,11 +70,12 @@ public class DatabaseUtil {
         }
     }
 
-    public static void Selecet() throws SQLException, IOException 
+    public static ResultSet Selecet(String Enitity) throws SQLException, IOException 
     {
-        try (Connection connection = getConnection()) {
+        Connection connection = getConnection();
+
             // Definujte SQL dotaz
-            String sqlQuery = "SELECT * FROM Person";
+            String sqlQuery = "SELECT * FROM " + Enitity;
             
             // Pripravte príkaz na vykonanie dotazu
             PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
@@ -83,25 +84,6 @@ public class DatabaseUtil {
             ResultSet resultSet = preparedStatement.executeQuery();
             
             // Spracovanie výsledkov dotazu
-            while (resultSet.next()) {
-                int personID = resultSet.getInt("PersonID");
-                String lastName = resultSet.getString("LastName");
-                String firstName = resultSet.getString("FirstName");
-                String email = resultSet.getString("Email");
-                String phoneNumber = resultSet.getString("PhoneNumber");
-                String documentNumber = resultSet.getString("DocumentNumber");
-                String dateOfBirth = resultSet.getString("dateOfBirth");
-                
-                // Tu môžete ďalej spracovať získané hodnoty, napríklad vypísať ich na konzolu
-                System.out.println("PersonID: " + personID + ", LastName: " + lastName + ", FirstName: " + firstName + ", Email: " + email + ", PhoneNumber: " + phoneNumber + ", DocumentNumber: " + documentNumber + ", DateOfBirth: " + dateOfBirth);
-            }
-            
-            // Uzavrite zdroje
-            resultSet.close();
-            preparedStatement.close();
-            connection.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+           return resultSet;
     }
 }

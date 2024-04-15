@@ -25,11 +25,8 @@
     <webApplication id="Home" location="Home.war" contextRoot="${app.context.root}" >
         <defaultServletsOverride value="false"/>
     </webApplication>
-    <webApplication id="Login" location="Login.war" contextRoot="${app.context.root}/login" >
-        <defaultServletsOverride value="false"/>
-    </webApplication>
-    <webApplication id="LoginSuccess" location="LoginSuccess.war" contextRoot="${app.context.root}/success" >
-        <defaultServletsOverride value="false"/>
-    </webApplication>
-</server>
 
+    <applicationLocation id="Login" location="Login.war" contextRoot="${app.context.root}/login" />
+    <applicationLocation id="pokus" location="pokus.war" contextRoot="${app.context.root}/pokus" />
+    <applicationLocation id="LoginSuccess" location="LoginSuccess.war" contextRoot="${app.context.root}/success" />
+</server>
