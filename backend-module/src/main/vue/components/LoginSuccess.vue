@@ -5,6 +5,16 @@
         <button>LogOut</button>
         </router-link>
     </div>
+
+    <!-- <div>
+    <h2>List of Customers</h2>
+    <ul>
+      <li v-for="customer in customers" :key="customer.CustomerID">
+        {{ customer.FirstName }} {{ customer.LastName }} - {{ customer.Email }}
+      </li>
+    </ul>
+  </div> -->
+
   </template>
   
   <script>
@@ -28,4 +38,24 @@
     cursor: pointer;
   }
   </style>
-  
+
+<!-- <script>
+import axios from 'axios';
+
+export default {
+  data() {
+    return {
+      customers: []
+    };
+  },
+  mounted() {
+    // axios.get('http://localhost:9080/api/customers')
+      .then(response => {
+        this.customers = response.data;
+      })
+      .catch(error => {
+        console.error('Error fetching customers:', error);
+      });
+  }
+};
+</script> -->

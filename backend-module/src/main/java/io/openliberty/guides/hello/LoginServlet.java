@@ -64,3 +64,35 @@ public class LoginServlet extends HttpServlet {
         }
     }
 }
+
+// public class CustomerFetcher {
+//     public static void main(String[] args) {
+//         try {
+//             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/your_database", "username", "password");
+//             Statement statement = connection.createStatement();
+            
+//             // Execute SQL Query
+//             ResultSet resultSet = statement.executeQuery("SELECT * FROM Customer");
+
+//             // Process the ResultSet (retrieve customer data)
+//             while (resultSet.next()) {
+//                 int customerID = resultSet.getInt("CustomerID");
+//                 String address = resultSet.getString("Address");
+//                 boolean subscription = resultSet.getBoolean("Subscription");
+
+//                 // Process or display the customer data as needed
+//                 System.out.println("Customer ID: " + customerID);
+//                 System.out.println("Address: " + address);
+//                 System.out.println("Subscription: " + (subscription ? "Subscribed" : "Not Subscribed"));
+//             }
+
+//             // Close resources
+//             resultSet.close();
+//             statement.close();
+//             connection.close();
+
+//         } catch (SQLException e) {
+//             e.printStackTrace();
+//         }
+//     }
+// }

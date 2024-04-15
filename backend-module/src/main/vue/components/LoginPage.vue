@@ -1,29 +1,26 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 
-
-<template> 
-  <div class="login-container"> 
-      <h2 class="login-title">Login</h2> 
-      <form @submit.prevent="login" class="login-form"> 
-          <div class="form-field"> 
-              <label for="username" class="form-label">Username:</label> 
-              <input type="email" id="username" v-model="email" required class="form-input" placeholder="example@example.com"> 
-          </div> 
-          <div class="form-field"> 
-              <label for="password" class="form-label">Password:</label> 
-              <input :type="passwordFieldType" id="password" v-model="password" required class="form-input"> 
-         
-          </div> 
-          <button type="password" @mousedown="switchVisibility" @mouseup="hide">show password</button>
-          <span class="display-eye" @click="switchVisibility">
-                <i :class="passwordFieldType === 'password' ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
-              </span>
-        
-          <button type="submit" class="login-button">Login</button> 
-      </form>
-      <p v-if="loginMessage">{{ loginMessage }}</p> <!-- Zobrazit zprávu o přihlášení -->
+<template>
+  <div class="login-container">
+    <h2 class="login-title">Login</h2>
+    <form @submit.prevent="login" class="login-form">
+      <div class="form-field">
+        <label for="username" class="form-label">Username:</label>
+        <input type="email" id="username" v-model="email" required class="form-input" placeholder="example@example.com">
+      </div>
+      <div class="form-field">
+        <label for="password" class="form-label">Password:</label>
+        <input :type="passwordFieldType" id="password" v-model="password" required class="form-input">
+      </div>
+      <button type="button" @mousedown="switchVisibility" @mouseup="hide" class="login-button">Show Password</button>
+      <span class="display-eye" @click="switchVisibility">
+        <i :class="passwordFieldType === 'password' ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
+      </span>
+      <button type="submit" class="login-button">Login</button>
+    </form>
+    <p v-if="loginMessage">{{ loginMessage }}</p>
   </div>
-</template> 
+</template>
 
 <style scoped> 
 .login-container { display: flex; flex-direction: column; align-items: center; margin-top: 100px; } 
