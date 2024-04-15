@@ -17,6 +17,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -27,6 +28,18 @@ public class PokusServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {  
+
+        // Koukne jestli existuje session pro uživatele
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            // Jinak vrátí na login page
+            System.out.println("Session not found");
+            response.sendRedirect("/Home/login");
+            return;
+        }
+        
+        String username = (String) session.getAttribute("username");
+        System.out.println("Session found, username: " + username);
 
         try {
             // Získanie údajov zo servera (napr. z databázy)
