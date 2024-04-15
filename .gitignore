@@ -1,4 +1,7 @@
 backend-module/target
+
 backend-module/node_modules
 backend-module/src/main/webapp/bundle.js.LICENSE.txt
+
 backend-module/node
+backend-module/package-lock.json
