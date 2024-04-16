@@ -88,13 +88,13 @@ public class DatabaseUtil {
     }
 
 
-    public static void UpdateService(String requestData, String Enitity, String ID) throws SQLException, IOException 
+    public static void Update(String requestData, String Enitity, String ID) throws SQLException, IOException 
     {
         try (Connection connection = getConnection()) {
 
         StringBuilder sqlQuery = new StringBuilder("UPDATE " + Enitity + " SET ");
 
-        requestData = requestData.replace("}", "").replace("{", "");
+        requestData = requestData.replace("}", "").replace("{", "");    //TODO: spravit inak rozdelovanie ciarky su problem
         String[] dataPairs = requestData.split(",");
         for (int i = 0; i < dataPairs.length; i++) {
             String pair = dataPairs[i];
@@ -117,7 +117,7 @@ public class DatabaseUtil {
 
             if (keyValue[0].equals("\"" + ID + "\"")) {
 
-                sqlQuery.append(" WHERE ServiceID = ").append(keyValue[1]).append(";"); // Odstránenie úvodzoviek
+                sqlQuery.append(" WHERE "+ ID + " = ").append(keyValue[1]).append(";"); // Odstránenie úvodzoviek
             }
         }
         System.out.println("Generated SQL query:");

@@ -12,8 +12,8 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.sql.SQLException;
 
-@WebServlet("/UpdateService")
-public class UpdateServiceServlet extends HttpServlet {
+@WebServlet("/UpdateRoom")
+public class UpdateRoomServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -30,8 +30,8 @@ public class UpdateServiceServlet extends HttpServlet {
         String requestData = sb.toString();
 
         try {
-            DatabaseUtil.Update(requestData, "Service", "ServiceID");
-            System.out.println("Received update for Service:");
+            DatabaseUtil.Update(requestData, "Room", "RoomID");
+            System.out.println("Received update for Room:");
             System.out.println(requestData);
         } 
         catch (SQLException e) {
