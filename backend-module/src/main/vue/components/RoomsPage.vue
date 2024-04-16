@@ -22,6 +22,7 @@
               <th>Equipment</th>
               <th>State</th>
               <th>Beds</th>
+              <th>Edit</th>
             </tr>
           </thead>
           <tbody v-if="rooms && rooms.length > 0">
@@ -31,6 +32,7 @@
             <td>{{ room.Equip }}</td>
             <td>{{ room.State }}</td>
             <td>{{ room.Beds }}</td>
+            <td><button class="edit-button" @click="editService(room.RoomID)">Edit</button></td>
           </tr>
           </tbody>
         </table>
@@ -51,7 +53,7 @@ export default {
   },
   methods: {
     fetchRooms() {
-      fetch('/Home/Rooms') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
+      fetch('/Home/Rooms/GetRooms') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
         .then(response => response.json())
         .then(data => {
           this.rooms = data; // Nastavenie údajov do premennej rooms
@@ -74,7 +76,10 @@ export default {
     },
     viewCustomers() {
       console.log('View Customers');
-    }
+    },
+    editService(RoomID) {
+      console.log('Editing Room:', RoomID);
+      }
   }
 };
 </script>
@@ -105,6 +110,19 @@ export default {
 .logout button:hover {
   background-color: #d32f2f;
 }
+.edit-button{
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #2196f3;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  .edit-button:hover {
+    background-color: #13568e;
+  }
 .toolbar {
   display: flex;
   flex-direction: column;
