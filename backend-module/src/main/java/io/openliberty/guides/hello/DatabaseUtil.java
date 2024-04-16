@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import com.fasterxml.jackson.databind.JsonNode;
 
 // Tato třída bude obsahovat metodu pro připojení k databázi
 public class DatabaseUtil {
@@ -74,59 +75,45 @@ public class DatabaseUtil {
     {
         Connection connection = getConnection();
 
-        // Definujte SQL dotaz
         String sqlQuery = "SELECT * FROM " + Enitity;
         
-        // Pripravte príkaz na vykonanie dotazu
         PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
         
-        // Vykonajte dotaz a získajte výsledky
         ResultSet resultSet = preparedStatement.executeQuery();
         
-        // Spracovanie výsledkov dotazu
         return resultSet;
     }
 
 
-    public static void Update(String requestData, String Enitity, String ID) throws SQLException, IOException 
+    public static void Update(JsonNode root, String Enitity, String ID) throws SQLException, IOException 
     {
+        System.out.println("Upadate for "+ Enitity);
         try (Connection connection = getConnection()) {
+        
+        //ziskanie nazvu stlpcov pre danu entitu
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '"+ Enitity +"';");
+        ResultSet NameOfColumns = preparedStatement.executeQuery();
 
         StringBuilder sqlQuery = new StringBuilder("UPDATE " + Enitity + " SET ");
 
-        requestData = requestData.replace("}", "").replace("{", "");    //TODO: spravit inak rozdelovanie ciarky su problem
-        String[] dataPairs = requestData.split(",");
-        for (int i = 0; i < dataPairs.length; i++) {
-            String pair = dataPairs[i];
-            String[] keyValue = pair.split(":");
-            String columnName = keyValue[0].replaceAll("\"", "");
-            String columnValue = keyValue[1];
-        
-            // Přidání sloupce a hodnoty do SQL dotazu
-            if (!columnName.equals("editable"))
-            {    
-                sqlQuery.append(columnName).append("=").append(columnValue).append(",");
-            }
+        while (NameOfColumns.next()) {
+            String columnName = NameOfColumns.getString("COLUMN_NAME");
+            String jsonValue = root.path(columnName).asText(); root.path(columnName);
+
+            if (!jsonValue.matches("-?\\d+(\\.\\d+)?"))  // Ak sa nejedna o cislo
+                sqlQuery.append(columnName).append("=").append("\"" + jsonValue + "\"").append(",");
+            else
+                sqlQuery.append(columnName).append("=").append(jsonValue).append(",");
         }
-        sqlQuery.deleteCharAt(sqlQuery.length() - 1);
+        sqlQuery.deleteCharAt(sqlQuery.length() - 1); //odstranenie podslednej ciarky
+        sqlQuery.append(" WHERE "+ ID + " = ").append(root.path(ID).asText()).append(";");
 
-        //Hladanie ID
-        String[] keyValuePairs = requestData.split(",");
-        for (String pair : keyValuePairs) {
-            String[] keyValue = pair.split(":");
+        PreparedStatement query = connection.prepareStatement(sqlQuery.toString());
+        query.executeUpdate();
 
-            if (keyValue[0].equals("\"" + ID + "\"")) {
-
-                sqlQuery.append(" WHERE "+ ID + " = ").append(keyValue[1]).append(";"); // Odstránenie úvodzoviek
-            }
+        NameOfColumns.close();
+        preparedStatement.close();
+        connection.close();
         }
-        System.out.println("Generated SQL query:");
-        System.out.println(sqlQuery.toString());
-
-        // Pripravte príkaz na vykonanie dotazu
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery.toString());
-        preparedStatement.executeUpdate();
-        }
-    
     }
 }

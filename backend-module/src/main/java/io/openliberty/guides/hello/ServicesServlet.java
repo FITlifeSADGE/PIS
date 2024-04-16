@@ -27,7 +27,7 @@ public class ServicesServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {  
-        System.out.println("PRSIEL GET NA SERVICE");
+        System.out.println("Get for Service Data");
         try {
             // Získanie údajov zo servera (napr. z databázy)
             ResultSet resultSet = DatabaseUtil.Selecet("Service");

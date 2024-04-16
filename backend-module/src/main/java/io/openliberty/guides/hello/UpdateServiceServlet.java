@@ -2,7 +2,6 @@ package io.openliberty.guides.hello;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -12,6 +11,10 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.sql.SQLException;
 
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @WebServlet("/UpdateService")
 public class UpdateServiceServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -19,24 +22,19 @@ public class UpdateServiceServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // Načítanie údajov z požiadavky
-        BufferedReader reader = new BufferedReader(new InputStreamReader(request.getInputStream()));
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            sb.append(line);
-        }
+        BufferedReader reader = request.getReader();
+        String line = reader.readLine();
         reader.close();
-        String requestData = sb.toString();
+        
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(line);
 
-        try {
-            DatabaseUtil.Update(requestData, "Service", "ServiceID");
-            System.out.println("Received update for Service:");
-            System.out.println(requestData);
+        try 
+        {
+            DatabaseUtil.Update(root, "Service", "ServiceID");
         } 
         catch (SQLException e) {
             e.printStackTrace();
-            // Spracovanie chyby
         }
     }
 }

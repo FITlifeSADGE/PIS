@@ -29,7 +29,7 @@
               <td v-if="!service.editable">{{ service.Name }}</td>
               <td v-else><input type="text" v-model="service.Name" :style="{ width: getServiceInputWidth(service.Name) }"></td>
               <td v-if="!service.editable">{{ service.Cost }}</td>
-              <td v-else><input type=number v-model="service.Cost" :style="{ width: getServiceInputWidth(service.Cost) }"></td>
+              <td v-else><input type=number min="0" v-model="service.Cost" :style="{ width: '50px' }"></td>
               <td v-if="!service.editable">{{ service.Availability }}</td>
               <td v-else><input type="text" v-model="service.Availability" :style="{ width: getServiceInputWidth(service.Availability) }"></td>
               <td v-if="!service.editable">{{ service.Description }}</td>
@@ -121,7 +121,7 @@ export default {
     },
     getServiceInputWidth(text) {
       // Funkcia na získanie šírky textového poľa na základe dĺžky textu
-      return text ? `${text.length * 8}px` : '100px'; // 8px na jeden znak, predvolená šírka je 100px
+      return text ? `${text.length * 12}px` : '100px'; // 8px na jeden znak, predvolená šírka je 100px
     }
   }
 };
@@ -223,5 +223,26 @@ export default {
     background-color: #2196F3;
     color: white;
   }
+  input[type="text"] {
+  padding: 8px; /* upravte podle potřeby */
+  border: none; /* odstranění ohraničení */
+  border-radius: 4px; /* zaoblené rohy */
+  font-size: 16px; /* velikost písma */
+  border: 1px solid #2196F3;
+  }
+  input[type=number] {
+  padding: 8px; /* upravte podle potřeby */
+  border: none; /* odstranění ohraničení */
+  border-radius: 4px; /* zaoblené rohy */
+  font-size: 16px; /* velikost písma */
+  border: 1px solid #2196F3;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: inner-spin-button; /* Nastavení výchozího vzhledu */
+  appearance: inner-spin-button;
+  color: #2196F3; /* Barva šipek */
+  font-size: 16px; /* Velikost písma šipek */
+}
   </style>
   

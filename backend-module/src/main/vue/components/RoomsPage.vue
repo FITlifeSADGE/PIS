@@ -30,18 +30,18 @@
               <td v-if="!room.editable">{{ room.TypeRoom }}</td>
               <td v-else><input type="text" v-model="room.TypeRoom" :style="{ width: getRoomInputWidth(room.TypeRoom) }"></td>
               <td v-if="!room.editable">{{ room.Cost }}</td>
-              <td v-else><input type= number min="0" v-model="room.Cost" :style="{ width: getRoomInputWidth(room.Cost) }"></td>
+              <td v-else><input type= number min="0" v-model="room.Cost" :style="{ width: '50px' }"></td>
               <td v-if="!room.editable">{{ room.Equip }}</td>
               <td v-else><input type="text" v-model="room.Equip" :style="{ width: getRoomInputWidth(room.Equip) }"></td>
               <td v-if="!room.editable">{{ room.State }}</td>
               <td v-else> 
-                <select v-model="room.State" :style="{ width: getRoomInputWidth(room.State) }">
+                <select v-model="room.State" :style="{ width: '100px' }">
                   <option value="Available">Available</option>
                   <option value="Occupied">Occupied</option>
                 </select>
               </td>
               <td v-if="!room.editable">{{ room.Beds }}</td>
-              <td v-else><input type= number min="1" v-model="room.Beds" :style="{ width: getRoomInputWidth(room.Beds) }"></td>
+              <td v-else><input type= number min="1" v-model="room.Beds" :style="{ width: '50px' }"></td>
               <td>
               <button v-if="!room.editable" class="edit-button" @click="toggleEdit(room)">Edit</button>
               <button v-else class="ok-button" @click="updateRoom(room)">OK</button>
@@ -128,7 +128,7 @@ export default {
     },
     getRoomInputWidth(text) {
       // Funkcia na získanie šírky textového poľa na základe dĺžky textu
-      return text ? `${text.length * 8}px` : '100px'; // 8px na jeden znak, predvolená šírka je 100px
+      return text ? `${text.length * 12}px` : '100px'; // 8px na jeden znak, predvolená šírka je 100px
     }
   }
 };
@@ -229,4 +229,32 @@ th {
   background-color: #2196F3;
   color: white;
 }
+input[type="text"] {
+  padding: 8px; /* upravte podle potřeby */
+  border: none; /* odstranění ohraničení */
+  border-radius: 4px; /* zaoblené rohy */
+  font-size: 16px; /* velikost písma */
+  border: 1px solid #2196F3;
+  }
+  input[type=number] {
+  padding: 8px; /* upravte podle potřeby */
+  border: none; /* odstranění ohraničení */
+  border-radius: 4px; /* zaoblené rohy */
+  font-size: 16px; /* velikost písma */
+  border: 1px solid #2196F3;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: inner-spin-button; /* Nastavení výchozího vzhledu */
+  appearance: inner-spin-button;
+  color: #2196F3;
+  font-size: 16px; /* Velikost písma šipek */
+  }
+  select{
+  padding: 8px; /* upravte podle potřeby */
+  border: none; /* odstranění ohraničení */
+  border-radius: 4px; /* zaoblené rohy */
+  font-size: 16px; /* velikost písma */
+  border: 1px solid #2196F3;
+  }
 </style>
