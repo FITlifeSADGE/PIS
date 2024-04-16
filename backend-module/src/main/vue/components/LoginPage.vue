@@ -71,7 +71,7 @@ methods: {
     .then(response => {
       if (response.ok) {
         console.log('Login successful');
-        this.$router.push('/Home/pokus');
+        this.$router.push('/Home/customers');
       } else {
         throw new Error('Login failed');
       }

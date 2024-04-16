@@ -26,7 +26,8 @@
         <defaultServletsOverride value="false"/>
     </webApplication>
 
-    <applicationLocation id="Login" location="Login.war" contextRoot="${app.context.root}/login" />
-    <applicationLocation id="pokus" location="pokus.war" contextRoot="${app.context.root}/pokus" />
-    <applicationLocation id="LoginSuccess" location="LoginSuccess.war" contextRoot="${app.context.root}/success" />
+    <applicationLocation id="Login" location="Home.war" contextRoot="${app.context.root}/login" />
+    <applicationLocation id="LoginSuccess" location="Home.war" contextRoot="${app.context.root}/success" />
+    <applicationLocation id="Customers" location="Home.war" contextRoot="${app.context.root}/customers" />
+    <applicationLocation id="CustomerDetails" location="Home.war" contextRoot="${app.context.root}/customers/detail" />
 </server>

@@ -86,4 +86,46 @@ public class DatabaseUtil {
             // Spracovanie výsledkov dotazu
            return resultSet;
     }
+
+    public static void update(String requestData, String Enitity, String ID) throws SQLException, IOException 
+    {
+        try (Connection connection = getConnection()) {
+
+        StringBuilder sqlQuery = new StringBuilder("UPDATE " + Enitity + " SET ");
+
+        requestData = requestData.replace("}", "").replace("{", "");
+        String[] dataPairs = requestData.split(",");
+        for (int i = 0; i < dataPairs.length; i++) {
+            String pair = dataPairs[i];
+            String[] keyValue = pair.split(":");
+            String columnName = keyValue[0].replaceAll("\"", "");
+            String columnValue = keyValue[1];
+        
+            // Přidání sloupce a hodnoty do SQL dotazu
+            if (!columnName.equals("editable"))
+            {    
+                sqlQuery.append(columnName).append("=").append(columnValue).append(",");
+            }
+        }
+        sqlQuery.deleteCharAt(sqlQuery.length() - 1);
+
+        //Hladanie ID
+        String[] keyValuePairs = requestData.split(",");
+        for (String pair : keyValuePairs) {
+            String[] keyValue = pair.split(":");
+
+            if (keyValue[0].equals("\"" + ID + "\"")) {
+
+                sqlQuery.append(" WHERE ServiceID = ").append(keyValue[1]).append(";"); // Odstránenie úvodzoviek
+            }
+        }
+        System.out.println("Generated SQL query:");
+        System.out.println(sqlQuery.toString());
+
+        // Pripravte príkaz na vykonanie dotazu
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery.toString());
+        preparedStatement.executeUpdate();
+        }
+    
+    }
 }
