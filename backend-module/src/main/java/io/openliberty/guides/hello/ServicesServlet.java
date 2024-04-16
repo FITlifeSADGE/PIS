@@ -36,6 +36,7 @@ public class ServicesServlet extends HttpServlet {
             return;
         }
 
+        System.out.println("Get for Service Data");
         try {
             // Získanie údajov zo servera (napr. z databázy)
             ResultSet resultSet = DatabaseUtil.Selecet("Service");

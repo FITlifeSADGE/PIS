@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpSession;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-@WebServlet("/Rooms")
+@WebServlet("/Rooms/GetRooms")
 public class RoomsServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
@@ -35,6 +35,7 @@ public class RoomsServlet extends HttpServlet {
             return;
         }
         
+        System.out.println("Get for Room Data");
         try {
             // Získanie údajov zo servera (napr. z databázy)
             ResultSet resultSet = DatabaseUtil.Selecet("Room");

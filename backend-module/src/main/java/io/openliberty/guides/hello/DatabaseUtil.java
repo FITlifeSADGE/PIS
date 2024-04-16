@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import com.fasterxml.jackson.databind.JsonNode;
 
 // Tato třída bude obsahovat metodu pro připojení k databázi
 public class DatabaseUtil {
@@ -74,16 +75,45 @@ public class DatabaseUtil {
     {
         Connection connection = getConnection();
 
-        // Definujte SQL dotaz
         String sqlQuery = "SELECT * FROM " + Enitity;
         
-        // Pripravte príkaz na vykonanie dotazu
         PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
         
-        // Vykonajte dotaz a získajte výsledky
         ResultSet resultSet = preparedStatement.executeQuery();
         
-        // Spracovanie výsledkov dotazu
         return resultSet;
+    }
+
+
+    public static void Update(JsonNode root, String Enitity, String ID) throws SQLException, IOException 
+    {
+        System.out.println("Upadate for "+ Enitity);
+        try (Connection connection = getConnection()) {
+        
+        //ziskanie nazvu stlpcov pre danu entitu
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '"+ Enitity +"';");
+        ResultSet NameOfColumns = preparedStatement.executeQuery();
+
+        StringBuilder sqlQuery = new StringBuilder("UPDATE " + Enitity + " SET ");
+
+        while (NameOfColumns.next()) {
+            String columnName = NameOfColumns.getString("COLUMN_NAME");
+            String jsonValue = root.path(columnName).asText(); root.path(columnName);
+
+            if (!jsonValue.matches("-?\\d+(\\.\\d+)?"))  // Ak sa nejedna o cislo
+                sqlQuery.append(columnName).append("=").append("\"" + jsonValue + "\"").append(",");
+            else
+                sqlQuery.append(columnName).append("=").append(jsonValue).append(",");
+        }
+        sqlQuery.deleteCharAt(sqlQuery.length() - 1); //odstranenie podslednej ciarky
+        sqlQuery.append(" WHERE "+ ID + " = ").append(root.path(ID).asText()).append(";");
+
+        PreparedStatement query = connection.prepareStatement(sqlQuery.toString());
+        query.executeUpdate();
+
+        NameOfColumns.close();
+        preparedStatement.close();
+        connection.close();
+        }
     }
 }

@@ -29,7 +29,7 @@ VALUES
 (425, 'Single', 50.00, 'Desk, Chair, Wardrobe', 'Occupied', 1),
 (426, 'Suite', 120.00, 'Desk, Chair, Wardrobe, King Size Bed, Sofa', 'Available', 3),
 (427, 'Single', 50.00, 'Desk, Chair, Wardrobe', 'Available', 1),
-(428, 'Double', 80.00, 'Desk, Chair, Wardrobe, Double Bed', 'Occupied', 2),
+(428, 'Double', 80.00, 'Desk, Chair, Wardrobe, Double Bed', 'Occupied', 2);
 -- (429, 'Single', 50.00, 'Desk, Chair, Wardrobe', 'Available', 1),
 -- (430, 'Suite', 120.00, 'Desk, Chair, Wardrobe, King Size Bed, Sofa', 'Available', 3),
 -- (431, 'Single', 50.00, 'Desk, Chair, Wardrobe', 'Available', 1),

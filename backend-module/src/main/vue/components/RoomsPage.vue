@@ -8,15 +8,31 @@
           <th>Equipment</th>
           <th>State</th>
           <th>Beds</th>
+          <th>Edit</th>
         </tr>
       </thead>
       <tbody v-if="rooms && rooms.length > 0">
         <tr v-for="room in rooms" :key="room.RoomID">
-          <td>{{ room.TypeRoom }}</td>
-          <td>{{ room.Cost }}</td>
-          <td>{{ room.Equip }}</td>
-          <td>{{ room.State }}</td>
-          <td>{{ room.Beds }}</td>
+          <td v-if="!room.editable">{{ room.TypeRoom }}</td>
+          <td v-else><input type="text" v-model="room.TypeRoom" :style="{ width: getRoomInputWidth(room.TypeRoom) }"></td>
+          <td v-if="!room.editable">{{ room.Cost }}</td>
+          <td v-else><input type= number min="0" v-model="room.Cost" :style="{ width: '50px' }"></td>
+          <td v-if="!room.editable">{{ room.Equip }}</td>
+          <td v-else><input type="text" v-model="room.Equip" :style="{ width: getRoomInputWidth(room.Equip) }"></td>
+          <td v-if="!room.editable">{{ room.State }}</td>
+          <td v-else> 
+            <select v-model="room.State" :style="{ width: '100px' }">
+              <option value="Available">Available</option>
+              <option value="Occupied">Occupied</option>
+            </select>
+          </td>
+          <td v-if="!room.editable">{{ room.Beds }}</td>
+          <td v-else><input type= number min="1" v-model="room.Beds" :style="{ width: '50px' }"></td>
+          <td>
+          <button v-if="!room.editable" class="edit-button" @click="toggleEdit(room)">Edit</button>
+          <button v-else class="ok-button" @click="updateRoom(room)">OK</button>
+          <button v-if="room.editable" class="delete-button" @click="deleteRoom(room)">Delete</button>  
+        </td>
         </tr>
       </tbody>
     </table>
@@ -37,15 +53,111 @@ export default {
   },
   methods: {
     fetchRooms() {
-      fetch('/Home/Rooms') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
+      fetch('/Home/Rooms/GetRooms') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
         .then(response => response.json())
         .then(data => {
-          this.rooms = data; // Nastavenie údajov do premennej rooms
+          this.rooms = data.map(room => ({ ...room, editable: false })); // Nastavenie údajov do premennej rooms
         })
         .catch(error => {
           console.error('Error fetching rooms:', error);
         });
+    },
+    toggleEdit(room) {
+      room.editable = !room.editable; // Prepnutie hodnoty editable
+    },
+
+    updateRoom(room) {
+      // Implementácia aktualizácie služby
+      console.log('Updating room:', room);
+      room.editable = false; // Zatvorenie editovacieho režimu
+
+      // Odoslanie údajov na server
+      fetch('/Home/UpdateRoom', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(room),
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log('Room updated successfully');
+        } else {
+          throw new Error('Failed to update Room');
+        }
+      })
+      .catch(error => {
+        console.error('Error updating room:', error);
+      });
+    },
+
+
+    
+    deleteRoom(room) {
+      // Implementácia odstránenia služby
+      console.log('Deleting room:', room);
+    },
+    getRoomInputWidth(text) {
+      // Funkcia na získanie šírky textového poľa na základe dĺžky textu
+      return text ? `${text.length * 12}px` : '100px'; // 8px na jeden znak, predvolená šírka je 100px
     }
   }
 };
 </script>
+
+<style scoped>
+.edit-button{
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #2196f3;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+.edit-button:hover {
+  background-color: #13568e;
+}
+.ok-button{
+  padding: 10px 10px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #2196f3;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+.ok-button:hover {
+  background-color: #13568e;
+}
+input[type="text"] {
+  padding: 8px; /* upravte podle potřeby */
+  border: none; /* odstranění ohraničení */
+  border-radius: 4px; /* zaoblené rohy */
+  font-size: 16px; /* velikost písma */
+  border: 1px solid #2196F3;
+  }
+input[type=number] {
+  padding: 8px; /* upravte podle potřeby */
+  border: none; /* odstranění ohraničení */
+  border-radius: 4px; /* zaoblené rohy */
+  font-size: 16px; /* velikost písma */
+  border: 1px solid #2196F3;
+  }
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: inner-spin-button; /* Nastavení výchozího vzhledu */
+  appearance: inner-spin-button;
+  color: #2196F3;
+  font-size: 16px; /* Velikost písma šipek */
+}
+select{
+  padding: 8px; /* upravte podle potřeby */
+  border: none; /* odstranění ohraničení */
+  border-radius: 4px; /* zaoblené rohy */
+  font-size: 16px; /* velikost písma */
+  border: 1px solid #2196F3;
+}
+</style>
