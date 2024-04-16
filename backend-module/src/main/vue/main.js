@@ -5,6 +5,7 @@ import HomePage from './components/HomePage.vue';
 import LoginSuccess from './components/LoginSuccess.vue';
 import RoomsPage from './components/RoomsPage.vue';
 import ServicesPage from './components/ServicesPage.vue';
+import Parent from './components/Parent.vue';
 
 Vue.use(VueRouter);
 
@@ -25,11 +26,23 @@ const router = new VueRouter({
     },
     {
       path: '/Home/Rooms',
-      component: RoomsPage
+      component: Parent,
+      children: [
+        {
+          path: '',
+          component: RoomsPage
+        }
+      ]
     },
     {
       path: '/Home/Services',
-      component: ServicesPage
+      component: Parent,
+      children: [
+        {
+          path: '',
+          component: ServicesPage
+        }
+      ]
     }
   ]
 });

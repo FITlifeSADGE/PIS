@@ -1,9 +1,6 @@
 package io.openliberty.guides.hello;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -17,6 +14,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -27,6 +25,16 @@ public class RoomsServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {  
+
+        // Koukne jestli existuje session pro uživatele
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            // Jinak vrátí na login page
+            System.out.println("Session not found");
+            response.sendRedirect("/Home/login");
+            return;
+        }
+        
         System.out.println("Get for Room Data");
         try {
             // Získanie údajov zo servera (napr. z databázy)
