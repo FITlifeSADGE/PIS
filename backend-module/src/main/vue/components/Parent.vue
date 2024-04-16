@@ -38,7 +38,7 @@ export default {
           this.username = data.username; // Nastavenie údajov do premennej rooms
         })
         .catch(error => {
-          console.error('Error fetching rooms:', error);
+          this.$router.push('/Home/login');
         });
     },
     logout() {
