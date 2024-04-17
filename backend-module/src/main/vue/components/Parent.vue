@@ -29,6 +29,7 @@ export default {
   },
   mounted() {
     this.fetchUserInformation(); // Volanie funkcie na načítanie údajov po načítaní komponentu
+    window.addEventListener('scroll', this.handleScroll);
   },
   methods: {
     fetchUserInformation() {
@@ -70,7 +71,7 @@ export default {
     viewCustomers() {
       console.log('View Customers');
     }
-  }
+  },
 };
 </script>
 
@@ -122,13 +123,14 @@ export default {
 .content {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   padding: 20px;
 }
 .table-container {
   flex: 1;
   padding: 10px;
   border-radius: 10px;
+  overflow: auto;
 }
 table {
   width: 100%;
@@ -142,5 +144,8 @@ th, td {
 th {
   background-color: #2196F3;
   color: white;
+  position: sticky;
+  top: 0; 
+
 }
 </style>

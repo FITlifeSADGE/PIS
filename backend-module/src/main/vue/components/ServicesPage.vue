@@ -45,7 +45,7 @@ export default {
   },
   methods: {
     fetchServices() {
-      fetch('/Home/Services') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
+      fetch('/Home/Services/GetServices') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
         .then(response => response.json())
         .then(data => {
           // Nastavenie údajov do premennej Services a pridanie atribútu editable pre úpravu

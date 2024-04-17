@@ -14,18 +14,6 @@
   
   <style scoped>
   /* Styly můžete přidat podle vašich preferencí */
-  h1 {
-    font-size: 24px;
-    color: #333;
-  }
-  
-  button {
-    padding: 10px 20px;
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
+  @import '/src/main/vue/styles/style.css';
   </style>
   
