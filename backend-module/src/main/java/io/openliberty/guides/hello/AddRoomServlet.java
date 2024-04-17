@@ -29,7 +29,6 @@ public class AddRoomServlet extends HttpServlet {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(line);
 
-        System.out.println("Vue data" + line.toString());
         try 
         {
             DatabaseUtil.Add(root, "Room", "RoomID");

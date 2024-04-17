@@ -15,11 +15,11 @@
 
         <!-- Add new -->
         <tr v-if="addingNew">
-          <td><input type="text" v-model="newRoom.TypeRoom"></td>
-          <td><input type=number min="1" v-model="newRoom.Cost"></td>
+          <td><input type="text" v-model="newRoom.TypeRoom" ></td>
+          <td><input type=number min="1" v-model="newRoom.Cost" ></td>
           <td><input type="text" v-model="newRoom.Equip"></td>
           <td> 
-            <select v-model="newRoom.State" :style="{ width: '130px' }">
+            <select v-model="newRoom.State" :style="{ width: '130px' }" >
               <option value="Available">Available</option>
               <option value="Occupied">Occupied</option>
             </select>
@@ -90,11 +90,11 @@ export default {
       },
       addingNew: false,
       newRoom: {
-        TypeRoom: '',
-        Cost: '',
-        Equip: '',
-        State: '',
-        Beds: ''
+        TypeRoom: 'Double',
+        Cost: '15',
+        Equip: 'Desk, Chair, Wardrobe, Bed',
+        State: 'Available',
+        Beds: '2'
       }
     };
   },
@@ -190,9 +190,17 @@ export default {
     toggleAddNew() {
       this.addingNew = true;
     },
-    addNewRoom() {
-      this.rooms.push({ ...this.newRoom, editable: false });
+    addNewRoom() 
+    {
+      if (
+      this.newRoom.TypeRoom &&
+      this.newRoom.Cost &&
+      this.newRoom.Equip &&
+      this.newRoom.State &&
+      this.newRoom.Beds
+      ) {
 
+      this.rooms.push({ ...this.newRoom, editable: false });
       fetch('/Home/AddRoom', {
         method: 'POST',
         headers: {
@@ -212,21 +220,26 @@ export default {
       });
 
       this.newRoom = {
-        TypeRoom: '',
-        Cost: '',
-        Equip: '',
-        State: '',
-        Beds: ''
+        TypeRoom: 'Double',
+        Cost: '15',
+        Equip: 'Desk, Chair, Wardrobe, Bed',
+        State: 'Available',
+        Beds: '2'
       };
       this.addingNew = false;
+      } 
+      else 
+      {
+        alert('Fill in all fields for new Room.');
+      }
     },
     cancelNewRoom() {
       this.newRoom = {
-        TypeRoom: '',
-        Cost: '',
-        Equip: '',
-        State: '',
-        Beds: ''
+        TypeRoom: 'Double',
+        Cost: '15',
+        Equip: 'Desk, Chair, Wardrobe, Bed',
+        State: 'Available',
+        Beds: '2'
       };
       this.addingNew = false;
     }
@@ -300,6 +313,6 @@ select{
   cursor: pointer;
 }
 .delete-button:hover {
-  background-color: #f32f218d;
+  background-color: #951e16;
 }
 </style>

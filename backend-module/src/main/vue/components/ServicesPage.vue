@@ -14,15 +14,15 @@
 
         <!-- Add new -->
         <tr v-if="addingNew">
-          <td><input type="text" v-model="newService.Name"></td>
+          <td><input type="text" v-model="newService.Name" placeholder="name of service"></td>
           <td><input type=number min="1" v-model="newService.Cost"></td>
           <td> 
-            <select v-model="newService.Availability" :style="{ width: '130px' }">
+            <select v-model="newService.Availability" :style="{ width: '130px' }" >
               <option value="Available">Available</option>
               <option value="Occupied">Not Available</option>
             </select>
           </td>
-          <td><input type="text" v-model="newService.Description"></td>
+          <td><input type="text" v-model="newService.Description" placeholder="description of service"></td>
           <td>
             <button @click="addNewService" class="edit-button" >OK</button>
             <button @click="cancelNewService" class="delete-button" >Cancel</button>
@@ -90,8 +90,8 @@ export default {
       addingNew: false,
       newService: {
         Name: '',
-        Cost: '',
-        Availability: '',
+        Cost: '10',
+        Availability: 'Available',
         Description: ''
       }
     };
@@ -190,39 +190,51 @@ export default {
       this.addingNew = true;
     },
     addNewService() {
-      this.services.push({ ...this.newService, editable: false });
 
-      fetch('/Home/AddService', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(this.newService),
-      })
-      .then(response => {
-        if (response.ok) {
-          console.log('Service added successfully');
-        } else {
-          throw new Error('Failed to add service');
-        }
-      })
-      .catch(error => {
-        console.error('Error adding service:', error);
-      });
+      if (
+      this.newService.Name &&
+      this.newService.Cost &&
+      this.newService.Availability) 
+      {
 
-      this.newService = {
-        Name: '',
-        Cost: '',
-        Availability: '',
-        Description: ''
-      };
-      this.addingNew = false;
+        this.services.push({ ...this.newService, editable: false });
+
+        fetch('/Home/AddService', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(this.newService),
+        })
+        .then(response => {
+          if (response.ok) {
+            console.log('Service added successfully');
+          } else {
+            throw new Error('Failed to add service');
+          }
+        })
+        .catch(error => {
+          console.error('Error adding service:', error);
+        });
+
+        this.newService = {
+          Name: '',
+          Cost: '10',
+          Availability: 'Available',
+          Description: ''
+        };
+        this.addingNew = false;
+      }
+        else 
+      {
+        alert('Fill in all fields in for new Service.');
+      }
     },
     cancelNewService() {
       this.newService = {
         Name: '',
-        Cost: '',
-        Availability: '',
+        Cost: '10',
+        Availability: 'Available',
         Description: ''
       };
       this.addingNew = false;
