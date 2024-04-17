@@ -5,14 +5,49 @@
         <tr>
           <th>Type</th>
           <th>Cost</th>
-          <th>Equipment</th>
+          <th>Equip</th>
           <th>State</th>
           <th>Beds</th>
           <th>Edit</th>
         </tr>
       </thead>
-      <tbody v-if="rooms && rooms.length > 0">
-        <tr v-for="room in rooms" :key="room.RoomID">
+      <tbody>
+
+        <!-- Add new -->
+        <tr v-if="addingNew">
+          <td><input type="text" v-model="newRoom.TypeRoom"></td>
+          <td><input type=number min="1" v-model="newRoom.Cost"></td>
+          <td><input type="text" v-model="newRoom.Equip"></td>
+          <td> 
+            <select v-model="newRoom.State" :style="{ width: '130px' }">
+              <option value="Available">Available</option>
+              <option value="Occupied">Occupied</option>
+            </select>
+          </td>
+          <td><input type=number min="1" v-model="newRoom.Beds"></td>
+          <td>
+            <button @click="addNewRoom" class="edit-button" >OK</button>
+            <button @click="cancelNewRoom" class="delete-button">Cancel</button>
+          </td>
+        </tr>
+        <tr v-else>
+          <td colspan="5" style="text-align: center;">
+            <button @click="toggleAddNew" class="edit-button">Add New</button>
+          </td>
+        </tr>
+
+        <!-- Filter row -->
+        <tr>
+          <td><input type="text" v-model="filters.TypeRoom"></td>
+          <td><input type="text" v-model="filters.Cost"></td>
+          <td><input type="text" v-model="filters.Equip"></td>
+          <td><input type="text" v-model="filters.State"></td>
+          <td><input type="text" v-model="filters.Beds"></td>
+          <td></td> <!-- Empty cell for buttons -->
+        </tr>
+
+        <!-- Data rows -->
+        <tr v-for="room in filteredRooms" :key="room.RoomID">
           <td v-if="!room.editable">{{ room.TypeRoom }}</td>
           <td v-else><input type="text" v-model="room.TypeRoom" :style="{ width: getRoomInputWidth(room.TypeRoom) }"></td>
           <td v-if="!room.editable">{{ room.Cost }}</td>
@@ -21,7 +56,7 @@
           <td v-else><input type="text" v-model="room.Equip" :style="{ width: getRoomInputWidth(room.Equip) }"></td>
           <td v-if="!room.editable">{{ room.State }}</td>
           <td v-else> 
-            <select v-model="room.State" :style="{ width: '100px' }">
+            <select v-model="room.State" :style="{ width: '130px' }">
               <option value="Available">Available</option>
               <option value="Occupied">Occupied</option>
             </select>
@@ -29,10 +64,10 @@
           <td v-if="!room.editable">{{ room.Beds }}</td>
           <td v-else><input type= number min="1" v-model="room.Beds" :style="{ width: '50px' }"></td>
           <td>
-          <button v-if="!room.editable" class="edit-button" @click="toggleEdit(room)">Edit</button>
-          <button v-else class="ok-button" @click="updateRoom(room)">OK</button>
-          <button v-if="room.editable" class="delete-button" @click="deleteRoom(room)">Delete</button>  
-        </td>
+            <button v-if="!room.editable" class="edit-button" @click="toggleEdit(room)">Edit</button>
+            <button v-else class="ok-button" @click="updateRoom(room)">OK</button>
+            <button v-if="room.editable" class="delete-button" @click="deleteRoom(room)">Delete</button>  
+          </td>
         </tr>
       </tbody>
     </table>
@@ -45,8 +80,37 @@ import Parent from './Parent.vue';
 export default {
   data() {
     return {
-      rooms: [] // pole na uchovávanie údajov
+      rooms: [], // pole na uchovávanie údajov
+      filters: {
+        TypeRoom: '',
+        Cost: '',
+        Equip: '',
+        State: '',
+        Beds: ''
+      },
+      addingNew: false,
+      newRoom: {
+        TypeRoom: '',
+        Cost: '',
+        Equip: '',
+        State: '',
+        Beds: ''
+      }
     };
+  },
+  computed: {
+    filteredRooms() {
+      // Filter rooms based on filter criteria
+      return this.rooms.filter(room => {
+        return (
+          room.TypeRoom.includes(this.filters.TypeRoom) &&
+          room.Cost.toString().includes(this.filters.Cost) &&
+          room.Equip.includes(this.filters.Equip) &&
+          room.State.includes(this.filters.State) &&
+          room.Beds.toString().includes(this.filters.Beds)
+        );
+      });
+    }
   },
   mounted() {
     this.fetchRooms(); // Volanie funkcie na načítanie údajov po načítaní komponentu
@@ -90,16 +154,81 @@ export default {
         console.error('Error updating room:', error);
       });
     },
-
-
     
     deleteRoom(room) {
-      // Implementácia odstránenia služby
       console.log('Deleting room:', room);
+      room.editable = false; // Zatvorenie editovacieho režimu
+
+      const index = this.rooms.indexOf(room);
+      if (index !== -1) 
+      {
+        this.rooms.splice(index, 1);
+      }
+      fetch('/Home/DeleteRoom', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(room),
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log('Room deleted successfully');
+        } else {
+          throw new Error('Failed to delete Room');
+        }
+      })
+      .catch(error => {
+        console.error('Error deleting room:', error);
+      });
     },
+
     getRoomInputWidth(text) {
       // Funkcia na získanie šírky textového poľa na základe dĺžky textu
       return text ? `${text.length * 12}px` : '100px'; // 8px na jeden znak, predvolená šírka je 100px
+    },
+    toggleAddNew() {
+      this.addingNew = true;
+    },
+    addNewRoom() {
+      this.rooms.push({ ...this.newRoom, editable: false });
+
+      fetch('/Home/AddRoom', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(this.newRoom),
+      })
+      .then(response => {
+        if (response.ok) {
+          console.log('Room added successfully');
+        } else {
+          throw new Error('Failed to add room');
+        }
+      })
+      .catch(error => {
+        console.error('Error adding room:', error);
+      });
+
+      this.newRoom = {
+        TypeRoom: '',
+        Cost: '',
+        Equip: '',
+        State: '',
+        Beds: ''
+      };
+      this.addingNew = false;
+    },
+    cancelNewRoom() {
+      this.newRoom = {
+        TypeRoom: '',
+        Cost: '',
+        Equip: '',
+        State: '',
+        Beds: ''
+      };
+      this.addingNew = false;
     }
   }
 };
@@ -159,5 +288,18 @@ select{
   border-radius: 4px; /* zaoblené rohy */
   font-size: 16px; /* velikost písma */
   border: 1px solid #2196F3;
+}
+.delete-button{
+  padding: 10px 10px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #f32f21;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+.delete-button:hover {
+  background-color: #f32f218d;
 }
 </style>

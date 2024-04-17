@@ -116,4 +116,68 @@ public class DatabaseUtil {
         connection.close();
         }
     }
+
+    public static void Add(JsonNode root, String Enitity, String ID) throws SQLException, IOException 
+    {
+        System.out.println("Add for " + Enitity);
+        try (Connection connection = getConnection()) {
+
+            PreparedStatement sql_command1 = connection.prepareStatement("SELECT MAX(" + ID + ") AS MaxID FROM " + Enitity);
+            ResultSet resultSet = sql_command1.executeQuery();
+            int maxID = 0;
+
+            if (resultSet.next()) 
+            {
+                maxID = resultSet.getInt("MaxID");
+            }
+            maxID += 1;
+
+            PreparedStatement sql_command2 = connection.prepareStatement("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '"+ Enitity +"';");
+            ResultSet NameOfColumns = sql_command2.executeQuery();
+
+            StringBuilder sql_command3 = new StringBuilder("INSERT INTO " + Enitity + " ( ");
+            StringBuilder sql_command4 = new StringBuilder(" VALUES (");
+            while (NameOfColumns.next()) 
+            {
+                String columnName = NameOfColumns.getString("COLUMN_NAME");
+                String jsonValue = root.path(columnName).asText(); root.path(columnName);
+    
+                sql_command3.append(columnName).append(", ");
+                if (!jsonValue.matches("-?\\d+(\\.\\d+)?"))  // Ak sa nejedna o cislo
+                    if (columnName.equals(ID))
+                        sql_command4.append(maxID).append(", ");
+                    else
+                        sql_command4.append("\"" + jsonValue + "\"").append(", ");
+                else
+                    sql_command4.append(jsonValue).append(", ");
+            }
+            sql_command3.deleteCharAt(sql_command3.length() - 2);
+            sql_command3.append(") ");
+
+            sql_command4.deleteCharAt(sql_command4.length() - 2);
+            sql_command4.append(");");
+            sql_command3.append(sql_command4);
+
+            PreparedStatement query = connection.prepareStatement(sql_command3.toString());
+            query.executeUpdate();
+
+            NameOfColumns.close();
+            sql_command1.close();
+            sql_command2.close();
+            connection.close();
+        }
+    }
+
+    public static void Delete(JsonNode root, String Enitity, String ID) throws SQLException, IOException 
+    {
+        System.out.println("Delete for "+ Enitity);
+        try (Connection connection = getConnection()) {
+        
+            String ElementID = root.path(ID).asText();
+            PreparedStatement sql_command2 = connection.prepareStatement("DELETE FROM "+ Enitity +" WHERE "+ ID +" = "+ ElementID +";");
+            sql_command2.executeUpdate();
+
+            connection.close();
+        }
+    }
 }
