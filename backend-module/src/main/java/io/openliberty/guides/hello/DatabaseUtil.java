@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
+import com.fasterxml.jackson.databind.JsonNode;
 
 // Tato třída bude obsahovat metodu pro připojení k databázi
 public class DatabaseUtil {

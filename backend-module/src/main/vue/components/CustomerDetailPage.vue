@@ -15,6 +15,7 @@
         </div>
         <div class="table-container">
         <button class="button" @click="ReturnToAllCustomers">Zpět na seznam</button>
+        <button class="button buttonR" v-if="showButton" @click="removeChanges">Zrušit změny</button>
 
 
           <!-- <span v-if="customer.validationError" class="error-message">{{ customer.validationError }}</span> -->
@@ -28,11 +29,11 @@
                 <th>Document Number</th>
                 <th>Date of Birth</th>
               </tr>
-              <tr><th>Allergy</th>
+              <!-- <tr><th>Allergy</th>
                 <th>Handicap</th>
                 <th>Address</th>
                 <th>Subscription</th>
-              </tr>
+              </tr> -->
             </thead>
             <tbody v-if="customers && customers.length > 0">
               <tr v-for="customer in customers" :key="customer.PersonID">
@@ -43,12 +44,12 @@
                 <td>{{ customer.DocumentNumber }}</td>
                 <td>{{ customer.dateOfBirth }}</td>
               </tr>
-              <tr v-for="customer in customers" :key="customer.PersonID">
+              <!-- <tr v-for="customer in customers" :key="customer.PersonID">
                 <td>{{ customer.Allergy }}</td>
                 <td>{{ customer.Handicap }}</td>
                 <td>{{ customer.Address }}</td>
                 <td>{{ customer.Subscription }}</td>
-              </tr>
+              </tr> -->
             </tbody>
           </table>
   
@@ -61,20 +62,21 @@
                 <th>Phone Number</th>
                 <th>Document Number</th>
                 <th>Date of Birth</th>
+                <th>Save</th>
               </tr>
-              <tr><th>Allergy</th>
+              <!-- <tr><th>Allergy</th>
                 <th>Handicap</th>
                 <th>Address</th>
                 <th>Subscription</th>
-              </tr>
+              </tr> -->
             </thead>
             <tbody v-if="customers && customers.length > 0">
               <tr v-for="customer in customers" :key="customer.PersonID">
                 <td>
-                  <input v-model="customer.LastName" @change="saveField(customer)" />
+                  <input v-model="customer.LastName"/>
                 </td>
                 <td>
-                  <input v-model="customer.FirstName" @change="saveField(customer)" />
+                  <input v-model="customer.FirstName"/>
                 </td>
                   <!-- ------------------------------------------------------------------------------------------------ -->
                 <!-- <td>
@@ -87,30 +89,31 @@
                 </td>
                 <!-- ------------------------------------------------------------------------------------------------ -->
                 <td>
-                  <!-- @change="saveField(customer)"  -->
                   <input v-model="customer.PhoneNumber" @change="validatePhoneNumber(customer)" />
                 </td>
                 <td>
-                  <input v-model="customer.DocumentNumber" @change="saveField(customer)" />
+                  <input v-model="customer.DocumentNumber"/>
                 </td>
                 <td>
-                  <input type="date" v-model="customer.dateOfBirth" @change="saveField(customer)" />
+                  <input type="date" v-model="customer.dateOfBirth"/>
                 </td>
                 <!-- FIXME: -->
+                <td>
                 <button class="button" @click="updateToggleTable(customer)">{{ buttonLabel }}</button> 
-                <!-- ------ -->
+                </td>
+              <!-- ------ -->
               </tr>
-              <tr v-for="customer in customers" :key="customer.PersonID">
+              <!-- <tr v-for="customer in customers" :key="customer.PersonID">
                 <td>
                   <input v-model="customer.Allergy" @change="saveField(customer)" />
                 </td>
                 <td><input v-model="customer.Handicap" /></td>
                 <td><input v-model="customer.Address" /></td>
                 <td><input v-model="customer.Subscription" /></td>
-              </tr>
+              </tr> -->
             </tbody>
           </table>
-          <button class="button buttonR" v-if="showButton" @click="removeChanges">Zrušit změny</button>
+          <p>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
 
         </div>
       </div>
@@ -134,10 +137,6 @@
     },
     methods: {
       // ------------------------------------------------------------------------------------------------
-      saveField(customer) {
-        console.log("Updated customer:", customer);
-        
-      },
       updateToggleTable(customer) {
         if(this.editTable == false)
         {
