@@ -14,6 +14,10 @@
           <button class="button" @click="viewCustomers">Zobrazenie zoznamu zákazníkov</button>
         </div>
         <div class="table-container">
+        <button class="button" @click="ReturnToAllCustomers">Zpět na seznam</button>
+        <button class="button" @click="toggleTable">{{ buttonLabel }}</button>
+        <button class="button buttonR" v-if="showButton" @click="removeChanges">Zrušit změny</button>
+
           <!-- <span v-if="customer.validationError" class="error-message">{{ customer.validationError }}</span> -->
           <table v-if="editTable">
             <thead>
@@ -25,6 +29,11 @@
                 <th>Document Number</th>
                 <th>Date of Birth</th>
               </tr>
+              <tr><th>Allergy</th>
+                <th>Handicap</th>
+                <th>Address</th>
+                <th>Subscription</th>
+              </tr>
             </thead>
             <tbody v-if="customers && customers.length > 0">
               <tr v-for="customer in customers" :key="customer.PersonID">
@@ -34,6 +43,12 @@
                 <td>{{ customer.PhoneNumber }}</td>
                 <td>{{ customer.DocumentNumber }}</td>
                 <td>{{ customer.dateOfBirth }}</td>
+              </tr>
+              <tr v-for="customer in customers" :key="customer.PersonID">
+                <td>{{ customer.Allergy }}</td>
+                <td>{{ customer.Handicap }}</td>
+                <td>{{ customer.Address }}</td>
+                <td>{{ customer.Subscription }}</td>
               </tr>
             </tbody>
           </table>
@@ -47,6 +62,11 @@
                 <th>Phone Number</th>
                 <th>Document Number</th>
                 <th>Date of Birth</th>
+              </tr>
+              <tr><th>Allergy</th>
+                <th>Handicap</th>
+                <th>Address</th>
+                <th>Subscription</th>
               </tr>
             </thead>
             <tbody v-if="customers && customers.length > 0">
@@ -78,6 +98,14 @@
                   <input type="date" v-model="customer.dateOfBirth" @change="saveField(customer)" />
                 </td>
               </tr>
+              <tr v-for="customer in customers" :key="customer.PersonID">
+                <td>
+                  <input v-model="customer.Allergy" @change="saveField(customer)" />
+                </td>
+                <td><input v-model="customer.Handicap" /></td>
+                <td><input v-model="customer.Address" /></td>
+                <td><input v-model="customer.Subscription" /></td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -92,7 +120,8 @@
       return {
         editTable: true,
         customers: [], // pole na uchovávanie údajov
-        buttonLabel: 'Edit informations',
+        buttonLabel: 'Upravit informace',
+        showButton: false,
         ID: null,
       };
     },
@@ -107,13 +136,22 @@
       },
       toggleTable() {
         if(this.editTable == false)
-          this.buttonLabel = 'Edit informations';
+        {
+          this.showButton = false;
+          this.buttonLabel = 'Upravit informace';
+        }
         else
-          this.buttonLabel = 'Save changes';
+        {
+          this.buttonLabel = 'Uložit změny';
+          this.showButton = true;
+        }
         this.editTable = !this.editTable;
       },
       // ------------------------------------------------------------------------------------------------
-  
+      ReturnToAllCustomers() {
+    // Přesměrování na stránku /Home/customers/detail s přidáním parametru ID
+      this.$router.push('/Home/customers');
+      },
       fetchCustomers() {
         fetch('/Home/customers/GetCustomer', {
           method: 'POST',
@@ -181,6 +219,10 @@
         // TODO:
         fetchCustomers();
       },
+      removeChanges(){
+        this.editTable = !this.editTable;
+        this.showButton = false;
+      }
       // -----------------------------------------------------------------------------------------------
   
     }
@@ -229,6 +271,11 @@
     font-size: 16px;
     cursor: pointer;
   }
+
+  .buttonR {
+    display: inline-block;
+  }
+
   .button:hover {
     background-color: #13568e;
   }
