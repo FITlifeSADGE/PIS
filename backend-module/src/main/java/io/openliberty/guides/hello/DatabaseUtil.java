@@ -128,7 +128,8 @@ public class DatabaseUtil {
         }
     
     }
-        public static void Update(JsonNode root, String Enitity, String ID) throws SQLException, IOException 
+    
+    public static void Update(JsonNode root, String Enitity, String ID) throws SQLException, IOException 
     {
         System.out.println("Upadate for "+ Enitity);
         try (Connection connection = getConnection()) {
