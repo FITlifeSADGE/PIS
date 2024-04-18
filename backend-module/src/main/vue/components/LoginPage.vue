@@ -8,14 +8,13 @@
         <label for="username" class="form-label">Username:</label>
         <input type="email" id="username" v-model="email" required class="form-input" placeholder="example@example.com">
       </div>
-      <div class="form-field">
+      <div class="form-field" style="margin-left: 4px;">
         <label for="password" class="form-label">Password:</label>
-        <input :type="passwordFieldType" id="password" v-model="password" required class="form-input">
+        <input type="password" id="password" :type="passwordFieldType" v-model="password" required class="form-input">
+        <span class="toggle-password" @click="togglePasswordVisibility">
+          <font-awesome-icon :icon="passwordFieldType === 'password' ? 'eye-slash' : 'eye'" />
+        </span>
       </div>
-      <button type="button" @mousedown="switchVisibility" @mouseup="hide" class="login-button">Show Password</button>
-      <span class="display-eye" @click="switchVisibility">
-        <i :class="passwordFieldType === 'password' ? 'fas fa-eye-slash' : 'fas fa-eye'"></i>
-      </span>
       <button type="submit" class="login-button">Login</button>
     </form>
     <p v-if="loginMessage">{{ loginMessage }}</p>
@@ -23,25 +22,16 @@
 </template>
 
 <style scoped> 
-.login-container { display: flex; flex-direction: column; align-items: center; margin-top: 100px; } 
-.login-title { font-size: 2rem; margin-bottom: 30px; color: #333; } 
-.login-form { display: flex; flex-direction: column; width: 300px; } 
-.form-field { margin-bottom: 15px; } .form-label { font-size: 0.9rem; margin-bottom: 5px; color: #666; } 
-.form-input { padding: 10px; border: 1px solid #ccc; border-radius: 3px; font-size: 0.9rem; } 
-.login-button { padding: 10px; background-color: #4CAF50; color: white; border: none; border-radius: 3px; font-size: 0.9rem; cursor: pointer; } 
-.login-button:hover { background-color: #45a049; } 
-.display-eye {
-  /* position: relative; */
-  cursor: pointer;
-}
-
-.display-eye i {
-  font-size: 30px;
-}
+  @import '/src/main/vue/styles/style.css';
 </style> 
 
 <script>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
 export default {
+  components: {
+    FontAwesomeIcon,
+  },
 data() {
   return {
     email: '',
@@ -71,7 +61,7 @@ methods: {
     .then(response => {
       if (response.ok) {
         console.log('Login successful');
-        this.$router.push('/Home/customers');
+        this.$router.push('/Home/Rooms');
       } else {
         throw new Error('Login failed');
       }
@@ -84,6 +74,9 @@ methods: {
       console.error('Error during login:', error);
       this.loginMessage = 'Špatný email nebo heslo'; // Pokud se nepodaří spojit nebo obdržet odpověď
     });
+  },
+  togglePasswordVisibility() {
+    this.passwordFieldType = this.passwordFieldType === 'password' ? 'text' : 'password';
   }
 }
 };

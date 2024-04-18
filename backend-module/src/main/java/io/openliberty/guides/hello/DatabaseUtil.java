@@ -75,61 +75,16 @@ public class DatabaseUtil {
     {
         Connection connection = getConnection();
 
-            // Definujte SQL dotaz
-            String sqlQuery = "SELECT * FROM " + Enitity;
-            
-            // Pripravte príkaz na vykonanie dotazu
-            PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
-            
-            // Vykonajte dotaz a získajte výsledky
-            ResultSet resultSet = preparedStatement.executeQuery();
-            
-            // Spracovanie výsledkov dotazu
-           return resultSet;
-    }
-
-    public static void update(String requestData, String Enitity, String ID) throws SQLException, IOException 
-    {
-        try (Connection connection = getConnection()) {
-
-        StringBuilder sqlQuery = new StringBuilder("UPDATE " + Enitity + " SET ");
-
-        requestData = requestData.replace("}", "").replace("{", "");
-        String[] dataPairs = requestData.split(",");
-        for (int i = 0; i < dataPairs.length; i++) {
-            String pair = dataPairs[i];
-            String[] keyValue = pair.split(":");
-            String columnName = keyValue[0].replaceAll("\"", "");
-            String columnValue = keyValue[1];
+        String sqlQuery = "SELECT * FROM " + Enitity;
         
-            // Přidání sloupce a hodnoty do SQL dotazu
-            if (!columnName.equals("editable"))
-            {    
-                sqlQuery.append(columnName).append("=").append(columnValue).append(",");
-            }
-        }
-        sqlQuery.deleteCharAt(sqlQuery.length() - 1);
-
-        //Hladanie ID
-        String[] keyValuePairs = requestData.split(",");
-        for (String pair : keyValuePairs) {
-            String[] keyValue = pair.split(":");
-
-            if (keyValue[0].equals("\"" + ID + "\"")) {
-
-                sqlQuery.append(" WHERE ServiceID = ").append(keyValue[1]).append(";"); // Odstránenie úvodzoviek
-            }
-        }
-        System.out.println("Generated SQL query:");
-        System.out.println(sqlQuery.toString());
-
-        // Pripravte príkaz na vykonanie dotazu
-        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery.toString());
-        preparedStatement.executeUpdate();
-        }
-    
+        PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
+        
+        ResultSet resultSet = preparedStatement.executeQuery();
+        
+        return resultSet;
     }
-    
+
+
     public static void Update(JsonNode root, String Enitity, String ID) throws SQLException, IOException 
     {
         System.out.println("Upadate for "+ Enitity);
@@ -159,6 +114,56 @@ public class DatabaseUtil {
         NameOfColumns.close();
         preparedStatement.close();
         connection.close();
+        }
+    }
+
+    public static void Add(JsonNode root, String Enitity, String ID) throws SQLException, IOException 
+    {
+        System.out.println("Add for " + Enitity);
+        try (Connection connection = getConnection()) {
+
+            PreparedStatement sql_command2 = connection.prepareStatement("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '"+ Enitity +"';");
+            ResultSet NameOfColumns = sql_command2.executeQuery();
+
+            StringBuilder sql_command3 = new StringBuilder("INSERT INTO " + Enitity + " ( ");
+            StringBuilder sql_command4 = new StringBuilder(" VALUES (");
+            while (NameOfColumns.next()) 
+            {
+                String columnName = NameOfColumns.getString("COLUMN_NAME");
+                String jsonValue = root.path(columnName).asText(); root.path(columnName);
+    
+                sql_command3.append(columnName).append(", ");
+                if (!jsonValue.matches("-?\\d+(\\.\\d+)?"))  // Ak sa nejedna o cislo
+                    sql_command4.append("\"" + jsonValue + "\"").append(", ");
+                else
+                    sql_command4.append(jsonValue).append(", ");
+            }
+            sql_command3.deleteCharAt(sql_command3.length() - 2);
+            sql_command3.append(") ");
+
+            sql_command4.deleteCharAt(sql_command4.length() - 2);
+            sql_command4.append(");");
+            sql_command3.append(sql_command4);
+
+            PreparedStatement query = connection.prepareStatement(sql_command3.toString());
+            query.executeUpdate();
+
+            NameOfColumns.close();
+            sql_command2.close();
+            connection.close();
+        }
+    }
+
+    public static void Delete(JsonNode root, String Enitity, String ID) throws SQLException, IOException 
+    {
+        System.out.println("Delete for "+ Enitity);
+        try (Connection connection = getConnection()) {
+        
+            String ElementID = root.path(ID).asText();
+            PreparedStatement sql_command2 = connection.prepareStatement("DELETE FROM "+ Enitity +" WHERE "+ ID +" = "+ ElementID +";");
+            sql_command2.executeUpdate();
+
+            connection.close();
         }
     }
 }

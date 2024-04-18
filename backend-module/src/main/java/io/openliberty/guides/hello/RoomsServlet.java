@@ -1,8 +1,6 @@
 package io.openliberty.guides.hello;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -16,25 +14,31 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-@WebServlet("/Customers/GetCustomers")
-public class CustomerServlet extends HttpServlet {
+@WebServlet("/Rooms/GetRooms")
+public class RoomsServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {  
 
+        // Koukne jestli existuje session pro uživatele
+        HttpSession session = request.getSession(false);
+        if (session == null) {
+            // Jinak vrátí na login page
+            System.out.println("Session not found");
+            response.sendRedirect("/Home/login");
+            return;
+        }
+        
+        System.out.println("Get for Room Data");
         try {
             // Získanie údajov zo servera (napr. z databázy)
-            Connection connection = DatabaseUtil.getConnection();
-            String query = "SELECT * FROM Person LEFT JOIN Customer on Person.PersonID = Customer.CustomerID WHERE Customer.CustomerID IS NOT NULL;";
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            ResultSet resultSet = preparedStatement.executeQuery();
-            System.out.println(resultSet);
-            //ResultSet resultSet = DatabaseUtil.Selecet("Person");
+            ResultSet resultSet = DatabaseUtil.Selecet("Room");
 
             List<Map<String, Object>> rows = new ArrayList<>();
             ResultSetMetaData metaData = resultSet.getMetaData();

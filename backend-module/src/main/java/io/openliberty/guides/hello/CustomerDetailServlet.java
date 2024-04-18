@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.sql.SQLException;
-import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,7 +22,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@WebServlet("/customers/GetCustomer")
+@WebServlet("/Customers/GetCustomer")
 public class CustomerDetailServlet extends HttpServlet{
     private static final long serialVersionUID = 1L;
 
@@ -44,11 +43,9 @@ public class CustomerDetailServlet extends HttpServlet{
             try {
                 Connection connection = DatabaseUtil.getConnection();
                 String query = "SELECT * FROM Person LEFT JOIN Customer on Person.PersonID = Customer.CustomerID WHERE Customer.CustomerID = " + requestData + ";";
-                // String query = "SELECT * FROM Person WHERE PersonID = " + requestData + ";";
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 ResultSet resultSet = preparedStatement.executeQuery();
                 System.out.println(resultSet);
-                //ResultSet resultSet = DatabaseUtil.Selecet("Person");
 
                 List<Map<String, Object>> rows = new ArrayList<>();
                 ResultSetMetaData metaData = resultSet.getMetaData();

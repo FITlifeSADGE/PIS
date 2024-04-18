@@ -11,6 +11,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.openliberty.guides.hello.model.LoginRequest;
@@ -36,8 +37,14 @@ public class LoginServlet extends HttpServlet {
                 
                 if (resultSet.next()) {
                     String dbPassword = resultSet.getString("Password"); // Získat heslo z databáze
+                    String dbRole = resultSet.getString("Assignment"); // Získat heslo z databáze
                     if (password.equals(dbPassword)) {
                         // User found and password matched, login successful
+
+                        HttpSession session = request.getSession(); // Create a session
+                        session.setAttribute("username", username);
+                        session.setAttribute("role", dbRole);
+
                         response.setStatus(HttpServletResponse.SC_OK);
                         response.getWriter().write("Login successful");
                     } else {

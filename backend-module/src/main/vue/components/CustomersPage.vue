@@ -1,44 +1,26 @@
 <template>
-    <div class="hotel-management">
-      <div class="header">
-        <h1>Hotel Management</h1>
-        <div class="logout">
-          <button class="button" @click="logout">Odhlásenie</button>
-        </div>
-      </div>
-      <div class="content">
-        <div class="toolbar">
-          <button class="button" @click="manageHotelServices">Správa služieb hotela</button>
-          <button class="button" @click="createReservation">Vytvorenie rezervácie</button>
-          <button class="button" @click="viewReservations">Zobrazenie rezervácií</button>
-          <button class="button" @click="viewCustomers">Zobrazenie zoznamu zákazníkov</button>
-        </div>
-        <div class="table-container">
-          <!-- <span v-if="customer.validationError" class="error-message">{{ customer.validationError }}</span> -->
-  
-          <table>
-            <thead>
-              <tr>
-                <th>Last Name</th>
-                <th>First Name</th>
-                <th>Email</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody v-if="customers && customers.length > 0">
-              <tr v-for="customer in customers" :key="customer.PersonID">
-                <td>{{ customer.LastName }}</td>
-                <td>{{ customer.FirstName }}</td>
-                <td>{{ customer.Email }}</td>
-                <td>
-                    <button class="button" @click="getDetail(customer.PersonID)">View details</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
+<div class="table-container">
+  <table>
+    <thead>
+      <tr>
+        <th>Last Name</th>
+        <th>First Name</th>
+        <th>Email</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody v-if="customers && customers.length > 0">
+      <tr v-for="customer in customers" :key="customer.PersonID">
+        <td>{{ customer.LastName }}</td>
+        <td>{{ customer.FirstName }}</td>
+        <td>{{ customer.Email }}</td>
+        <td>
+            <button class="button" @click="getDetail(customer.PersonID)">View details</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
   
   </template>
   
@@ -54,7 +36,7 @@
     },
     methods: {
     fetchCustomers() {
-    fetch('/Home/customers/GetCustomers') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
+    fetch('/Home/Customers/GetCustomers') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
         .then(response => response.json())
         .then(data => {
         this.customers = data; // Nastavenie údajov do premennej customers
@@ -63,36 +45,9 @@
         console.error('Error fetching customers:', error);
         });
       },
-    //   getDetail(customerID) {
-    //     fetch('/Home/customers/GetCustomer', {
-    //     method: 'POST',
-    //     headers: {
-    //         'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({
-    //         personID: customerID,
-    //     })
-    //     })
-    //     .then(response => {
-    //     if (response.ok) {
-    //         console.log('Login successful');
-    //         this.$router.push('/Home/customers');
-    //     } else {
-    //         throw new Error('Login failed');
-    //     }
-    //     })
-    //     .then(data => {
-    //     // Zpracovat úspěšnou odpověď
-    //     this.loginMessage = data;
-    //     })
-    //     .catch(error => {
-    //     console.error('Error during login:', error);
-    //     this.loginMessage = 'Špatný email nebo heslo'; // Pokud se nepodaří spojit nebo obdržet odpověď
-    //     });
-    // },
     getDetail(personID) {
     // Přesměrování na stránku /Home/customers/detail s přidáním parametru ID
-    this.$router.push({ path: '/Home/customers/detail', query: { id: personID } });
+    this.$router.push({ path: '/Home/Customers/detail', query: { id: personID } });
     },
       logout() {
         console.log('Logout');

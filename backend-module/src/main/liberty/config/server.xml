@@ -27,7 +27,9 @@
     </webApplication>
 
     <applicationLocation id="Login" location="Home.war" contextRoot="${app.context.root}/login" />
-    <applicationLocation id="LoginSuccess" location="Home.war" contextRoot="${app.context.root}/success" />
-    <applicationLocation id="Customers" location="Home.war" contextRoot="${app.context.root}/customers" />
-    <applicationLocation id="CustomerDetails" location="Home.war" contextRoot="${app.context.root}/customers/detail" />
+    <applicationLocation id="Customers" location="Home.war" contextRoot="${app.context.root}/Customers" />
+    <applicationLocation id="CustomerDetails" location="Home.war" contextRoot="${app.context.root}/Customers/detail" />
+    <applicationLocation id="RoomsPage" location="RoomsPage.war" contextRoot="${app.context.root}/Rooms" />
+    <applicationLocation id="ServicesPage" location="ServicesPage.war" contextRoot="${app.context.root}/Services" />
 </server>
+
