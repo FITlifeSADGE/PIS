@@ -15,8 +15,7 @@
         </div>
         <div class="table-container">
         <button class="button" @click="ReturnToAllCustomers">Zpět na seznam</button>
-        <button class="button" @click="toggleTable">{{ buttonLabel }}</button>
-        <button class="button buttonR" v-if="showButton" @click="removeChanges">Zrušit změny</button>
+
 
           <!-- <span v-if="customer.validationError" class="error-message">{{ customer.validationError }}</span> -->
           <table v-if="editTable">
@@ -97,6 +96,9 @@
                 <td>
                   <input type="date" v-model="customer.dateOfBirth" @change="saveField(customer)" />
                 </td>
+                <!-- FIXME: -->
+                <button class="button" @click="updateToggleTable(customer)">{{ buttonLabel }}</button> 
+                <!-- ------ -->
               </tr>
               <tr v-for="customer in customers" :key="customer.PersonID">
                 <td>
@@ -108,6 +110,8 @@
               </tr>
             </tbody>
           </table>
+          <button class="button buttonR" v-if="showButton" @click="removeChanges">Zrušit změny</button>
+
         </div>
       </div>
     </div>
@@ -134,7 +138,7 @@
         console.log("Updated customer:", customer);
         
       },
-      toggleTable() {
+      updateToggleTable(customer) {
         if(this.editTable == false)
         {
           this.showButton = false;
@@ -146,6 +150,26 @@
           this.showButton = true;
         }
         this.editTable = !this.editTable;
+        console.log('Updating room:', room);
+      room.editable = false; // Zatvorenie editovacieho režimu
+
+        fetch('/Home/UpdateCustomer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(customer),
+        })
+        .then(response => {
+          if (response.ok) {
+            console.log('Customer updated successfully');
+          } else {
+            throw new Error('Failed to update Room');
+          }
+        })
+        .catch(error => {
+          console.error('Error updating room:', error);
+        });
       },
       // ------------------------------------------------------------------------------------------------
       ReturnToAllCustomers() {
