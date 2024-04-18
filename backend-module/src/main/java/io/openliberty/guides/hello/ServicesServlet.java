@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpSession;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-@WebServlet("/Services")
+@WebServlet("/Services/GetServices")
 public class ServicesServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 

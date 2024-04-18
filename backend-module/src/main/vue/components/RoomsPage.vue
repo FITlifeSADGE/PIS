@@ -41,7 +41,13 @@
           <td><input type="text" v-model="filters.TypeRoom"></td>
           <td><input type="text" v-model="filters.Cost"></td>
           <td><input type="text" v-model="filters.Equip"></td>
-          <td><input type="text" v-model="filters.State"></td>
+          <td> 
+            <select v-model="filters.State" :style="{ width: '130px' }">
+              <option value="Available">Available</option>
+              <option value="Occupied">Occupied</option>
+              <option value="">Do Not Index</option>
+            </select>
+          </td>
           <td><input type="text" v-model="filters.Beds"></td>
           <td></td> <!-- Empty cell for buttons -->
         </tr>
@@ -103,10 +109,10 @@ export default {
       // Filter rooms based on filter criteria
       return this.rooms.filter(room => {
         return (
-          room.TypeRoom.includes(this.filters.TypeRoom) &&
+          room.TypeRoom.toLowerCase().includes(this.filters.TypeRoom.toLowerCase()) &&
           room.Cost.toString().includes(this.filters.Cost) &&
-          room.Equip.includes(this.filters.Equip) &&
-          room.State.includes(this.filters.State) &&
+          room.Equip.toLowerCase().includes(this.filters.Equip.toLowerCase()) &&
+          room.State.toLowerCase().includes(this.filters.State.toLowerCase()) &&
           room.Beds.toString().includes(this.filters.Beds)
         );
       });

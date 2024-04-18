@@ -19,7 +19,7 @@
           <td> 
             <select v-model="newService.Availability" :style="{ width: '130px' }" >
               <option value="Available">Available</option>
-              <option value="Occupied">Not Available</option>
+              <option value="Closed">Closed</option>
             </select>
           </td>
           <td><input type="text" v-model="newService.Description" placeholder="description of service"></td>
@@ -41,7 +41,8 @@
           <td> 
             <select v-model="filters.Availability" :style="{ width: '130px' }">
               <option value="Available">Available</option>
-              <option value="Occupied">Not Available</option>
+              <option value="Closed">Closed</option>
+              <option value="">Do Not Index</option>
             </select>
           </td>
           <td><input type="text" v-model="filters.Description"></td>
@@ -58,7 +59,7 @@
           <td v-else> 
             <select v-model="service.Availability" :style="{ width: '130px' }">
               <option value="Available">Available</option>
-              <option value="Occupied">Not Available</option>
+              <option value="Closed">Closed</option>
             </select>
           </td>
           <td v-if="!service.editable">{{ service.Description }}</td>
@@ -101,10 +102,10 @@ export default {
       // Filter services based on filter criteria
       return this.services.filter(service => {
         return (
-          service.Name.includes(this.filters.Name) &&
+          service.Name.toLowerCase().includes(this.filters.Name.toLowerCase()) &&
           service.Cost.toString().includes(this.filters.Cost) &&
-          service.Availability.includes(this.filters.Availability) &&
-          service.Description.includes(this.filters.Description)
+          service.Availability.toLowerCase().includes(this.filters.Availability.toLowerCase()) &&
+          service.Description.toLowerCase().includes(this.filters.Description.toLowerCase())
         );
       });
     }
@@ -114,7 +115,7 @@ export default {
   },
   methods: {
     fetchServices() {
-      fetch('/Home/Services') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
+      fetch('/Home/Services/GetServices') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
         .then(response => response.json())
         .then(data => {
           // Nastavenie údajov do premennej services a pridanie atribútu editable pre úpravu
