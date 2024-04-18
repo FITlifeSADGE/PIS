@@ -31,7 +31,7 @@
           </td>
         </tr>
         <tr v-else>
-          <td colspan="5" style="text-align: center;">
+          <td colspan="6" style="text-align: center;">
             <button @click="toggleAddNew" class="edit-button">Add New</button>
           </td>
         </tr>

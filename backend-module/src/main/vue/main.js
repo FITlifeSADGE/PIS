@@ -2,7 +2,6 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import LoginPage from './components/LoginPage.vue';
 import HomePage from './components/HomePage.vue';
-import LoginSuccess from './components/LoginSuccess.vue';
 import RoomsPage from './components/RoomsPage.vue';
 import ServicesPage from './components/ServicesPage.vue';
 import Parent from './components/Parent.vue';
@@ -26,10 +25,6 @@ const router = new VueRouter({
     {
       path: '/Home/login',
       component: LoginPage
-    },
-    {
-      path: '/Home/success',
-      component: LoginSuccess
     },
     {
       path: '/Home/Rooms',

@@ -105,7 +105,7 @@ export default {
           service.Name.toLowerCase().includes(this.filters.Name.toLowerCase()) &&
           service.Cost.toString().includes(this.filters.Cost) &&
           service.Availability.toLowerCase().includes(this.filters.Availability.toLowerCase()) &&
-          service.Description.toLowerCase().includes(this.filters.Description.toLowerCase())
+          service.Description.replace(/\s/g, '').toLowerCase().includes(this.filters.Description.replace(/\s/g, '').toLowerCase())
         );
       });
     }
