@@ -198,41 +198,38 @@ export default {
     },
     addNewRoom() 
     {
-      if (
-      this.newRoom.TypeRoom &&
-      this.newRoom.Cost &&
-      this.newRoom.Equip &&
-      this.newRoom.State &&
-      this.newRoom.Beds
-      ) {
+      if (this.newRoom.TypeRoom && this.newRoom.Cost && this.newRoom.Equip && this.newRoom.State && this.newRoom.Beds) 
+      {
+        let maxRoomID = Math.max(...this.rooms.map(room => room.RoomID));
+        this.newRoom.RoomID = maxRoomID + 1;
 
-      this.rooms.push({ ...this.newRoom, editable: false });
-      fetch('/Home/AddRoom', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(this.newRoom),
-      })
-      .then(response => {
-        if (response.ok) {
-          console.log('Room added successfully');
-        } else {
-          throw new Error('Failed to add room');
-        }
-      })
-      .catch(error => {
-        console.error('Error adding room:', error);
-      });
+        this.rooms.push({ ...this.newRoom, editable: false });
+        fetch('/Home/AddRoom', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(this.newRoom),
+        })
+        .then(response => {
+          if (response.ok) {
+            console.log('Room added successfully');
+          } else {
+            throw new Error('Failed to add room');
+          }
+        })
+        .catch(error => {
+          console.error('Error adding room:', error);
+        });
 
-      this.newRoom = {
-        TypeRoom: 'Double',
-        Cost: '15',
-        Equip: 'Desk, Chair, Wardrobe, Bed',
-        State: 'Available',
-        Beds: '2'
-      };
-      this.addingNew = false;
+        this.newRoom = {
+          TypeRoom: 'Double',
+          Cost: '15',
+          Equip: 'Desk, Chair, Wardrobe, Bed',
+          State: 'Available',
+          Beds: '2'
+        };
+        this.addingNew = false;
       } 
       else 
       {

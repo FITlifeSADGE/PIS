@@ -122,16 +122,6 @@ public class DatabaseUtil {
         System.out.println("Add for " + Enitity);
         try (Connection connection = getConnection()) {
 
-            PreparedStatement sql_command1 = connection.prepareStatement("SELECT MAX(" + ID + ") AS MaxID FROM " + Enitity);
-            ResultSet resultSet = sql_command1.executeQuery();
-            int maxID = 0;
-
-            if (resultSet.next()) 
-            {
-                maxID = resultSet.getInt("MaxID");
-            }
-            maxID += 1;
-
             PreparedStatement sql_command2 = connection.prepareStatement("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '"+ Enitity +"';");
             ResultSet NameOfColumns = sql_command2.executeQuery();
 
@@ -144,10 +134,7 @@ public class DatabaseUtil {
     
                 sql_command3.append(columnName).append(", ");
                 if (!jsonValue.matches("-?\\d+(\\.\\d+)?"))  // Ak sa nejedna o cislo
-                    if (columnName.equals(ID))
-                        sql_command4.append(maxID).append(", ");
-                    else
-                        sql_command4.append("\"" + jsonValue + "\"").append(", ");
+                    sql_command4.append("\"" + jsonValue + "\"").append(", ");
                 else
                     sql_command4.append(jsonValue).append(", ");
             }
@@ -162,7 +149,6 @@ public class DatabaseUtil {
             query.executeUpdate();
 
             NameOfColumns.close();
-            sql_command1.close();
             sql_command2.close();
             connection.close();
         }

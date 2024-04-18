@@ -93,7 +93,8 @@ export default {
         Name: '',
         Cost: '10',
         Availability: 'Available',
-        Description: ''
+        Description: '',
+        ServiceID: ''
       }
     };
   },
@@ -192,11 +193,11 @@ export default {
     },
     addNewService() {
 
-      if (
-      this.newService.Name &&
-      this.newService.Cost &&
-      this.newService.Availability) 
+      if (this.newService.Name && this.newService.Cost && this.newService.Availability) 
       {
+
+        let maxServiceID = Math.max(...this.services.map(service => service.ServiceID));
+        this.newService.ServiceID = maxServiceID + 1;
 
         this.services.push({ ...this.newService, editable: false });
 
@@ -222,7 +223,8 @@ export default {
           Name: '',
           Cost: '10',
           Availability: 'Available',
-          Description: ''
+          Description: '',
+          ServiceID: ''
         };
         this.addingNew = false;
       }
@@ -236,7 +238,8 @@ export default {
         Name: '',
         Cost: '10',
         Availability: 'Available',
-        Description: ''
+        Description: '',
+        ServiceID: ''
       };
       this.addingNew = false;
     }
