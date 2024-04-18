@@ -150,8 +150,7 @@
           this.showButton = true;
         }
         this.editTable = !this.editTable;
-        console.log('Updating room:', room);
-      room.editable = false; // Zatvorenie editovacieho režimu
+        console.log('Updating customer:', customer);
 
         fetch('/Home/UpdateCustomer', {
           method: 'POST',
@@ -164,11 +163,11 @@
           if (response.ok) {
             console.log('Customer updated successfully');
           } else {
-            throw new Error('Failed to update Room');
+            throw new Error('Failed to update customer');
           }
         })
         .catch(error => {
-          console.error('Error updating room:', error);
+          console.error('Error updating customer:', error);
         });
       },
       // ------------------------------------------------------------------------------------------------

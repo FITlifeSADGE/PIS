@@ -128,4 +128,35 @@ public class DatabaseUtil {
         }
     
     }
+        public static void Update(JsonNode root, String Enitity, String ID) throws SQLException, IOException 
+    {
+        System.out.println("Upadate for "+ Enitity);
+        try (Connection connection = getConnection()) {
+        
+        //ziskanie nazvu stlpcov pre danu entitu
+        PreparedStatement preparedStatement = connection.prepareStatement("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '"+ Enitity +"';");
+        ResultSet NameOfColumns = preparedStatement.executeQuery();
+
+        StringBuilder sqlQuery = new StringBuilder("UPDATE " + Enitity + " SET ");
+
+        while (NameOfColumns.next()) {
+            String columnName = NameOfColumns.getString("COLUMN_NAME");
+            String jsonValue = root.path(columnName).asText(); root.path(columnName);
+
+            if (!jsonValue.matches("-?\\d+(\\.\\d+)?"))  // Ak sa nejedna o cislo
+                sqlQuery.append(columnName).append("=").append("\"" + jsonValue + "\"").append(",");
+            else
+                sqlQuery.append(columnName).append("=").append(jsonValue).append(",");
+        }
+        sqlQuery.deleteCharAt(sqlQuery.length() - 1); //odstranenie podslednej ciarky
+        sqlQuery.append(" WHERE "+ ID + " = ").append(root.path(ID).asText()).append(";");
+
+        PreparedStatement query = connection.prepareStatement(sqlQuery.toString());
+        query.executeUpdate();
+
+        NameOfColumns.close();
+        preparedStatement.close();
+        connection.close();
+        }
+    }
 }
