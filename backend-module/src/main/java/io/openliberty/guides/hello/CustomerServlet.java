@@ -31,7 +31,7 @@ public class CustomerServlet extends HttpServlet {
         try {
             // Získanie údajov zo servera (napr. z databázy)
             Connection connection = DatabaseUtil.getConnection();
-            String query = "SELECT * FROM Person LEFT JOIN Employee on Person.PersonID = Employee.EmployeeID WHERE Employee.EmployeeID IS NULL;";
+            String query = "SELECT * FROM Person LEFT JOIN Customer on Person.PersonID = Customer.CustomerID WHERE Customer.CustomerID IS NOT NULL;";
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             ResultSet resultSet = preparedStatement.executeQuery();
             System.out.println(resultSet);

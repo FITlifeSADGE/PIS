@@ -29,13 +29,11 @@
                 <th>Phone Number</th>
                 <th>Document Number</th>
                 <th>Date of Birth</th>
-              </tr>
-              <!-- <tr>
                 <th>Allergy</th>
                 <th>Handicap</th>
                 <th>Address</th>
                 <th>Subscription</th>
-              </tr> -->
+              </tr>
             </thead>
             <tbody v-if="customers && customers.length > 0">
               <tr v-for="customer in customers" :key="customer.PersonID">
@@ -45,15 +43,32 @@
                 <td>{{ formatPhoneNumber(customer.PhoneNumber) }}</td>
                 <td>{{ customer.DocumentNumber }}</td>
                 <td>{{ formatDateOfBirth(customer.dateOfBirth) }}</td>
-              </tr>
-              <!-- <tr v-for="customer in customers" :key="customer.CustomerID">
                 <td>{{ customer.Allergy }}</td>
                 <td>{{ customer.Handicap }}</td>
                 <td>{{ customer.Address }}</td>
                 <td>{{ customer.Subscription }}</td>
-              </tr> -->
+              </tr>
             </tbody>
           </table>
+
+          <!-- <table v-if="editTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Cost</th>
+                <th>Availability</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody v-if="services && services.length > 0">
+              <tr v-for="service in services" :key="Service.ServiceID">
+                <td>{{ service.Name }}</td>
+                <td>{{ service.Cost }}</td>
+                <td>{{ service.Availability }}</td>
+                <td>{{ service.Description }}</td>
+              </tr>
+            </tbody>
+          </table> -->
   
           <table v-if="!editTable">
             <thead>
@@ -185,11 +200,11 @@
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(this.$route.query.id), // Assuming you're sending an object with an ID property
+          body: JSON.stringify(this.$route.query.id),
         })
         .then(response => response.json())
         .then(data => {
-          this.customers = data; // Set the fetched data to the customers variable
+          this.customers = data;
         })
         .catch(error => {
           console.error('Error fetching customers:', error);
