@@ -15,8 +15,9 @@
         </div>
         <div class="table-container">
         <button class="button" @click="ReturnToAllCustomers">Zpět na seznam</button>
-        <button class="button buttonR" v-if="showButton" @click="removeChanges">Zrušit změny</button>
 
+        <button class="button" @click="ToggleTable()">{{ buttonLabel }}</button> 
+        <button class="button buttonR" v-if="showButton" @click="removeChanges">Zrušit změny</button>
 
           <!-- <span v-if="customer.validationError" class="error-message">{{ customer.validationError }}</span> -->
           <table v-if="editTable">
@@ -42,7 +43,7 @@
                 <td>{{ customer.Email }}</td>
                 <td>{{ customer.PhoneNumber }}</td>
                 <td>{{ customer.DocumentNumber }}</td>
-                <td>{{ customer.dateOfBirth }}</td>
+                <td>{{ formatDateOfBirth(customer.dateOfBirth) }}</td>
               </tr>
               <!-- <tr v-for="customer in customers" :key="customer.PersonID">
                 <td>{{ customer.Allergy }}</td>
@@ -96,10 +97,12 @@
                 </td>
                 <td>
                   <input type="date" v-model="customer.dateOfBirth"/>
+                  <!-- <input type="date" :value="formattedDateOfBirth(customer.dateOfBirth)" @input="formattedDateOfBirth(customer.dateOfBirth)" /> -->
                 </td>
                 <!-- FIXME: -->
                 <td>
-                <button class="button" @click="updateToggleTable(customer)">{{ buttonLabel }}</button> 
+                <button class="ok-button" @click="updateToggleTable(customer)">Uložit</button> 
+                
                 </td>
               <!-- ------ -->
               </tr>
@@ -113,8 +116,6 @@
               </tr> -->
             </tbody>
           </table>
-          <p>aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
-
         </div>
       </div>
     </div>
@@ -137,7 +138,7 @@
     },
     methods: {
       // ------------------------------------------------------------------------------------------------
-      updateToggleTable(customer) {
+      ToggleTable() {
         if(this.editTable == false)
         {
           this.showButton = false;
@@ -149,7 +150,9 @@
           this.showButton = true;
         }
         this.editTable = !this.editTable;
-        console.log('Updating customer:', customer);
+      },
+      updateToggleTable(customer) {        
+      console.log('Updating customer:', customer);
 
         fetch('/Home/UpdateCustomer', {
           method: 'POST',
@@ -205,7 +208,20 @@
       viewCustomers() {
         console.log('View Customers');
       },
-  
+      formatDateOfBirth(dateOfBirth) {
+        if (!dateOfBirth) return ''; // Handle case when dateOfBirth is null or undefined
+
+        const dateObj = new Date(dateOfBirth);
+        const month = dateObj.getMonth() + 1; // Months are zero-indexed
+        const day = dateObj.getDate();
+        const year = dateObj.getFullYear();
+
+        // Pad single digit month and day with leading zero
+        const formattedMonth = month < 10 ? `0${month}` : `${month}`;
+        const formattedDay = day < 10 ? `0${day}` : `${day}`;
+
+        return `${year}-${formattedMonth}-${formattedDay}`;
+      },
       // -----------------------------------------------------------------------------------------------
       validatePhoneNumber(customer){
         const phoneNumber = customer.PhoneNumber;
@@ -325,5 +341,19 @@
     background-color: #2196F3;
     color: white;
   }
+
+.ok-button{
+  padding: 10px 10px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #2196f3;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+.ok-button:hover {
+  background-color: #13568e;
+}
   </style>
   
