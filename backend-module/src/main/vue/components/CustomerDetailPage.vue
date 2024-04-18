@@ -29,6 +29,8 @@
                 <th>Phone Number</th>
                 <th>Document Number</th>
                 <th>Date of Birth</th>
+              </tr>
+              <tr>
                 <th>Allergy</th>
                 <th>Handicap</th>
                 <th>Address</th>
@@ -43,6 +45,8 @@
                 <td>{{ formatPhoneNumber(customer.PhoneNumber) }}</td>
                 <td>{{ customer.DocumentNumber }}</td>
                 <td>{{ formatDateOfBirth(customer.dateOfBirth) }}</td>
+              </tr>
+              <tr>
                 <td>{{ customer.Allergy }}</td>
                 <td>{{ customer.Handicap }}</td>
                 <td>{{ customer.Address }}</td>
@@ -81,11 +85,12 @@
                 <th>Date of Birth</th>
                 <th>Save</th>
               </tr>
-              <!-- <tr><th>Allergy</th>
+              <tr>
+                <th>Allergy</th>
                 <th>Handicap</th>
                 <th>Address</th>
                 <th>Subscription</th>
-              </tr> -->
+              </tr>
             </thead>
             <tbody v-if="customers && customers.length > 0">
               <tr v-for="customer in customers" :key="customer.PersonID">
@@ -121,14 +126,14 @@
                 </td>
               <!-- ------ -->
               </tr>
-              <!-- <tr v-for="customer in customers" :key="customer.PersonID">
+              <tr v-for="customer in customers" :key="customer.PersonID">
                 <td>
                   <input v-model="customer.Allergy" @change="saveField(customer)" />
                 </td>
                 <td><input v-model="customer.Handicap" /></td>
                 <td><input v-model="customer.Address" /></td>
                 <td><input v-model="customer.Subscription" /></td>
-              </tr> -->
+              </tr>
             </tbody>
           </table>
         </div>

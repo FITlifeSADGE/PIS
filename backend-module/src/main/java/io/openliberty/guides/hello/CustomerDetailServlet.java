@@ -43,7 +43,8 @@ public class CustomerDetailServlet extends HttpServlet{
             
             try {
                 Connection connection = DatabaseUtil.getConnection();
-                String query = "SELECT * FROM Person WHERE PersonID = " + requestData + ";";
+                String query = "SELECT * FROM Person LEFT JOIN Customer on Person.PersonID = Customer.CustomerID WHERE Customer.CustomerID = " + requestData + ";";
+                // String query = "SELECT * FROM Person WHERE PersonID = " + requestData + ";";
                 PreparedStatement preparedStatement = connection.prepareStatement(query);
                 ResultSet resultSet = preparedStatement.executeQuery();
                 System.out.println(resultSet);
