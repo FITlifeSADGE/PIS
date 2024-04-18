@@ -30,7 +30,8 @@
                 <th>Document Number</th>
                 <th>Date of Birth</th>
               </tr>
-              <!-- <tr><th>Allergy</th>
+              <!-- <tr>
+                <th>Allergy</th>
                 <th>Handicap</th>
                 <th>Address</th>
                 <th>Subscription</th>
@@ -41,11 +42,11 @@
                 <td>{{ customer.LastName }}</td>
                 <td>{{ customer.FirstName }}</td>
                 <td>{{ customer.Email }}</td>
-                <td>{{ customer.PhoneNumber }}</td>
+                <td>{{ formatPhoneNumber(customer.PhoneNumber) }}</td>
                 <td>{{ customer.DocumentNumber }}</td>
                 <td>{{ formatDateOfBirth(customer.dateOfBirth) }}</td>
               </tr>
-              <!-- <tr v-for="customer in customers" :key="customer.PersonID">
+              <!-- <tr v-for="customer in customers" :key="customer.CustomerID">
                 <td>{{ customer.Allergy }}</td>
                 <td>{{ customer.Handicap }}</td>
                 <td>{{ customer.Address }}</td>
@@ -96,13 +97,12 @@
                   <input v-model="customer.DocumentNumber"/>
                 </td>
                 <td>
-                  <input type="date" v-model="customer.dateOfBirth"/>
+                  <!-- FIXME: je treba opravit placeholder nefunguje-->
+                  <input type="date" v-model="customer.dateOfBirth" placeholder="customer.dateOfBirth"/> 
                   <!-- <input type="date" :value="formattedDateOfBirth(customer.dateOfBirth)" @input="formattedDateOfBirth(customer.dateOfBirth)" /> -->
                 </td>
-                <!-- FIXME: -->
                 <td>
-                <button class="ok-button" @click="updateToggleTable(customer)">Uložit</button> 
-                
+                  <button class="ok-button" @click="updateToggleTable(customer)">Uložit</button> 
                 </td>
               <!-- ------ -->
               </tr>
@@ -151,9 +151,9 @@
         }
         this.editTable = !this.editTable;
       },
-      updateToggleTable(customer) {        
-      console.log('Updating customer:', customer);
 
+      updateToggleTable(customer) {        
+        console.log('Updating customer:', customer);
         fetch('/Home/UpdateCustomer', {
           method: 'POST',
           headers: {
@@ -171,11 +171,13 @@
         .catch(error => {
           console.error('Error updating customer:', error);
         });
+        this.showButton = false;
+        this.buttonLabel = 'Upravit informace';
+        this.editTable = !this.editTable;
       },
       // ------------------------------------------------------------------------------------------------
       ReturnToAllCustomers() {
-    // Přesměrování na stránku /Home/customers/detail s přidáním parametru ID
-      this.$router.push('/Home/customers');
+        this.$router.push('/Home/customers');
       },
       fetchCustomers() {
         fetch('/Home/customers/GetCustomer', {
@@ -208,19 +210,27 @@
       viewCustomers() {
         console.log('View Customers');
       },
-      formatDateOfBirth(dateOfBirth) {
-        if (!dateOfBirth) return ''; // Handle case when dateOfBirth is null or undefined
+      formatPhoneNumber(phoneNumber)
+      {
+        const countryCode = phoneNumber.slice(1, 4); // Assuming country code length is 3
+        const restOfNumber = phoneNumber.slice(4, phoneNumber.length - 1);
+
+        // Construct the formatted phone number
+        return `+${countryCode} ${restOfNumber}`;
+      },
+      formatDateOfBirth(dateOfBirth)
+      {
+        if (!dateOfBirth) return ''; 
 
         const dateObj = new Date(dateOfBirth);
-        const month = dateObj.getMonth() + 1; // Months are zero-indexed
+        const month = dateObj.getMonth() + 1;
         const day = dateObj.getDate();
         const year = dateObj.getFullYear();
 
-        // Pad single digit month and day with leading zero
         const formattedMonth = month < 10 ? `0${month}` : `${month}`;
         const formattedDay = day < 10 ? `0${day}` : `${day}`;
 
-        return `${year}-${formattedMonth}-${formattedDay}`;
+        return `${formattedDay}.${formattedMonth}.${year}`;
       },
       // -----------------------------------------------------------------------------------------------
       validatePhoneNumber(customer){
