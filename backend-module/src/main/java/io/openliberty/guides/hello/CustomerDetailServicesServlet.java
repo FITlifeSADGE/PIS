@@ -65,6 +65,7 @@ public class CustomerDetailServicesServlet extends HttpServlet {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(jsonString);
+            System.out.println(jsonString);
 
         } catch (SQLException e) {
             e.printStackTrace();

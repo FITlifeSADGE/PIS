@@ -172,6 +172,7 @@
     },
     mounted() {
       this.fetchCustomers(); // Volanie funkcie na načítanie údajov po načítaní komponentu
+      this.fetchServices(); // Volanie funkcie na načítanie údajov po načítaní komponentu
     },
     methods: {
       // ------------------------------------------------------------------------------------------------
