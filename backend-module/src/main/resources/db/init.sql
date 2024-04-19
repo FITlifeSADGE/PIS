@@ -3,7 +3,8 @@ CREATE TABLE IF NOT EXISTS Person (
     LastName varchar(255),
     FirstName varchar(255),
     Email varchar(255),
-    PhoneNumber varchar(13),
+    PhonePreselection varchar(4),
+    PhoneNumber varchar(9),
     DocumentNumber varchar(255),
     dateOfBirth date
 );

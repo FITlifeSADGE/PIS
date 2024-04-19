@@ -1,138 +1,116 @@
 <template>
-<div class="table-container">
-<button class="button" @click="ReturnToAllCustomers">Zpět na seznam</button>
+      <div class="table-container">
+        <button class="button" @click="ReturnToAllCustomers">Zpět na seznam</button>
 
-<button class="button" @click="ToggleTable()">{{ buttonLabel }}</button> 
-<button class="button buttonR" v-if="showButton" @click="removeChanges">Zrušit změny</button>
+        <button class="button" @click="ToggleTable()">{{ buttonLabel }}</button> 
+        <button class="button buttonR" v-if="showButton" @click="removeChanges">Zrušit změny</button>
+        <p v-if="error">error</p>
 
-  <!-- <span v-if="customer.validationError" class="error-message">{{ customer.validationError }}</span> -->
-  <!-- <table v-if="editTable">
-    <thead>
-      <tr>
-        <th>Last Name</th>
-        <th>First Name</th>
-        <th>Email</th>
-        <th>Phone Number</th>
-        <th>Document Number</th>
-        <th>Date of Birth</th>
-      </tr>
-      <tr>
-        <th>Allergy</th>
-        <th>Handicap</th>
-        <th>Address</th>
-        <th>Subscription</th>
-      </tr>
-    </thead>
-    <tbody v-if="customers && customers.length > 0">
-      <tr v-for="customer in customers" :key="customer.PersonID">
-        <td>{{ customer.LastName }}</td>
-        <td>{{ customer.FirstName }}</td>
-        <td>{{ customer.Email }}</td>
-        <td>{{ formatPhoneNumber(customer.PhoneNumber) }}</td>
-        <td>{{ customer.DocumentNumber }}</td>
-        <td>{{ formatDateOfBirth(customer.dateOfBirth) }}</td>
-        <td>{{ customer.Allergy }}</td>
-        <td>{{ customer.Handicap }}</td>
-        <td>{{ customer.Address }}</td>
-        <td>{{ customer.Subscription }}</td>
-      </tr>
-    </tbody>
-  </table> -->
-  <table v-if="editTable">
-  <thead>
-    <tr>
-      <th>Last Name</th>
-      <th>First Name</th>
-      <th>Email</th>
-      <th>Phone Number</th>
-      <th>Document Number</th>
-      <th>Date of Birth</th>
-      <th>Allergy</th>
-      <th>Handicap</th>
-      <th>Address</th>
-      <th>Subscription</th>
-    </tr>
-  </thead>
-  <tbody v-if="customers && customers.length > 0">
-    <tr v-for="customer in customers.slice(0, 25)" :key="customer.PersonID">
-      <td>{{ customer.LastName }}</td>
-      <td>{{ customer.FirstName }}</td>
-      <td>{{ customer.Email }}</td>
-      <td>{{ formatPhoneNumber(customer.PhoneNumber) }}</td>
-      <td>{{ customer.DocumentNumber }}</td>
-      <td>{{ formatDateOfBirth(customer.dateOfBirth) }}</td>
-      <td>{{ customer.Allergy }}</td>
-      <td>{{ customer.Handicap }}</td>
-      <td>{{ customer.Address }}</td>
-      <td>{{ customer.Subscription }}</td>
-    </tr>
-  </tbody>
-</table>
+        <div class="tableCustomers">
+          <table v-if="editTable">
+            <thead>
+              <td>
+                <tr><th>Last Name</th></tr>
+                <tr><th>First Name</th></tr>
+                <tr><th>Email</th></tr>
+                <tr><th>Phone Number</th></tr>
+                <tr><th>Document Number</th></tr>
+                <tr><th>Date of Birth</th></tr>
+                <tr><th>Allergy</th></tr>
+                <tr><th>Handicap</th></tr>
+                <tr><th>Address</th></tr>
+                <tr><th>Subscription</th></tr>
+              </td>
+            </thead>
+          </table>
+          <table v-if="editTable" class="tableData">
+            <tbody v-if="customers && customers.length > 0">
+              <td v-for="customer in customers" :key="customer.PersonID">
+                <tr>{{ customer.LastName }}</tr>
+                <tr>{{ customer.FirstName }}</tr>
+                <tr>{{ customer.Email }}</tr>
+                <tr>{{ formatPhoneNumber(customer.PhoneNumber) }}</tr>
+                <tr>{{ customer.DocumentNumber }}</tr>
+                <tr>{{ formatDateOfBirth(customer.dateOfBirth) }}</tr>
+                <tr>{{ customer.Allergy }}</tr>
+                <tr>{{ formatHandicap(customer.Handicap) }}</tr>
+                <tr>{{ customer.Address }}</tr>
+                <tr>{{ formatSubscription(customer.Subscription) }}</tr>
+              </td>
+            </tbody>
+          </table>
+        </div>
 
-  <table v-if="!editTable">
-    <thead>
-      <tr>
-        <th>Last Name</th>
-        <th>First Name</th>
-        <th>Email</th>
-        <th>Phone Number</th>
-        <th>Document Number</th>
-        <th>Date of Birth</th>
-        <th>Save</th>
-      </tr>
-      <tr>
-        <th>Allergy</th>
-        <th>Handicap</th>
-        <th>Address</th>
-        <th>Subscription</th>
-      </tr>
-    </thead>
-    <tbody v-if="customers && customers.length > 0">
-      <tr v-for="customer in customers" :key="customer.PersonID">
-        <td>
-          <input v-model="customer.LastName"/>
-        </td>
-        <td>
-          <input v-model="customer.FirstName"/>
-        </td>
-          <!-- ------------------------------------------------------------------------------------------------ -->
-        <!-- <td>
-          <input type="email" v-model="customer.Email" @blur="validateEmail(customer)" />
-        </td>
-        <span v-if="customer.validationError" class="error-message">{{ customer.validationError }}</span> -->
-        <td>
-          <input type="email" v-model="customer.Email" @change="validateEmail(customer)" />
-          <span v-if="customer.validationError" class="error-message">{{ customer.validationError }}</span>
-        </td>
-        <!-- ------------------------------------------------------------------------------------------------ -->
-        <td>
-          <input v-model="customer.PhoneNumber" @change="validatePhoneNumber(customer)" />
-        </td>
-        <td>
-          <input v-model="customer.DocumentNumber"/>
-        </td>
-        <td>
-          <!-- FIXME: je treba opravit placeholder nefunguje-->
-          <input type="date" v-model="customer.dateOfBirth" placeholder="customer.dateOfBirth"/> 
-          <!-- <input type="date" :value="formattedDateOfBirth(customer.dateOfBirth)" @input="formattedDateOfBirth(customer.dateOfBirth)" /> -->
-        </td>
-        <td>
-          <button class="ok-button" @click="updateToggleTable(customer)">Uložit</button> 
-        </td>
-      <!-- ------ -->
-      </tr>
-      <tr v-for="customer in customers" :key="customer.PersonID">
-        <td>
-          <input v-model="customer.Allergy" @change="saveField(customer)" />
-        </td>
-        <td><input v-model="customer.Handicap" /></td>
-        <td><input v-model="customer.Address" /></td>
-        <td><input v-model="customer.Subscription" /></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
- 
+        <table v-if="editTable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Cost</th>
+              <th>Availability</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody v-if="services && services.length > 0">
+            <tr v-for="service in services" :key="service.ServiceID">
+              <td>{{ service.Name }}</td>
+              <td>{{ service.Cost }}</td>
+              <td>{{ service.Availability }}</td>
+              <td>{{ service.Description }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+      <div class="tableCustomers">
+        <table v-if="!editTable">
+          <thead>
+            <td>
+              <tr><th>Last Name</th></tr>
+              <tr><th>First Name</th></tr>
+              <tr><th>Email</th></tr>
+              <tr><th>Phone Number</th></tr>
+              <tr><th>Document Number</th></tr>
+              <tr><th>Date of Birth</th></tr>
+              <tr><th>Allergy</th></tr>
+              <tr><th>Handicap</th></tr>
+              <tr><th>Address</th></tr>
+              <tr><th>Subscription</th></tr>
+            </td>
+          </thead>
+        </table>
+        <table v-if="!editTable">
+          <tbody v-if="customers && customers.length > 0">
+            <td v-for="customer in customers" :key="customer.PersonID">
+              <tr><input v-model="customer.LastName"/></tr>
+              <tr><input v-model="customer.FirstName"/></tr>
+              <tr><input type="email" v-model="customer.Email" :style="{ width: '200px' }"/></tr>
+              <tr><select v-model="customer.PhonePreselection" :style="{ width: '100px' }">
+                  <option value='+420'>+420</option>
+                  <option value='+421'>+421</option>
+                  <option value='+69'>+49</option>
+                </select>
+                <input v-model="customer.PhoneNumber"/></tr>
+              <tr><input v-model="customer.DocumentNumber"/></tr>
+              
+                <!-- FIXME: je treba opravit placeholder nefunguje-->
+              <tr><input type="date" :value="formatDateOfBirth(customer.dateOfBirth)"/> </tr>
+                <!-- <input type="date" :value="formattedDateOfBirth(customer.dateOfBirth)" @input="formattedDateOfBirth(customer.dateOfBirth)" /> -->
+              <tr><input v-model="customer.Allergy" @change="saveField(customer)" /></tr>
+              <tr><select v-model="customer.Handicap" :style="{ width: '100px' }">
+                  <option value=true>Ano</option>
+                  <option value=false>Ne</option>
+                </select></tr>
+              <tr><input v-model="customer.Address" /></tr>
+              <tr><select v-model="customer.Subscription" :style="{ width: '100px' }">
+                  <option value=true>Přihlášen</option>
+                  <option value=false>Odhlášen</option>
+                </select></tr>
+              <tr><button class="ok-button" @click="updateToggleTable(customer)">Uložit</button></tr>
+            </td>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  
   </template>
   
   <script>
@@ -141,13 +119,16 @@
       return {
         editTable: true,
         customers: [], // pole na uchovávanie údajov
+        services: [], 
         buttonLabel: 'Upravit informace',
         showButton: false,
         ID: null,
+        error: false,
       };
     },
     mounted() {
       this.fetchCustomers(); // Volanie funkcie na načítanie údajov po načítaní komponentu
+      this.fetchServices(); // Volanie funkcie na načítanie údajov po načítaní komponentu
     },
     methods: {
       // ------------------------------------------------------------------------------------------------
@@ -166,6 +147,13 @@
       },
 
       updateToggleTable(customer) {        
+
+        // validatePhoneNumber(customer.PhoneNumber);
+        // validateEmail(customer.Email);
+        if(!customer.dateOfBirth){
+          customer.dateOfBirth = null;
+        }
+
         console.log('Updating customer:', customer);
         fetch('/Home/UpdateCustomer', {
           method: 'POST',
@@ -191,6 +179,21 @@
       // ------------------------------------------------------------------------------------------------
       ReturnToAllCustomers() {
         this.$router.push('/Home/Customers');
+      },
+      fetchServices() {
+        fetch('/Home/Customers/GetServices', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        })
+        .then(response => response.json())
+        .then(data => {
+          this.services = data;
+        })
+        .catch(error => {
+          console.error('Error fetching services:', error);
+        });
       },
       fetchCustomers() {
         fetch('/Home/Customers/GetCustomer', {
@@ -243,38 +246,44 @@
         const formattedMonth = month < 10 ? `0${month}` : `${month}`;
         const formattedDay = day < 10 ? `0${day}` : `${day}`;
 
-        return `${formattedDay}.${formattedMonth}.${year}`;
+        return `${year}-${formattedMonth}-${formattedDay}`;
+      },
+      formatHandicap(){
+        if (this.customers.Handicap == true)
+          return 'Ano';
+        else
+          return 'Ne';
+      },
+      formatSubscription(){
+        if (this.customers.Subscription == true)
+          return 'Přihlášen';
+        else
+          return 'Odhlášen';
       },
       // -----------------------------------------------------------------------------------------------
-      validatePhoneNumber(customer){
-        const phoneNumber = customer.PhoneNumber;
-        if(!/\S+/.test(phoneNumber)){
-          customer.validationError = 'BAD';
-          return false;
-        }else{
-        customer.validationError = '';
-        return true;
-        }
+      validatePhoneNumber(phoneNumber){
+        // +420 xxx xxx xxx - length + 3 9
+        if(phoneNumber.length!=9)
+          console.log('wrong number format');
+        if(!this.inputString.split('').every(char => /^\d$/.test(char)))
+          console.log('wrong number format');
       },
-      validateEmail(customer) {
-        const email = customer.Email;
-        // if (!email) {
-        //   customer.validationError = 'Email is required';
-        //   return false;
-        // }
-        if (!/\S+@\S+/.test(email)) {
-          customer.validationError = 'Chybí @examle';
-          return false;
-        }else if(!/\S+\.\S+/.test(email)){
-          customer.validationError = 'Chybí .com';
-          return false;
-        }else if(!/\S+@\S+\.\S+/.test(email)){
-          customer.validationError = 'Chybí obsah emailu';
-          return false;
+      validateEmail(email) {
+        if (!email) {
+          console.log('Email is required');
+          return; // Exit early if email is not provided
         }
-        // Clear validation error if email is valid
-        customer.validationError = '';
-        return true;
+
+        if (!/\S+@\S+\.\S+/.test(email)) {
+          console.log('Invalid email format');
+          if (!/@/.test(email)) {
+            console.log('Missing @ symbol');
+          } else if (!/\.\S+/.test(email)) {
+            console.log('Missing domain part (e.g., .com)');
+          } else {
+            console.log('Email is incomplete');
+          }
+        }
       },
       cancelEdit() {
         // TODO:
@@ -291,6 +300,12 @@
   </script>
   
   <style scoped>
+  .tableCustomers{
+    display: flex;
+  }
+  .tableData{
+    margin-left: 200px;
+  }
   .hotel-management {
     margin: 0;
     font-family: Arial, sans-serif;
