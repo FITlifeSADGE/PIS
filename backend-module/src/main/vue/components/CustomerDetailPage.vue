@@ -46,7 +46,7 @@
                 <td>{{ customer.DocumentNumber }}</td>
                 <td>{{ formatDateOfBirth(customer.dateOfBirth) }}</td>
               </tr>
-              <tr>
+              <tr v-for="customer in customers" :key="customer.PersonID">
                 <td>{{ customer.Allergy }}</td>
                 <td>{{ customer.Handicap }}</td>
                 <td>{{ customer.Address }}</td>
@@ -55,7 +55,7 @@
             </tbody>
           </table>
 
-          <!-- <table v-if="editTable">
+          <table v-if="editTable">
             <thead>
               <tr>
                 <th>Name</th>
@@ -65,14 +65,14 @@
               </tr>
             </thead>
             <tbody v-if="services && services.length > 0">
-              <tr v-for="service in services" :key="Service.ServiceID">
+              <tr v-for="service in services" :key="service.ServiceID">
                 <td>{{ service.Name }}</td>
                 <td>{{ service.Cost }}</td>
                 <td>{{ service.Availability }}</td>
                 <td>{{ service.Description }}</td>
               </tr>
             </tbody>
-          </table> -->
+          </table>
   
           <table v-if="!editTable">
             <thead>
@@ -148,6 +148,7 @@
       return {
         editTable: true,
         customers: [], // pole na uchovávanie údajov
+        services: [], 
         buttonLabel: 'Upravit informace',
         showButton: false,
         ID: null,
@@ -198,6 +199,34 @@
       // ------------------------------------------------------------------------------------------------
       ReturnToAllCustomers() {
         this.$router.push('/Home/customers');
+      },
+      // fetchServices() {
+      //   fetch('/Home/customers/detail/GetServices') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
+      //   .then(response => response.json())
+      //   .then(data => {
+      //     // Nastavenie údajov do premennej Services a pridanie atribútu editable pre úpravu
+      //     this.services = data.map(service => ({ ...service, editable: false }));
+      //   })
+      //   .catch(error => {
+      //     console.error('Error fetching Services:', error);
+      //   });
+      // },
+
+      fetchServices() {
+        fetch('/Home/customers/GetServices', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(this.$route.query.id),
+        })
+        .then(response => response.json())
+        .then(data => {
+          this.services = data;
+        })
+        .catch(error => {
+          console.error('Error fetching services:', error);
+        });
       },
       fetchCustomers() {
         fetch('/Home/customers/GetCustomer', {
