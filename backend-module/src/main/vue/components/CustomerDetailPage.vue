@@ -48,9 +48,9 @@
               </tr>
               <tr v-for="customer in customers" :key="customer.PersonID">
                 <td>{{ customer.Allergy }}</td>
-                <td>{{ customer.Handicap }}</td>
+                <td>{{ formatHandicap(customer.Handicap) }}</td>
                 <td>{{ customer.Address }}</td>
-                <td>{{ customer.Subscription }}</td>
+                <td>{{ formatSubscription(customer.Subscription) }}</td>
               </tr>
             </tbody>
           </table>
@@ -82,10 +82,10 @@
                 <th>Email</th>
                 <th>Phone Number</th>
                 <th>Document Number</th>
-                <th>Date of Birth</th>
                 <th>Save</th>
               </tr>
               <tr>
+                <th>Date of Birth</th>
                 <th>Allergy</th>
                 <th>Handicap</th>
                 <th>Address</th>
@@ -106,7 +106,7 @@
                 </td>
                 <span v-if="customer.validationError" class="error-message">{{ customer.validationError }}</span> -->
                 <td>
-                  <input type="email" v-model="customer.Email" @change="validateEmail(customer)" />
+                  <input type="email" v-model="customer.Email" @change="validateEmail(customer)" :style="{ width: '200px' }"/>
                   <span v-if="customer.validationError" class="error-message">{{ customer.validationError }}</span>
                 </td>
                 <!-- ------------------------------------------------------------------------------------------------ -->
@@ -116,11 +116,7 @@
                 <td>
                   <input v-model="customer.DocumentNumber"/>
                 </td>
-                <td>
-                  <!-- FIXME: je treba opravit placeholder nefunguje-->
-                  <input type="date" v-model="customer.dateOfBirth" placeholder="customer.dateOfBirth"/> 
-                  <!-- <input type="date" :value="formattedDateOfBirth(customer.dateOfBirth)" @input="formattedDateOfBirth(customer.dateOfBirth)" /> -->
-                </td>
+                
                 <td>
                   <button class="ok-button" @click="updateToggleTable(customer)">Uložit</button> 
                 </td>
@@ -128,11 +124,26 @@
               </tr>
               <tr v-for="customer in customers" :key="customer.PersonID">
                 <td>
+                  <!-- FIXME: je treba opravit placeholder nefunguje-->
+                  <input type="date" v-model="customer.dateOfBirth" placeholder="customer.dateOfBirth"/> 
+                  <!-- <input type="date" :value="formattedDateOfBirth(customer.dateOfBirth)" @input="formattedDateOfBirth(customer.dateOfBirth)" /> -->
+                </td>
+                <td>
                   <input v-model="customer.Allergy" @change="saveField(customer)" />
                 </td>
-                <td><input v-model="customer.Handicap" /></td>
+                <td>
+                  <select v-model="customer.Handicap" :style="{ width: '100px' }">
+                    <option value=true>Ano</option>
+                    <option value=false>Ne</option>
+                  </select>
+                </td>
                 <td><input v-model="customer.Address" /></td>
-                <td><input v-model="customer.Subscription" /></td>
+                <td>
+                  <select v-model="customer.Subscription" :style="{ width: '100px' }">
+                    <option value=true>Přihlášen</option>
+                    <option value=false>Odhlášen</option>
+                  </select>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -174,6 +185,10 @@
       },
 
       updateToggleTable(customer) {        
+        if(!customer.dateOfBirth){
+          customer.dateOfBirth = null;
+        }
+
         console.log('Updating customer:', customer);
         fetch('/Home/UpdateCustomer', {
           method: 'POST',
@@ -280,6 +295,18 @@
         const formattedDay = day < 10 ? `0${day}` : `${day}`;
 
         return `${formattedDay}.${formattedMonth}.${year}`;
+      },
+      formatHandicap(){
+        if (this.customers.Handicap == true)
+          return 'Ano';
+        else
+          return 'Ne';
+      },
+      formatSubscription(){
+        if (this.customers.Subscription == true)
+          return 'Přihlášen';
+        else
+          return 'Odhlášen';
       },
       // -----------------------------------------------------------------------------------------------
       validatePhoneNumber(customer){
