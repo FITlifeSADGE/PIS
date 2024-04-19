@@ -18,7 +18,7 @@
 
         <button class="button" @click="ToggleTable()">{{ buttonLabel }}</button> 
         <button class="button buttonR" v-if="showButton" @click="removeChanges">Zrušit změny</button>
-
+        <p v-if="error">error</p>
           <!-- <span v-if="customer.validationError" class="error-message">{{ customer.validationError }}</span> -->
           <table v-if="editTable">
             <thead>
@@ -106,12 +106,16 @@
                 </td>
                 <span v-if="customer.validationError" class="error-message">{{ customer.validationError }}</span> -->
                 <td>
-                  <input type="email" v-model="customer.Email" @change="validateEmail(customer)" :style="{ width: '200px' }"/>
-                  <span v-if="customer.validationError" class="error-message">{{ customer.validationError }}</span>
+                  <input type="email" v-model="customer.Email" :style="{ width: '200px' }"/>
                 </td>
                 <!-- ------------------------------------------------------------------------------------------------ -->
                 <td>
-                  <input v-model="customer.PhoneNumber" @change="validatePhoneNumber(customer)" />
+                  <select v-model="customer.PhonePreselection" :style="{ width: '100px' }">
+                    <option value='+420'>+420</option>
+                    <option value='+421'>+421</option>
+                    <option value='+69'>+49</option>
+                  </select>
+                  <input v-model="customer.PhoneNumber"/>
                 </td>
                 <td>
                   <input v-model="customer.DocumentNumber"/>
@@ -163,6 +167,7 @@
         buttonLabel: 'Upravit informace',
         showButton: false,
         ID: null,
+        error: false,
       };
     },
     mounted() {
@@ -185,6 +190,10 @@
       },
 
       updateToggleTable(customer) {        
+
+        validatePhoneNumber(customer.PhoneNumber);
+        validateEmail(customer.Email);
+
         if(!customer.dateOfBirth){
           customer.dateOfBirth = null;
         }
@@ -309,35 +318,29 @@
           return 'Odhlášen';
       },
       // -----------------------------------------------------------------------------------------------
-      validatePhoneNumber(customer){
-        const phoneNumber = customer.PhoneNumber;
-        if(!/\S+/.test(phoneNumber)){
-          customer.validationError = 'BAD';
-          return false;
-        }else{
-        customer.validationError = '';
-        return true;
-        }
+      validatePhoneNumber(phoneNumber){
+        // +420 xxx xxx xxx - length + 3 9
+        if(phoneNumber.length!=9)
+          console.log('wrong number format');
+        if(!this.inputString.split('').every(char => /^\d$/.test(char)))
+          console.log('wrong number format');
       },
-      validateEmail(customer) {
-        const email = customer.Email;
-        // if (!email) {
-        //   customer.validationError = 'Email is required';
-        //   return false;
-        // }
-        if (!/\S+@\S+/.test(email)) {
-          customer.validationError = 'Chybí @examle';
-          return false;
-        }else if(!/\S+\.\S+/.test(email)){
-          customer.validationError = 'Chybí .com';
-          return false;
-        }else if(!/\S+@\S+\.\S+/.test(email)){
-          customer.validationError = 'Chybí obsah emailu';
-          return false;
+      validateEmail(email) {
+        if (!email) {
+          console.log('Email is required');
+          return; // Exit early if email is not provided
         }
-        // Clear validation error if email is valid
-        customer.validationError = '';
-        return true;
+
+        if (!/\S+@\S+\.\S+/.test(email)) {
+          console.log('Invalid email format');
+          if (!/@/.test(email)) {
+            console.log('Missing @ symbol');
+          } else if (!/\.\S+/.test(email)) {
+            console.log('Missing domain part (e.g., .com)');
+          } else {
+            console.log('Email is incomplete');
+          }
+        }
       },
       cancelEdit() {
         // TODO:

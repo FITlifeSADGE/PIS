@@ -1,8 +1,8 @@
-INSERT IGNORE INTO Person (PersonID, LastName, FirstName, Email, PhoneNumber, DocumentNumber, dateOfBirth)
+INSERT IGNORE INTO Person (PersonID, LastName, FirstName, Email, PhonePreselection, PhoneNumber, DocumentNumber, dateOfBirth)
 VALUES 
-(1, 'Smith', 'John', 'john.smith@example.com', '+1234567890', 'AB123456', '1990-05-15'),
-(2, 'Johnson', 'Emily', 'emily.johnson@example.com', '+1987654321', 'CD987654', '1985-09-23'),
-(3, 'Williams', 'Michael', 'michael.williams@example.com', '+1122334455', 'EF246810', '1978-12-10');
+(1, 'Smith', 'John', 'john.smith@example.com', '+123','456789088', 'AB123456', '1990-05-15'),
+(2, 'Johnson', 'Emily', 'emily.johnson@example.com', '+123','765432112', 'CD987654', '1985-09-23'),
+(3, 'Williams', 'Michael', 'michael.williams@example.com', '+112', '233445500', 'EF246810', '1978-12-10');
 
 INSERT IGNORE INTO Employee (EmployeeID, Assignment, Password, WorkShift)
 VALUES 
