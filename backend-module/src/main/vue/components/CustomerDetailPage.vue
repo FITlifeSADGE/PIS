@@ -96,6 +96,33 @@
       </tbody>
     </table>
 
+    <table v-if="editTable">
+      <thead>
+        <tr>
+          <th>Start</th>
+          <th>End</th>
+          <th>State</th>
+          <th>Cost</th>
+          <th>Check-In</th>
+          <th>Check-Out</th>
+          <th>Business Guest</th>
+          <th>Parking</th>
+        </tr>
+      </thead>
+      <tbody v-if="reservations && reservations.length > 0">
+        <tr v-for="reservation in reservations" :key="reservation.ReservationID">
+          <td>{{ reservation.Start }}</td>
+          <td>{{ reservation.End }}</td>
+          <td>{{ reservation.State }}</td>
+          <td>{{ reservation.Cost }}</td>
+          <td>{{ reservation.CommingTime}}</td>
+          <td>{{ reservation.LeavingTime}}</td>
+          <td>{{ reservation.BusinessGuest}}</td>
+          <td>{{ reservation.Parking}}</td>
+        </tr>
+      </tbody>
+    </table>
+
   <div class="tableCustomers">
     <table v-if="!editTable">
       <thead>
@@ -156,6 +183,7 @@ data() {
     editTable: true,
     customers: [], // pole na uchovávanie údajov
     services: [], 
+    reservations: [], 
     buttonLabel: 'Upravit informace',
     showButton: false,
     ID: null,
@@ -194,6 +222,7 @@ mounted() {
   console.log('Person ID:', personID);
   this.fetchCustomers(personID); // Volanie funkcie na načítanie údajov po načítaní komponentu
   this.fetchServices(); // Volanie funkcie na načítanie údajov po načítaní komponentu
+  this.fetchReservations(); // Volanie funkcie na načítanie údajov po načítaní komponentu
 },
 methods: {
   // ------------------------------------------------------------------------------------------------
@@ -213,8 +242,8 @@ methods: {
 
   updateToggleTable(customer) {        
 
-    // validatePhoneNumber(customer.PhoneNumber);
-    // validateEmail(customer.Email);
+    this.validatePhoneNumber(customer.PhoneNumber);
+    this.validateEmail(customer.Email);
     if(!customer.dateOfBirth){
       customer.dateOfBirth = null;
     }
@@ -258,6 +287,21 @@ methods: {
     })
     .catch(error => {
       console.error('Error fetching services:', error);
+    });
+  },
+  fetchReservations() {
+    fetch('/Home/Customers/GetReservations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      this.reservations = data;
+    })
+    .catch(error => {
+      console.error('Error fetching reservations:', error);
     });
   },
   fetchCustomers(personID) {
@@ -330,7 +374,7 @@ methods: {
     // +420 xxx xxx xxx - length + 3 9
     if(phoneNumber.length!=9)
       console.log('wrong number format');
-    if(!this.inputString.split('').every(char => /^\d$/.test(char)))
+    if(!(phoneNumber.split('').every(char => /^\d$/.test(char))))
       console.log('wrong number format');
   },
   validateEmail(email) {

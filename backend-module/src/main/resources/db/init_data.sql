@@ -62,6 +62,14 @@ VALUES
 (458, 'Single', 60.00, 'Desk, Chair, Wardrobe, Single Bed, Coffee Maker', 'Available', 1),
 (459, 'Double', 90.00, 'Desk, Chair, Wardrobe, Double Bed, Mini Fridge', 'Occupied', 2);
 
+
+INSERT IGNORE INTO Reservation (ReservationID, Start, End, State, Cost, CommingTime, LeavingTime, BusinessGuest, Parking)
+VALUES
+(11, '2024-05-01', '2024-05-05', 'Confirmed', 500.00, '2024-05-01', '2024-05-05', 0, 0),
+(12, '2024-06-10', '2024-06-15', 'Pending', 800.00, '2024-06-10', '2024-06-15', 1, 1),
+(13, '2024-07-20', '2024-07-25', 'Confirmed', 700.00, '2024-07-20', '2024-07-25', 0, 1),
+(14, '2024-08-15', '2024-08-20', 'Cancelled', 600.00, '2024-08-15', '2024-08-20', 1, 0),
+(15, '2024-09-01', '2024-10-01', 'Confirmed', 1500.00, '2024-09-01', '2024-10-01', 0, 1);
 -- at vyme
 -- SELECT * FROM Employee Join Person on Employee.EmployeeID = Person.PersonID;
 -- CLR K, CTRL C/CTRL U 
