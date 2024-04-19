@@ -55,12 +55,18 @@ const router = new VueRouter({
         {
           path: '',
           component: CustomersPage
-        },
-        {
-          path: '/Home/Customers/detail',
-          component: CustomerDetailPage
         }
       ]
+    },
+    {
+    path: '/Home/Customers/detail/:personID',
+    component: Parent,
+    children: [
+      {
+        path: '',
+        component: CustomerDetailPage
+      }
+    ]
     }
   ]
 });

@@ -10,15 +10,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.sql.SQLException;
+
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-@WebServlet("/UpdateCustomer")
-public class UpdateCustomerServlet extends HttpServlet {
+@WebServlet("/Customer/UpdateService")
+public class CustomerDetailUpdateServicesServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -31,26 +29,9 @@ public class UpdateCustomerServlet extends HttpServlet {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(line);
 
-        JsonNode dateOfBirthNode = root.get("dateOfBirth");
-        System.out.println(root);
-        if (dateOfBirthNode.isNumber()) {
-            // Převod milisekund na objekt typu Date
-            long milliseconds = dateOfBirthNode.asLong();
-            Date dateOfBirth = new Date(milliseconds);
-
-            // Formátování objektu typu Date na požadovaný formát (yyyy-MM-dd)
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            String formattedDateOfBirth = dateFormat.format(dateOfBirth);
-
-            // Přidání nového dateOfBirth do rootNode
-            ((ObjectNode) root).put("dateOfBirth", formattedDateOfBirth);
-        }
-
-        System.out.println(root);
-
         try 
         {
-            DatabaseUtil.Update(root, "Person", "PersonID");
+            DatabaseUtil.Update(root, "Service", "ServiceID");
         } 
         catch (SQLException e) {
             e.printStackTrace();
