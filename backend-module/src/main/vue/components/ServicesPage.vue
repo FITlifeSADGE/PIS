@@ -192,7 +192,6 @@ export default {
       this.addingNew = true;
     },
     addNewService() {
-
       if (this.newService.Name && this.newService.Cost && this.newService.Availability) 
       {
 

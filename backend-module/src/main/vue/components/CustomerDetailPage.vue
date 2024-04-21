@@ -41,6 +41,9 @@
       </table>
     </div>
 
+    <!-- CUSTOMER -->
+    <!-- SERVICES -->
+
     <table v-if="editTable">
       <thead>
         <tr>
@@ -48,31 +51,31 @@
           <th>Cost</th>
           <th>Availability</th>
           <th>Description</th>
+          <th>Edit</th>
         </tr>
       </thead>
-      <tbody v-if="services && services.length > 0">
-
-        <!-- <tr v-if="addingNew">
-        <td><input type="text" v-model="newService.Name" placeholder="name of service"></td>
-        <td><input type=number min="1" v-model="newService.Cost"></td>
-        <td> 
-          <select v-model="newService.Availability" :style="{ width: '130px' }" >
-            <option value="Available">Available</option>
-            <option value="Closed">Closed</option>
-          </select>
-        </td>
-        <td><input type="text" v-model="newService.Description" placeholder="description of service"></td>
-        <td>
-          <button @click="addNewService" class="edit-button" >OK</button>
-          <button @click="cancelNewService" class="delete-button" >Cancel</button>
-        </td>
+      <tbody>
+        <!-- v-if="services && services.length > 0" -->
+        <tr v-if="addingNew">
+          <td><input type="text" v-model="newService.Name" placeholder="name of service"></td>
+          <td><input type=number min="1" v-model="newService.Cost"></td>
+          <td> 
+            <select v-model="newService.Availability" :style="{ width: '130px' }" >
+              <option value="Available">Available</option>
+              <option value="Closed">Closed</option>
+            </select>
+          </td>
+          <td><input type="text" v-model="newService.Description" placeholder="description of service"></td>
+          <td>
+            <button @click="addNewService" class="edit-button" >OK</button>
+            <button @click="cancelNewService" class="delete-button" >Cancel</button>
+          </td>
         </tr>
         <tr v-else>
-        <td colspan="5" style="text-align: center;">
-          <button @click="toggleAddNew" class="edit-button">Add New</button>
-        </td>
+          <td colspan="5" style="text-align: center;">
+            <button @click="toggleAddNew" class="edit-button">Add New</button>
+          </td>
         </tr>
-        </tr> -->
 
         <tr>
         <td><input type="text" v-model="filters.Name"></td>
@@ -87,14 +90,32 @@
         <td><input type="text" v-model="filters.Description"></td>
         <td></td>
         </tr>
-        <tr v-for="service in services" :key="service.ServiceID">
-          <td>{{ service.Name }}</td>
-          <td>{{ service.Cost }}</td>
-          <td>{{ service.Availability }}</td>
-          <td>{{ service.Description }}</td>
+
+        <tr v-for="service in filteredServices" :key="service.ServiceID">
+          <td v-if="!service.editable">{{ service.Name }}</td>
+          <td v-else><input type="text" v-model="service.Name" :style="{ width: getServiceInputWidth(service.Name) }"></td>
+          <td v-if="!service.editable">{{ service.Cost }}</td>
+          <td v-else><input type=number min="1" v-model="service.Cost" :style="{ width: '50px' }"></td>
+          <td v-if="!service.editable">{{ service.Availability }}</td>
+          <td v-else> 
+            <select v-model="service.Availability" :style="{ width: '130px' }">
+              <option value="Available">Available</option>
+              <option value="Closed">Closed</option>
+            </select>
+          </td>
+          <td v-if="!service.editable">{{ service.Description }}</td>
+          <td v-else><input type="text" v-model="service.Description" :style="{ width: getServiceInputWidth(service.Description) }"></td>
+          <td>
+            <button v-if="!service.editable" class="edit-button" @click="toggleEdit(service)">Edit</button>
+            <button v-else class="ok-button" @click="updateService(service)">OK</button>
+            <button v-if="service.editable" class="delete-button" @click="deleteService(service)">Delete</button>
+          </td>
         </tr>
       </tbody>
     </table>
+
+    <!-- SERVICES -->
+    <!-- RESERVATION -->
 
     <table v-if="editTable">
       <thead>
@@ -107,22 +128,79 @@
           <th>Check-Out</th>
           <th>Business Guest</th>
           <th>Parking</th>
+          <th>Edit</th>
         </tr>
       </thead>
-      <tbody v-if="reservations && reservations.length > 0">
-        <tr v-for="reservation in reservations" :key="reservation.ReservationID">
-          <td>{{ reservation.Start }}</td>
-          <td>{{ reservation.End }}</td>
-          <td>{{ reservation.State }}</td>
-          <td>{{ reservation.Cost }}</td>
-          <td>{{ reservation.CommingTime}}</td>
-          <td>{{ reservation.LeavingTime}}</td>
-          <td>{{ reservation.BusinessGuest}}</td>
-          <td>{{ reservation.Parking}}</td>
+      <tbody>
+        <tr v-if="addingNewReservation">
+          <td><input type="text" v-model="newReservation.Name" placeholder="name of Reservation"></td>
+          <td><input type=number min="1" v-model="newReservation.Cost"></td>
+          <td> 
+            <select v-model="newReservation.Availability" :style="{ width: '130px' }" >
+              <option value="Available">Available</option>
+              <option value="Closed">Closed</option>
+            </select>
+          </td>
+          <td><input type="text" v-model="newReservation.Description" placeholder="description of Reservation"></td>
+          <td>
+            <button @click="addNewReservation" class="edit-button" >OK</button>
+            <button @click="cancelNewReservation" class="delete-button" >Cancel</button>
+          </td>
+        </tr>
+        <tr v-else>
+          <td colspan="5" style="text-align: center;">
+            <button @click="toggleAddNewReservation" class="edit-button">Add New</button>
+          </td>
+        </tr>
+
+        <!-- <tr>
+        <td><input type="text" v-model="filtersR.Name"></td>
+        <td><input type=number min="0" v-model="filtersR.Cost"></td>
+        <td> 
+          <select v-model="filtersR.Availability" :style="{ width: '130px' }">
+            <option value="Available">Available</option>
+            <option value="Closed">Closed</option>
+            <option value="">Do Not Index</option>
+          </select>
+        </td>
+        <td><input type="text" v-model="filtersR.Description"></td>
+        <td></td>
+        </tr> -->
+    <tr v-for="reservation in filteredReservations" :key="reservation.reservationID">
+          <td v-if="!reservation.editableR">{{ reservation.Start }}</td>
+          <td v-if="!reservation.editableR">{{ reservation.End }}</td>
+          <td v-if="!reservation.editableR">{{ reservation.State }}</td>
+          <td v-if="!reservation.editableR">{{ reservation.Cost }}</td>
+          <td v-if="!reservation.editableR">{{ reservation.CommingTime }}</td>
+          <td v-if="!reservation.editableR">{{ reservation.LeavingTime }}</td>
+          <td v-if="!reservation.editableR">{{ reservation.BusinessGuest }}</td>
+          <td v-if="!reservation.editableR">{{ reservation.Parking }}</td>
+
+          <!--
+          <td v-if="!reservation.editableR">{{ reservation.Start }}</td>
+          <td v-else><input type="text" v-model="reservation.Name" :style="{ width: getReservationInputWidth(reservation.Name) }"></td>
+          <td v-if="!reservation.editableR">{{ reservation.Cost }}</td>
+          <td v-else><input type=number min="1" v-model="reservation.Cost" :style="{ width: '50px' }"></td>
+          <td v-if="!reservation.editableR">{{ reservation.Availability }}</td>
+          <td v-else> 
+            <select v-model="reservation.Availability" :style="{ width: '130px' }">
+              <option value="Available">Available</option>
+              <option value="Closed">Closed</option>
+            </select>
+          </td>
+          <td v-if="!reservation.editableR">{{ reservation.Description }}</td>
+          <td v-else><input type="text" v-model="reservation.Description" :style="{ width: getReservationInputWidth(reservation.Description) }"></td>
+          <td>
+            <button v-if="!reservation.editableR" class="edit-button" @click="toggleEditReservation(reservation)">Edit</button>
+            <button v-else class="ok-button" @click="updateReservation(reservation)">OK</button>
+            <button v-if="reservation.editableR" class="delete-button" @click="deleteReservation(reservation)">Delete</button>
+          </td>-->
         </tr>
       </tbody>
     </table>
 
+    <!-- RESERVATION -->
+    <!-- CUSTOMER -->
   <div class="tableCustomers">
     <table v-if="!editTable">
       <thead>
@@ -189,11 +267,22 @@ data() {
     ID: null,
     error: false,
     addingNew: false,
+    addingNewReservation: false,
     filters: {
       Name: '',
       Cost: '',
       Availability: '',
       Description: ''
+    },
+    filtersR: {
+      Start: '',
+      End: '',
+      State: '',
+      Cost: '',
+      CheckIn: '',
+      CheckOuts: '',
+      BusinessGuest: '',
+      Parking: ''
     },
     newService: {
       Name: '',
@@ -213,6 +302,17 @@ computed: {
         service.Cost.toString().includes(this.filters.Cost) &&
         service.Availability.toLowerCase().includes(this.filters.Availability.toLowerCase()) &&
         service.Description.replace(/\s/g, '').toLowerCase().includes(this.filters.Description.replace(/\s/g, '').toLowerCase())
+      );
+    });
+  },
+  filteredReservations() {
+    // Filter reservations based on filter criteria
+    return this.reservations.filter(reservation => {
+      return (
+        reservation.Start.toLowerCase().includes(this.filtersR.Start.toLowerCase()) &&
+        reservation.Cost.toString().includes(this.filtersR.Cost) &&
+        reservation.Availability.toLowerCase().includes(this.filtersR.Availability.toLowerCase()) &&
+        reservation.Description.replace(/\s/g, '').toLowerCase().includes(this.filtersR.Description.replace(/\s/g, '').toLowerCase())
       );
     });
   }
@@ -241,7 +341,6 @@ methods: {
   },
 
   updateToggleTable(customer) {        
-
     this.validatePhoneNumber(customer.PhoneNumber);
     this.validateEmail(customer.Email);
     if(!customer.dateOfBirth){
@@ -270,39 +369,29 @@ methods: {
     this.buttonLabel = 'Upravit informace';
     this.editTable = !this.editTable;
   },
-  // ------------------------------------------------------------------------------------------------
-  ReturnToAllCustomers() {
-    this.$router.push('/Home/Customers');
-  },
+  // ---------------------------------------- FETCH --------------------------------------------------------
+
   fetchServices() {
-    fetch('/Home/Customers/GetServices', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    .then(response => response.json())
-    .then(data => {
-      this.services = data;
-    })
-    .catch(error => {
-      console.error('Error fetching services:', error);
-    });
+    fetch('/Home/Customers/GetServices') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
+      .then(response => response.json())
+      .then(data => {
+        // Nastavenie údajov do premennej services a pridanie atribútu editable pre úpravu
+        this.services = data.map(service => ({ ...service, editable: false }));
+      })
+      .catch(error => {
+        console.error('Error fetching services:', error);
+      });
   },
   fetchReservations() {
-    fetch('/Home/Customers/GetReservations', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-    .then(response => response.json())
-    .then(data => {
-      this.reservations = data;
-    })
-    .catch(error => {
-      console.error('Error fetching reservations:', error);
-    });
+    fetch('/Home/Customers/GetReservations') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
+      .then(response => response.json())
+      .then(data => {
+        // Nastavenie údajov do premennej services a pridanie atribútu editableR pre úpravu
+        this.reservation = data.map(reservation => ({ ...reservation, editableR: false }));
+      })
+      .catch(error => {
+        console.error('Error fetching services:', error);
+      });
   },
   fetchCustomers(personID) {
     fetch('/Home/Customers/GetCustomer', {
@@ -320,6 +409,7 @@ methods: {
       console.error('Error fetching customers:', error);
     });
   },
+  // ---------------------------------------- FETCH --------------------------------------------------------
   logout() {
     console.log('Logout');
   },
@@ -335,6 +425,7 @@ methods: {
   viewCustomers() {
     console.log('View Customers');
   },
+  // ---------------------------------------------- FORMATS -------------------------------------------------
   formatPhoneNumber(phoneNumber)
   {
     const countryCode = phoneNumber.slice(1, 4); // Assuming country code length is 3
@@ -369,7 +460,11 @@ methods: {
     else
       return 'Odhlášen';
   },
-  // -----------------------------------------------------------------------------------------------
+  // ---------------------------------------------- FORMATS -------------------------------------------------
+  // ---------------------------------------------- CUSTOMER -------------------------------------------------
+  ReturnToAllCustomers() {
+    this.$router.push('/Home/Customers');
+  },
   validatePhoneNumber(phoneNumber){
     // +420 xxx xxx xxx - length + 3 9
     if(phoneNumber.length!=9)
@@ -401,10 +496,11 @@ methods: {
     this.editTable = !this.editTable;
     this.showButton = false;
   },
-  // -----------------------------------------------------------------------------------------------
+  // -------------------------------------------- SERVICES ---------------------------------------------------
   toggleAddNew() {
       this.addingNew = true;
      },
+ 
   addNewService() {
     if (this.newService.Name && this.newService.Cost && this.newService.Availability) 
     {
@@ -511,6 +607,125 @@ methods: {
       console.error('Error deleting Service:', error);
     });
   },
+  getServiceInputWidth(text) {
+      // Funkcia na získanie šírky textového poľa na základe dĺžky textu
+      return text ? `${text.length * 12}px` : '100px'; // 8px na jeden znak, predvolená šírka je 100px
+  },
+  // --------------------- RESERVATION ------------------------
+  toggleAddNewReservation() {
+  this.addingNewReservation = true;
+  },
+  addNewReservation() {
+  if (this.newReservation.Name && this.newReservation.Cost && this.newReservation.Availability) 
+  {
+
+    let maxReservationID = Math.max(...this.reservations.map(reservation => reservation.ReservationID));
+    this.newReservation.ReservationID = maxReservationID + 1;
+
+    this.reservations.push({ ...this.newReservation, editableR: false });
+
+    fetch('/Home/AddReservation', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(this.newReservation),
+    })
+    .then(response => {
+      if (response.ok) {
+        console.log('Reservation added successfully');
+      } else {
+        throw new Error('Failed to add reservation');
+      }
+    })
+    .catch(error => {
+      console.error('Error adding reservation:', error);
+    });
+
+    this.newReservation = {
+      Name: '',
+      Cost: '10',
+      Availability: 'Available',
+      Description: '',
+      ReservationID: ''
+    };
+    this.addingNewReservation = false;
+    }
+      else 
+    {
+      alert('Fill in all fields in for new Reservation.');
+    }
+  },
+  cancelNewReservation() {
+  this.newReservation = {
+    Name: '',
+    Cost: '10',
+    Availability: 'Available',
+    Description: '',
+    ReservationID: ''
+  };
+  this.addingNewReservation = false;
+  },
+  toggleEditReservation(reservation) {
+    reservation.editableR = !reservation.editablR; // Prepnutie hodnoty editableR
+  },
+  updateReservation(reservation) {
+    // Implementácia aktualizácie služby
+    console.log('Updating reservation:', reservation);
+    reservation.editableR = false; // Zatvorenie editovacieho režimu
+
+    // Odoslanie údajov na server
+    fetch('/Home/Customer/UpdateReservation', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(reservation),
+    })
+    .then(response => {
+      if (response.ok) {
+        console.log('Reservation updated successfully');
+      } else {
+        throw new Error('Failed to update reservation');
+      }
+    })
+    .catch(error => {
+      console.error('Error updating reservation:', error);
+    });
+  },
+
+  deleteReservation(reservation) {
+    console.log('Deleting reservation:', reservation);
+    reservation.editableR = false; // Zatvorenie editovacieho režimu
+
+    const index = this.reservations.indexOf(reservation);
+    if (index !== -1) 
+    {
+      this.reservations.splice(index, 1);
+    }
+    fetch('/Home/Customer/DeleteReservation', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(reservation),
+    })
+    .then(response => {
+      if (response.ok) {
+        console.log('Reservation deleted successfully');
+      } else {
+        throw new Error('Failed to delete Reservation');
+      }
+    })
+    .catch(error => {
+      console.error('Error deleting Reservation:', error);
+    });
+  },
+  getReservationInputWidth(text) {
+      // Funkcia na získanie šírky textového poľa na základe dĺžky textu
+      return text ? `${text.length * 12}px` : '100px'; // 8px na jeden znak, predvolená šírka je 100px
+    },
+  
 }
 };
 </script>
@@ -585,6 +800,7 @@ border-radius: 10px;
 table {
 width: 100%;
 border-collapse: collapse;
+margin-bottom: 15px;
 }
 th, td {
 border: 1px solid #ddd;
@@ -608,5 +824,31 @@ cursor: pointer;
 }
 .ok-button:hover {
 background-color: #13568e;
+}
+.delete-button{
+  padding: 10px 10px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #f32f21;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+.delete-button:hover {
+  background-color: #951e16;
+}
+.edit-button{
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #2196f3;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+.edit-button:hover {
+  background-color: #13568e;
 }
 </style>
