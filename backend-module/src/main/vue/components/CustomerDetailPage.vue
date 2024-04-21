@@ -133,40 +133,75 @@
       </thead>
       <tbody>
         <tr v-if="addingNewReservation">
-          <td><input type="text" v-model="newReservation.Name" placeholder="name of Reservation"></td>
-          <td><input type=number min="1" v-model="newReservation.Cost"></td>
+          <td><input type=date v-model="newReservation.Start"></td>
+          <td><input type=date v-model="newReservation.End"></td>
           <td> 
-            <select v-model="newReservation.Availability" :style="{ width: '130px' }" >
-              <option value="Available">Available</option>
-              <option value="Closed">Closed</option>
+            <select v-model="filtersR.State" :style="{ width: '130px' }">
+              <option value="Available">Cancelled</option>
+              <option value="Closed">Comfirmed</option>
+              <option value="Pending">Pending</option>
+              <option value="">Do Not Index</option>
             </select>
           </td>
-          <td><input type="text" v-model="newReservation.Description" placeholder="description of Reservation"></td>
+          <td><input type=number min="0" v-model="filtersR.Cost"></td>
+          <td><input type=date v-model="newReservation.CommingTime"></td>
+          <td><input type=date v-model="newReservation.LeavingTime"></td>
+          <td> 
+            <select v-model="filtersR.BusinessGuest" :style="{ width: '130px' }">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+              <option value="">Do Not Index</option>
+            </select>
+          </td>
+          <td> 
+            <select v-model="filtersR.Parking" :style="{ width: '130px' }">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+              <option value="">Do Not Index</option>
+            </select>
+          </td>
           <td>
             <button @click="addNewReservation" class="edit-button" >OK</button>
             <button @click="cancelNewReservation" class="delete-button" >Cancel</button>
           </td>
         </tr>
         <tr v-else>
-          <td colspan="5" style="text-align: center;">
+          <td colspan="9" style="text-align: center;">
             <button @click="toggleAddNewReservation" class="edit-button">Add New</button>
           </td>
         </tr>
+        <tr>
+          <td><input type=date v-model="filtersR.Start"></td>
+          <td><input type=date v-model="filtersR.End"></td>
+          <td> 
+              <select v-model="filtersR.State" :style="{ width: '130px' }">
+              <option value="Available">Cancelled</option>
+              <option value="Closed">Comfirmed</option>
+              <option value="Pending">Pending</option>
+              <option value="">Do Not Index</option>
+            </select>
+          </td>
+          <td><input type=number min="0" v-model="filtersR.Cost"></td>
+          <td><input type=date v-model="filtersR.CommingTime"></td>
+          <td><input type=date v-model="filtersR.LeavingTime"></td>
+          <td> 
+            <select v-model="filtersR.BusinessGuest" :style="{ width: '130px' }">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+              <option value="">Do Not Index</option>
+            </select>
+          </td>
+          <td> 
+            <select v-model="filtersR.Parking" :style="{ width: '130px' }">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+              <option value="">Do Not Index</option>
+            </select>
+          </td>
+          <td></td>
+        </tr>
 
-        <!-- <tr>
-        <td><input type="text" v-model="filtersR.Name"></td>
-        <td><input type=number min="0" v-model="filtersR.Cost"></td>
-        <td> 
-          <select v-model="filtersR.Availability" :style="{ width: '130px' }">
-            <option value="Available">Available</option>
-            <option value="Closed">Closed</option>
-            <option value="">Do Not Index</option>
-          </select>
-        </td>
-        <td><input type="text" v-model="filtersR.Description"></td>
-        <td></td>
-        </tr> -->
-    <tr v-for="reservation in filteredReservations" :key="reservation.reservationID">
+    <tr v-for="reservation in filteredReservations" :key="reservation.ReservationID">
           <td v-if="!reservation.editableR">{{ reservation.Start }}</td>
           <td v-if="!reservation.editableR">{{ reservation.End }}</td>
           <td v-if="!reservation.editableR">{{ reservation.State }}</td>
@@ -176,7 +211,8 @@
           <td v-if="!reservation.editableR">{{ reservation.BusinessGuest }}</td>
           <td v-if="!reservation.editableR">{{ reservation.Parking }}</td>
 
-          <!--
+
+          <!-- 
           <td v-if="!reservation.editableR">{{ reservation.Start }}</td>
           <td v-else><input type="text" v-model="reservation.Name" :style="{ width: getReservationInputWidth(reservation.Name) }"></td>
           <td v-if="!reservation.editableR">{{ reservation.Cost }}</td>
@@ -194,7 +230,8 @@
             <button v-if="!reservation.editableR" class="edit-button" @click="toggleEditReservation(reservation)">Edit</button>
             <button v-else class="ok-button" @click="updateReservation(reservation)">OK</button>
             <button v-if="reservation.editableR" class="delete-button" @click="deleteReservation(reservation)">Delete</button>
-          </td>-->
+          </td>
+-->
         </tr>
       </tbody>
     </table>
@@ -218,7 +255,7 @@
         </td>
       </thead>
     </table>
-    <table v-if="!editTable">
+    <table v-if="!editTable" class="tableData">
       <tbody v-if="customers && customers.length > 0">
         <td v-for="customer in customers" :key="customer.PersonID">
           <tr><input v-model="customer.LastName"/></tr>
@@ -279,8 +316,8 @@ data() {
       End: '',
       State: '',
       Cost: '',
-      CheckIn: '',
-      CheckOuts: '',
+      CommingTime: '',
+      LeavingTime: '',
       BusinessGuest: '',
       Parking: ''
     },
@@ -290,6 +327,17 @@ data() {
       Availability: 'Available',
       Description: '',
       ServiceID: ''
+    },
+    newReservation: {
+      Start: '2024-04-09',
+      End: '2024-04-09',
+      State: 'Pending',
+      Cost: '600',
+      CommingTime: '2024-04-09',
+      LeavingTime: '2024-04-09',
+      BusinessGuest: 'No',
+      Parking: 'No',
+      ReservationID: ''
     }
   };
 },
@@ -310,9 +358,13 @@ computed: {
     return this.reservations.filter(reservation => {
       return (
         reservation.Start.toLowerCase().includes(this.filtersR.Start.toLowerCase()) &&
+        reservation.End.toLowerCase().includes(this.filtersR.End.toLowerCase()) &&
+        reservation.State.toLowerCase().includes(this.filtersR.State.toLowerCase()) &&
         reservation.Cost.toString().includes(this.filtersR.Cost) &&
-        reservation.Availability.toLowerCase().includes(this.filtersR.Availability.toLowerCase()) &&
-        reservation.Description.replace(/\s/g, '').toLowerCase().includes(this.filtersR.Description.replace(/\s/g, '').toLowerCase())
+        reservation.CommingTime.toLowerCase().includes(this.filtersR.CommingTime.toLowerCase()) &&
+        reservation.LeavingTime.toLowerCase().includes(this.filtersR.LeavingTime.toLowerCase()) &&
+        reservation.BusinessGuest.toLowerCase().includes(this.filtersR.BusinessGuest.toLowerCase()) &&
+        reservation.Parking.toLowerCase().includes(this.filtersR.Parking.toLowerCase())
       );
     });
   }
@@ -390,7 +442,7 @@ methods: {
         this.reservation = data.map(reservation => ({ ...reservation, editableR: false }));
       })
       .catch(error => {
-        console.error('Error fetching services:', error);
+        console.error('Error fetching reservations:', error);
       });
   },
   fetchCustomers(personID) {
@@ -733,10 +785,13 @@ methods: {
 <style scoped>
 .tableCustomers{
 display: flex;
+width: 200px;
 }
-.tableData{
-margin-left: 200px;
+
+.tableData tr {
+  line-height: 30px;  
 }
+
 .hotel-management {
 margin: 0;
 font-family: Arial, sans-serif;
@@ -811,6 +866,8 @@ th {
 background-color: #2196F3;
 color: white;
 }
+
+
 
 .ok-button{
 padding: 10px 10px;

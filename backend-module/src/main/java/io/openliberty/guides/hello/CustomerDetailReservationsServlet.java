@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 
 @WebServlet("/Customers/GetReservations")
-public class CustomerDetailReservationServlet extends HttpServlet {
+public class CustomerDetailReservationsServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
