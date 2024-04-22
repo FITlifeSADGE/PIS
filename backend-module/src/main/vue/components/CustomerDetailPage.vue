@@ -81,7 +81,7 @@
         <td><input type="text" v-model="filters.Name"></td>
         <td><input type=number min="0" v-model="filters.Cost"></td>
         <td> 
-          <select v-model="filters.Availability" :style="{ width: '130px' }">
+          <select v-model="filters.Availability" :style="{ width: '140px' }">
             <option value="Available">Available</option>
             <option value="Closed">Closed</option>
             <option value="">Do Not Index</option>
@@ -136,7 +136,7 @@
           <td><input type=date v-model="newReservation.Start"></td>
           <td><input type=date v-model="newReservation.End"></td>
           <td> 
-            <select v-model="filtersR.State" :style="{ width: '130px' }">
+            <select v-model="filtersR.State" :style="{ width: '140px' }">
               <option value="Available">Cancelled</option>
               <option value="Closed">Comfirmed</option>
               <option value="Pending">Pending</option>
@@ -147,14 +147,14 @@
           <td><input type=date v-model="newReservation.CommingTime"></td>
           <td><input type=date v-model="newReservation.LeavingTime"></td>
           <td> 
-            <select v-model="filtersR.BusinessGuest" :style="{ width: '130px' }">
+            <select v-model="filtersR.BusinessGuest" :style="{ width: '140px' }">
               <option value="0">No</option>
               <option value="1">Yes</option>
               <option value="">Do Not Index</option>
             </select>
           </td>
           <td> 
-            <select v-model="filtersR.Parking" :style="{ width: '130px' }">
+            <select v-model="filtersR.Parking" :style="{ width: '140px' }">
               <option value="0">No</option>
               <option value="1">Yes</option>
               <option value="">Do Not Index</option>
@@ -174,7 +174,7 @@
           <td><input type=date v-model="filtersR.Start"></td>
           <td><input type=date v-model="filtersR.End"></td>
           <td> 
-              <select v-model="filtersR.State" :style="{ width: '130px' }">
+              <select v-model="filtersR.State" :style="{ width: '140px' }">
               <option value="Available">Cancelled</option>
               <option value="Closed">Comfirmed</option>
               <option value="Pending">Pending</option>
@@ -185,14 +185,14 @@
           <td><input type=date v-model="filtersR.CommingTime"></td>
           <td><input type=date v-model="filtersR.LeavingTime"></td>
           <td> 
-            <select v-model="filtersR.BusinessGuest" :style="{ width: '130px' }">
+            <select v-model="filtersR.BusinessGuest" :style="{ width: '140px' }">
               <option value="0">No</option>
               <option value="1">Yes</option>
               <option value="">Do Not Index</option>
             </select>
           </td>
           <td> 
-            <select v-model="filtersR.Parking" :style="{ width: '130px' }">
+            <select v-model="filtersR.Parking" :style="{ width: '140px' }">
               <option value="0">No</option>
               <option value="1">Yes</option>
               <option value="">Do Not Index</option>
@@ -907,5 +907,33 @@ background-color: #13568e;
 }
 .edit-button:hover {
   background-color: #13568e;
+}
+input[type="text"] {
+  padding: 8px; /* upravte podle potřeby */
+  border: none; /* odstranění ohraničení */
+  border-radius: 4px; /* zaoblené rohy */
+  font-size: 16px; /* velikost písma */
+  border: 1px solid #2196F3;
+}
+input[type=number] {
+  padding: 8px; /* upravte podle potřeby */
+  border: none; /* odstranění ohraničení */
+  border-radius: 4px; /* zaoblené rohy */
+  font-size: 16px; /* velikost písma */
+  border: 1px solid #2196F3;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: inner-spin-button; /* Nastavení výchozího vzhledu */
+  appearance: inner-spin-button;
+  color: #2196F3; /* Barva šipek */
+  font-size: 16px; /* Velikost písma šipek */
+}
+select{
+  padding: 8px; /* upravte podle potřeby */
+  border: none; /* odstranění ohraničení */
+  border-radius: 4px; /* zaoblené rohy */
+  font-size: 16px; /* velikost písma */
+  border: 1px solid #2196F3;
 }
 </style>

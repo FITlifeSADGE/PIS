@@ -6,16 +6,25 @@
           <th>Last Name</th>
           <th>First Name</th>
           <th>Email</th>
+          <th>Phone Number</th>
           <th></th>
         </tr>
       </thead>
-      <tbody v-if="customers && customers.length > 0">
-        <tr v-for="customer in customers" :key="customer.PersonID">
+      <tbody>
+        <tr>
+          <td><input type="text" v-model="filters.LastName"></td>
+          <td><input type="text" v-model="filters.FirstName"></td>
+          <td><input type="text" v-model="filters.Email"></td>
+          <td><input type="text" v-model="filters.PhoneNumber"></td>
+        </tr>
+
+        <tr v-for="customer in filteredCustomers" :key="customer.PersonID">
           <td>{{ customer.LastName }}</td>
           <td>{{ customer.FirstName }}</td>
           <td>{{ customer.Email }}</td>
+          <td>{{ customer.PhonePreselection + ' ' + customer.PhoneNumber }}</td>
           <td>
-              <button class="button" @click="getDetail(customer.PersonID)">View details</button>
+            <button class="button" @click="getDetail(customer.PersonID)">View details</button>
           </td>
         </tr>
       </tbody>
@@ -29,7 +38,26 @@
       data() {
         return {
           customers: [], // pole na uchovávanie údajov
+          filters: {
+            LastName: '',
+            FirstName: '',
+            Email: '',
+            PhoneNumber: ''
+          },
         };
+      },
+      computed: {
+        filteredCustomers() {
+          // Filter services based on filter criteria
+          return this.customers.filter(customer => {
+            return (
+              customer.LastName.toLowerCase().includes(this.filters.LastName.toLowerCase()) &&
+              customer.FirstName.toLowerCase().includes(this.filters.FirstName.toLowerCase()) &&
+              customer.Email.toLowerCase().includes(this.filters.Email.toLowerCase()) &&
+              customer.PhoneNumber.toString().includes(this.filters.PhoneNumber.toString())
+            );
+          });
+        }
       },
       mounted() {
         this.fetchCustomers(); // Volanie funkcie na načítanie údajov po načítaní komponentu
@@ -70,6 +98,34 @@
     </script>
     
     <style scoped>
+    input[type="text"] {
+      padding: 8px; /* upravte podle potřeby */
+      border: none; /* odstranění ohraničení */
+      border-radius: 4px; /* zaoblené rohy */
+      font-size: 16px; /* velikost písma */
+      border: 1px solid #2196F3;
+    }
+    input[type=number] {
+      padding: 8px; /* upravte podle potřeby */
+      border: none; /* odstranění ohraničení */
+      border-radius: 4px; /* zaoblené rohy */
+      font-size: 16px; /* velikost písma */
+      border: 1px solid #2196F3;
+    }
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: inner-spin-button; /* Nastavení výchozího vzhledu */
+      appearance: inner-spin-button;
+      color: #2196F3; /* Barva šipek */
+      font-size: 16px; /* Velikost písma šipek */
+    }
+    select{
+      padding: 8px; /* upravte podle potřeby */
+      border: none; /* odstranění ohraničení */
+      border-radius: 4px; /* zaoblené rohy */
+      font-size: 16px; /* velikost písma */
+      border: 1px solid #2196F3;
+    }
     .hotel-management {
       margin: 0;
       font-family: Arial, sans-serif;
