@@ -15,6 +15,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import javax.xml.crypto.Data;
+
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 @WebServlet("/UpdateCustomer")
@@ -51,6 +54,8 @@ public class UpdateCustomerServlet extends HttpServlet {
         try 
         {
             DatabaseUtil.Update(root, "Person", "PersonID");
+            DatabaseUtil.Update(root, "Customer", "CustomerID");
+            
         } 
         catch (SQLException e) {
             e.printStackTrace();

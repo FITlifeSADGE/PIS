@@ -100,10 +100,15 @@ public class DatabaseUtil {
             String columnName = NameOfColumns.getString("COLUMN_NAME");
             String jsonValue = root.path(columnName).asText(); root.path(columnName);
 
-            if (!jsonValue.matches("-?\\d+(\\.\\d+)?"))  // Ak sa nejedna o cislo
-                sqlQuery.append(columnName).append("=").append("\"" + jsonValue + "\"").append(",");
-            else
-                sqlQuery.append(columnName).append("=").append(jsonValue).append(",");
+            if (jsonValue.matches("true|false")) {
+                sqlQuery.append(columnName).append("=").append(root.path(columnName).asBoolean()).append(",");
+            } // Ak sa jedna o boolean hodnotu
+            else {
+                if (!jsonValue.matches("-?\\d+(\\.\\d+)?"))  // Ak sa nejedna o cislo
+                    sqlQuery.append(columnName).append("=").append("\"" + jsonValue + "\"").append(",");
+                else
+                    sqlQuery.append(columnName).append("=").append(jsonValue).append(",");
+            }
         }
         sqlQuery.deleteCharAt(sqlQuery.length() - 1); //odstranenie podslednej ciarky
         sqlQuery.append(" WHERE "+ ID + " = ").append(root.path(ID).asText()).append(";");

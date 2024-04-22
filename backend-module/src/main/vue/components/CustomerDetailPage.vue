@@ -4,40 +4,43 @@
 
     <button class="button" @click="ToggleTable()">{{ buttonLabel }}</button> 
     <p v-if="error">error</p>
-
-    <div class="tableCustomers">
-      <table v-if="editTable" class="threadTable">
-        <thead>
-          <td>
-            <tr><th>Last Name</th></tr>
-            <tr><th>First Name</th></tr>
-            <tr><th>Email</th></tr>
-            <tr><th>Phone Number</th></tr>
-            <tr><th>Document Number</th></tr>
-            <tr><th>Date of Birth</th></tr>
-            <tr><th>Allergy</th></tr>
-            <tr><th>Handicap</th></tr>
-            <tr><th>Address</th></tr>
-            <tr><th>Subscription</th></tr>
-          </td>
-        </thead>
-      </table>
-      <table v-if="editTable" class="tableData">
-        <tbody v-if="customers && customers.length > 0">
-          <td v-for="customer in customers" :key="customer.PersonID">
-            <tr>{{ customer.LastName }}</tr>
-            <tr>{{ customer.FirstName }}</tr>
-            <tr>{{ customer.Email }}</tr>
-            <tr>{{ formatPhoneNumber(customer.PhoneNumber) }}</tr>
-            <tr>{{ customer.DocumentNumber }}</tr>
-            <tr>{{ formatDate(customer.dateOfBirth) }}</tr>
-            <tr>{{ customer.Allergy }}</tr>
-            <tr>{{ formatHandicap(customer.Handicap) }}</tr>
-            <tr>{{ customer.Address }}</tr>
-            <tr>{{ formatSubscription(customer.Subscription) }}</tr>
-          </td>
-        </tbody>
-      </table>
+    <div class="tableWrapper">
+      <div class="tableCustomers">
+        <table v-if="editTable" class="threadTable">
+          <tbody v-if="customers && customers.length > 0">
+            <tr v-for="(customer, index) in customers" :key="index">
+              <th>Last Name:</th><td>{{ customer.LastName }}</td>
+            </tr>
+            <tr v-for="(customer, index) in customers" :key="'first_name_' + index">
+              <th>First Name:</th><td>{{ customer.FirstName }}</td>
+            </tr>
+            <tr v-for="(customer, index) in customers" :key="'email_' + index">
+              <th>Email:</th><td>{{ customer.Email }}</td>
+            </tr>
+            <tr v-for="(customer, index) in customers" :key="'phone_number_' + index">
+              <th>Phone Number:</th><td>{{ formatPhoneNumber(customer.PhoneNumber) }}</td>
+            </tr>
+            <tr v-for="(customer, index) in customers" :key="'document_number_' + index">
+              <th>Document Number:</th><td>{{ customer.DocumentNumber }}</td>
+            </tr>
+            <tr v-for="(customer, index) in customers" :key="'date_of_birth_' + index">
+              <th>Date of Birth:</th><td>{{ formatDate(customer.dateOfBirth) }}</td>
+            </tr>
+            <tr v-for="(customer, index) in customers" :key="'allergy_' + index">
+              <th>Allergy:</th><td>{{ customer.Allergy }}</td>
+            </tr>
+            <tr v-for="(customer, index) in customers" :key="'handicap_' + index">
+              <th>Handicap:</th><td>{{ formatHandicap(customer.Handicap) }}</td>
+            </tr>
+            <tr v-for="(customer, index) in customers" :key="'address_' + index">
+              <th>Address:</th><td>{{ customer.Address }}</td>
+            </tr>
+            <tr v-for="(customer, index) in customers" :key="'subscription_' + index">
+              <th>Subscription:</th><td>{{ formatSubscription(customer.Subscription) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <!-- CUSTOMER -->
@@ -249,24 +252,114 @@
 
     <!-- RESERVATION -->
     <!-- CUSTOMER -->
-  <div class="tableCustomers">
-    <table v-if="!editTable" class="threadTable">
-      <thead >
-        <td>
-          <tr><th>Last Name</th></tr>
-          <tr><th>First Name</th></tr>
-          <tr><th>Email</th></tr>
-          <tr><th>Phone Number</th></tr>
-          <tr><th>Document Number</th></tr>
-          <tr><th>Date of Birth</th></tr>
-          <tr><th>Allergy</th></tr>
-          <tr><th>Handicap</th></tr>
-          <tr><th>Address</th></tr>
-          <tr><th>Subscription</th></tr>
-        </td>
-      </thead>
-    </table>
-    <table v-if="!editTable" class="tableData">
+    <!-- <div class="tableCustomers">
+      <table v-if="!editTable" class="threadTable">
+        <tbody v-if="customers && customers.length > 0">
+          <tr v-for="customer in customers" :key="customer.PersonID">
+            <th>Last Name:</th><td><input type="text" v-model="customer.LastName"/></td>
+          </tr>
+          <tr v-for="customer in customers" :key="customer.PersonID">
+            <th>First Name:</th><td><input type="text" v-model="customer.FirstName"/></td>
+          </tr>
+          <tr v-for="customer in customers" :key="customer.PersonID">
+            <th>Email:</th><td><input type="email" v-model="customer.Email"/></td>
+          </tr>
+          <tr v-for="customer in customers" :key="customer.PersonID">
+            <th>Phone Number:</th><td><select v-model="customer.PhonePreselection">
+              <option value='+420'>+420</option>
+              <option value='+421'>+421</option>
+              <option value='+69'>+49</option>
+            </select>
+            <input type="text" v-model="customer.PhoneNumber"/></td>
+          </tr>
+          <tr v-for="customer in customers" :key="customer.PersonID">
+            <th>Document Number:</th><td><input type="text" v-model="customer.DocumentNumber"/></td>
+          </tr>
+          <tr v-for="customer in customers" :key="customer.PersonID">
+            <th>Date of Birth:</th><td><input type="date" v-model="customer.dateOfBirth"/></td>
+          </tr>
+          <tr v-for="customer in customers" :key="customer.PersonID">
+            <th>Allergy:</th><td><input type="text" v-model="customer.Allergy"/></td>
+          </tr>
+          <tr v-for="customer in customers" :key="customer.PersonID">
+            <th>Handicap:</th><td><select v-model="customer.Handicap">
+              <option value=true>Ano</option>
+              <option value=false>Ne</option>
+            </select></td>
+          </tr>
+          <tr v-for="customer in customers" :key="customer.PersonID">
+            <th>Address:</th><td><input type="text" v-model="customer.Address" /></td>
+          </tr>
+          <tr v-for="customer in customers" :key="customer.PersonID">
+            <th>Subscription:</th><td><select v-model="customer.Subscription">
+              <option value=true>Přihlášen</option>
+              <option value=false>Odhlášen</option>
+            </select></td>
+          </tr>
+          <tr v-for="customer in customers" :key="customer.PersonID">
+            <td>
+              <button class="ok-button" @click="updateToggleTable(customer)">Uložit</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div> -->
+
+
+    <div class="tableCustomers">
+      <table v-if="!editTable" class="threadTable">
+        <tbody v-if="customers && customers.length > 0">
+          <tr v-for="(customer, index) in customers" :key="index">
+            <th>Last Name:</th><td><input type="text" v-model="customer.LastName"/></td>
+          </tr>
+          <tr v-for="(customer, index) in customers" :key="'first_name_' + index">
+            <th>First Name:</th><td><input type="text" v-model="customer.FirstName"/></td>
+          </tr>
+          <tr v-for="(customer, index) in customers" :key="'email_' + index">
+            <th>Email:</th><td><input type="email" v-model="customer.Email"/></td>
+          </tr>
+          <tr v-for="(customer, index) in customers" :key="'phone_number_' + index">
+            <th>Phone Number:</th><td><select v-model="customer.PhonePreselection">
+              <option value='+420'>+420</option>
+              <option value='+421'>+421</option>
+              <option value='+69'>+49</option>
+            </select>
+            <input type="text" v-model="customer.PhoneNumber"/></td>
+          </tr>
+          <tr v-for="(customer, index) in customers" :key="'document_number_' + index">
+            <th>Document Number:</th><td><input type="text" v-model="customer.DocumentNumber"/></td>
+          </tr>
+          <tr v-for="(customer, index) in customers" :key="'date_of_birth_' + index">
+            <th>Date of Birth:</th><td><input type="date" v-model="customer.dateOfBirth"/></td>
+          </tr>
+          <tr v-for="(customer, index) in customers" :key="'allergy_' + index">
+            <th>Allergy:</th><td><input type="text" v-model="customer.Allergy"/></td>
+          </tr>
+          <tr v-for="(customer, index) in customers" :key="'handicap_' + index">
+            <th>Handicap:</th><td><select v-model="customer.Handicap">
+              <option value=true>Ano</option>
+              <option value=false>Ne</option>
+            </select></td>
+          </tr>
+          <tr v-for="(customer, index) in customers" :key="'address_' + index">
+            <th>Address:</th><td><input type="text" v-model="customer.Address" /></td>
+          </tr>
+          <tr v-for="(customer, index) in customers" :key="'subscription_' + index">
+            <th>Subscription:</th><td><select v-model="customer.Subscription">
+              <option value=true>Přihlášen</option>
+              <option value=false>Odhlášen</option>
+            </select></td>
+          </tr>
+          <tr v-for="(customer, index) in customers" :key="'button_' + index">
+            <td colspan="2">
+              <button class="ok-button" @click="updateToggleTable(customer)">Uložit</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- <table v-if="!editTable" class="tableData">
       <tbody v-if="customers && customers.length > 0">
         <td v-for="customer in customers" :key="customer.PersonID">
           <tr><input type="text" v-model="customer.LastName"/></tr>
@@ -280,9 +373,7 @@
             <input type="text" v-model="customer.PhoneNumber"/></tr>
           <tr><input type="text" v-model="customer.DocumentNumber"/></tr>
           
-            <!-- FIXME: je treba opravit placeholder nefunguje-->
           <tr><input type="date" :value="formatDate(customer.dateOfBirth)"/> </tr>
-            <!-- <input type="date" :value="formattedDateOfBirth(customer.dateOfBirth)" @input="formattedDateOfBirth(customer.dateOfBirth)" /> -->
           <tr><input type="text" v-model="customer.Allergy" @change="saveField(customer)" /></tr>
           <tr><select v-model="customer.Handicap" :style="{ width: '100px' }">
               <option value=true>Ano</option>
@@ -296,8 +387,7 @@
           <tr><button class="ok-button" @click="updateToggleTable(customer)">Uložit</button></tr>
         </td>
       </tbody>
-    </table>
-  </div>
+    </table> -->
 </div>
 
 </template>
@@ -502,8 +592,9 @@ methods: {
 
     return `${year}-${formattedMonth}-${formattedDay}`;
   },
-  formatHandicap(){
-    if (this.customers.Handicap == true)
+  formatHandicap(Handicap){
+    console.log(Handicap);
+    if (Handicap == true)
       return 'Ano';
     else
       return 'Ne';
@@ -784,16 +875,33 @@ methods: {
 </script>
 
 <style scoped>
-.tableCustomers{
-display: flex;
+.tableWrapper {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 20px;
+  }
+
+.tableCustomers {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+
+.tableData {
+  margin-left: 20px;
+  width: 150%;
+}
+
+.tableData table {
+  width: 150%;
+  border-collapse: collapse;
 }
 
 .tableData tr {
-  line-height: 30px;  
-  margin-left: 500px;
-}
-.threadTable td{
-  width: 300px;
+  padding: 8px;
+  text-align: left;
+  height: 35px;
+
 }
 
 .hotel-management {
@@ -862,8 +970,8 @@ border-collapse: collapse;
 margin-bottom: 15px;
 }
 th, td {
-border: 1px solid #ddd;
-padding: 8px;
+/* border: 1px solid #ddd; */
+/* padding: 8px; */
 text-align: left;
 }
 th {
