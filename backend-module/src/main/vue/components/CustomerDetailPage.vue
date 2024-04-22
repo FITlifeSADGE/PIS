@@ -7,7 +7,7 @@
     <p v-if="error">error</p>
 
     <div class="tableCustomers">
-      <table v-if="editTable">
+      <table v-if="editTable" class="threadTable">
         <thead>
           <td>
             <tr><th>Last Name</th></tr>
@@ -31,7 +31,7 @@
             <tr>{{ customer.Email }}</tr>
             <tr>{{ formatPhoneNumber(customer.PhoneNumber) }}</tr>
             <tr>{{ customer.DocumentNumber }}</tr>
-            <tr>{{ formatDateOfBirth(customer.dateOfBirth) }}</tr>
+            <tr>{{ formatDate(customer.dateOfBirth) }}</tr>
             <tr>{{ customer.Allergy }}</tr>
             <tr>{{ formatHandicap(customer.Handicap) }}</tr>
             <tr>{{ customer.Address }}</tr>
@@ -201,17 +201,32 @@
           <td></td>
         </tr>
 
-    <tr v-for="reservation in filteredReservations" :key="reservation.ReservationID">
-          <td v-if="!reservation.editableR">{{ reservation.Start }}</td>
-          <td v-if="!reservation.editableR">{{ reservation.End }}</td>
-          <td v-if="!reservation.editableR">{{ reservation.State }}</td>
-          <td v-if="!reservation.editableR">{{ reservation.Cost }}</td>
-          <td v-if="!reservation.editableR">{{ reservation.CommingTime }}</td>
-          <td v-if="!reservation.editableR">{{ reservation.LeavingTime }}</td>
-          <td v-if="!reservation.editableR">{{ reservation.BusinessGuest }}</td>
-          <td v-if="!reservation.editableR">{{ reservation.Parking }}</td>
-
-
+        <!-- <tr v-for="reservation in reservations" :key="reservation.ReservationID"> -->
+        <tr v-if="!reservation.editableR" v-for="reservation in filteredReservations" :key="reservation.ReservationID">
+            <td>{{ formatDate(reservation.Start) }}</td>
+            <td>{{ formatDate(reservation.End) }}</td>
+            <td>{{ reservation.State }}</td>
+            <td>{{ reservation.Cost }}</td>
+            <td>{{ formatDate(reservation.CommingTime) }}</td>
+            <td>{{ formatDate(reservation.LeavingTime) }}</td>
+            <td>{{ reservation.BusinessGuest }}</td>
+            <td>{{ reservation.Parking }}</td>
+            <td><button class="edit-button" @click="toggleEditReservation(reservation)">Edit</button></td>
+        </tr>
+        <!-- <tr v-if="reservation.editableR" v-for="reservation in filteredReservations" :key="reservation.ReservationID">
+            
+          <td>{{ formatDate(reservation.Start) }}</td>
+            <td>{{ formatDate(reservation.End) }}</td>
+            <td><input type="text" v-model="reservation.Name" :style="{ width: getReservationInputWidth(reservation.Name) }"></td>
+          
+            <td>{{ reservation.State }}</td>
+            <td>{{ reservation.Cost }}</td>
+            <td>{{ formatDate(reservation.CommingTime) }}</td>
+            <td>{{ formatDate(reservation.LeavingTime) }}</td>
+            <td>{{ reservation.BusinessGuest }}</td>
+            <td>{{ reservation.Parking }}</td>
+            <td><button class="edit-button" @click="toggleEditReservation(reservation)">Edit</button></td>
+        </tr> -->
           <!-- 
           <td v-if="!reservation.editableR">{{ reservation.Start }}</td>
           <td v-else><input type="text" v-model="reservation.Name" :style="{ width: getReservationInputWidth(reservation.Name) }"></td>
@@ -224,23 +239,16 @@
               <option value="Closed">Closed</option>
             </select>
           </td>
-          <td v-if="!reservation.editableR">{{ reservation.Description }}</td>
-          <td v-else><input type="text" v-model="reservation.Description" :style="{ width: getReservationInputWidth(reservation.Description) }"></td>
-          <td>
-            <button v-if="!reservation.editableR" class="edit-button" @click="toggleEditReservation(reservation)">Edit</button>
-            <button v-else class="ok-button" @click="updateReservation(reservation)">OK</button>
-            <button v-if="reservation.editableR" class="delete-button" @click="deleteReservation(reservation)">Delete</button>
-          </td>
+
 -->
-        </tr>
       </tbody>
     </table>
 
     <!-- RESERVATION -->
     <!-- CUSTOMER -->
   <div class="tableCustomers">
-    <table v-if="!editTable">
-      <thead>
+    <table v-if="!editTable" class="threadTable">
+      <thead >
         <td>
           <tr><th>Last Name</th></tr>
           <tr><th>First Name</th></tr>
@@ -270,7 +278,7 @@
           <tr><input v-model="customer.DocumentNumber"/></tr>
           
             <!-- FIXME: je treba opravit placeholder nefunguje-->
-          <tr><input type="date" :value="formatDateOfBirth(customer.dateOfBirth)"/> </tr>
+          <tr><input type="date" :value="formatDate(customer.dateOfBirth)"/> </tr>
             <!-- <input type="date" :value="formattedDateOfBirth(customer.dateOfBirth)" @input="formattedDateOfBirth(customer.dateOfBirth)" /> -->
           <tr><input v-model="customer.Allergy" @change="saveField(customer)" /></tr>
           <tr><select v-model="customer.Handicap" :style="{ width: '100px' }">
@@ -312,14 +320,14 @@ data() {
       Description: ''
     },
     filtersR: {
-      Start: '',
-      End: '',
+      Start: null,            // Initialize as null or new Date()
+      End: null,              // Initialize as null or new Date()
       State: '',
       Cost: '',
-      CommingTime: '',
-      LeavingTime: '',
-      BusinessGuest: '',
-      Parking: ''
+      CommingTime: null,      // Initialize as null or new Date()
+      LeavingTime: null,      // Initialize as null or new Date()
+      BusinessGuest: null,
+      Parking: null
     },
     newService: {
       Name: '',
@@ -354,20 +362,38 @@ computed: {
     });
   },
   filteredReservations() {
-    // Filter reservations based on filter criteria
     return this.reservations.filter(reservation => {
       return (
-        reservation.Start.toLowerCase().includes(this.filtersR.Start.toLowerCase()) &&
-        reservation.End.toLowerCase().includes(this.filtersR.End.toLowerCase()) &&
+        (!this.filtersR.Start || reservation.Start >= this.filtersR.Start) &&
+        (!this.filtersR.End || reservation.End <= this.filtersR.End) &&
         reservation.State.toLowerCase().includes(this.filtersR.State.toLowerCase()) &&
         reservation.Cost.toString().includes(this.filtersR.Cost) &&
-        reservation.CommingTime.toLowerCase().includes(this.filtersR.CommingTime.toLowerCase()) &&
-        reservation.LeavingTime.toLowerCase().includes(this.filtersR.LeavingTime.toLowerCase()) &&
-        reservation.BusinessGuest.toLowerCase().includes(this.filtersR.BusinessGuest.toLowerCase()) &&
-        reservation.Parking.toLowerCase().includes(this.filtersR.Parking.toLowerCase())
+        (!this.filtersR.CommingTime || reservation.CommingTime >= this.filtersR.CommingTime) &&
+        (!this.filtersR.LeavingTime || reservation.LeavingTime <= this.filtersR.LeavingTime) &&
+        (this.filtersR.BusinessGuest === null || reservation.BusinessGuest === this.filtersR.BusinessGuest) &&
+        (this.filtersR.Parking === null || reservation.Parking === this.filtersR.Parking)
       );
     });
   }
+  // filteredReservations() {
+  //   return this.reservations.filter(reservation => {
+  //     // Convert filter strings to lowercase for case-insensitive comparison
+  //     const filterState = this.filtersR.State.toLowerCase();
+  //     const filterCost = this.filtersR.Cost.toLowerCase();
+
+  //     // Check reservation against filter criteria
+  //     return (
+  //       (!this.filtersR.Start || reservation.Start >= this.filtersR.Start) &&
+  //       (!this.filtersR.End || reservation.End <= this.filtersR.End) &&
+  //       reservation.State.toLowerCase().includes(filterState) &&
+  //       reservation.Cost.toString().toLowerCase().includes(filterCost) &&
+  //       (!this.filtersR.CommingTime || reservation.CommingTime >= this.filtersR.CommingTime) &&
+  //       (!this.filtersR.LeavingTime || reservation.LeavingTime <= this.filtersR.LeavingTime) &&
+  //       (this.filtersR.BusinessGuest === null || reservation.BusinessGuest === this.filtersR.BusinessGuest) &&
+  //       (this.filtersR.Parking === null || reservation.Parking === this.filtersR.Parking)
+  //     );
+  //   });
+  // }
 },
 mounted() {
   const personID = this.$route.params.personID;
@@ -439,7 +465,7 @@ methods: {
       .then(response => response.json())
       .then(data => {
         // Nastavenie údajov do premennej services a pridanie atribútu editableR pre úpravu
-        this.reservation = data.map(reservation => ({ ...reservation, editableR: false }));
+        this.reservations = data.map(reservation => ({ ...reservation, editableR: false }));
       })
       .catch(error => {
         console.error('Error fetching reservations:', error);
@@ -486,7 +512,7 @@ methods: {
     // Construct the formatted phone number
     return `+${countryCode} ${restOfNumber}`;
   },
-  formatDateOfBirth(dateOfBirth)
+  formatDate(dateOfBirth)
   {
     if (!dateOfBirth) return ''; 
 
@@ -785,11 +811,14 @@ methods: {
 <style scoped>
 .tableCustomers{
 display: flex;
-width: 200px;
 }
 
 .tableData tr {
   line-height: 30px;  
+  margin-left: 500px;
+}
+.threadTable td{
+  width: 300px;
 }
 
 .hotel-management {
@@ -866,9 +895,6 @@ th {
 background-color: #2196F3;
 color: white;
 }
-
-
-
 .ok-button{
 padding: 10px 10px;
 margin-bottom: 10px;
@@ -936,4 +962,5 @@ select{
   font-size: 16px; /* velikost písma */
   border: 1px solid #2196F3;
 }
+
 </style>
