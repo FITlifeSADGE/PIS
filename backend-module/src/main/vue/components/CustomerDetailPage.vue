@@ -203,44 +203,48 @@
 
         <!-- <tr v-for="reservation in reservations" :key="reservation.ReservationID"> -->
         <tr v-if="!reservation.editableR" v-for="reservation in filteredReservations" :key="reservation.ReservationID">
-            <td>{{ formatDate(reservation.Start) }}</td>
-            <td>{{ formatDate(reservation.End) }}</td>
-            <td>{{ reservation.State }}</td>
-            <td>{{ reservation.Cost }}</td>
-            <td>{{ formatDate(reservation.CommingTime) }}</td>
-            <td>{{ formatDate(reservation.LeavingTime) }}</td>
-            <td>{{ reservation.BusinessGuest }}</td>
-            <td>{{ reservation.Parking }}</td>
-            <td><button class="edit-button" @click="toggleEditReservation(reservation)">Edit</button></td>
-        </tr>
-        <!-- <tr v-if="reservation.editableR" v-for="reservation in filteredReservations" :key="reservation.ReservationID">
-            
           <td>{{ formatDate(reservation.Start) }}</td>
-            <td>{{ formatDate(reservation.End) }}</td>
-            <td><input type="text" v-model="reservation.Name" :style="{ width: getReservationInputWidth(reservation.Name) }"></td>
-          
-            <td>{{ reservation.State }}</td>
-            <td>{{ reservation.Cost }}</td>
-            <td>{{ formatDate(reservation.CommingTime) }}</td>
-            <td>{{ formatDate(reservation.LeavingTime) }}</td>
-            <td>{{ reservation.BusinessGuest }}</td>
-            <td>{{ reservation.Parking }}</td>
-            <td><button class="edit-button" @click="toggleEditReservation(reservation)">Edit</button></td>
-        </tr> -->
-          <!-- 
-          <td v-if="!reservation.editableR">{{ reservation.Start }}</td>
-          <td v-else><input type="text" v-model="reservation.Name" :style="{ width: getReservationInputWidth(reservation.Name) }"></td>
-          <td v-if="!reservation.editableR">{{ reservation.Cost }}</td>
-          <td v-else><input type=number min="1" v-model="reservation.Cost" :style="{ width: '50px' }"></td>
-          <td v-if="!reservation.editableR">{{ reservation.Availability }}</td>
-          <td v-else> 
-            <select v-model="reservation.Availability" :style="{ width: '130px' }">
-              <option value="Available">Available</option>
-              <option value="Closed">Closed</option>
+          <td>{{ formatDate(reservation.End) }}</td>
+          <td>{{ reservation.State }}</td>
+          <td>{{ reservation.Cost }}</td>
+          <td>{{ formatDate(reservation.CommingTime) }}</td>
+          <td>{{ formatDate(reservation.LeavingTime) }}</td>
+          <td>{{ reservation.BusinessGuest }}</td>
+          <td>{{ reservation.Parking }}</td>
+          <td><button class="edit-button" @click="toggleEditReservation(reservation)">Edit</button></td>
+        </tr>
+        <tr v-if="reservation.editableR" v-for="reservation in filteredReservations" :key="reservation.ReservationID">
+          <td><input type="date" :value="formatDate(reservation.Start)" /></td>
+          <td><input type="date" :value="formatDate(reservation.End)" /></td>
+          <td>
+            <select v-model="reservation.State" :style="{ width: '130px' }">
+              <option value="Confirmed">Confirmed</option>
+              <option value="Pending">Pending</option>
+              <option value="Cancelled">Cancelled</option>
             </select>
           </td>
-
--->
+          <td><input type="text" v-model="reservation.LastName" :style="{ width: getReservationInputWidth(reservation.LastName) }"></td>
+          <td><input type="text" v-model="reservation.FirstName" :style="{ width: getReservationInputWidth(reservation.FirstName) }"></td>
+          <td><input type=number min="1" v-model="reservation.Cost" :style="{ width: '50px' }"></td>
+          <td><input type="date" :value="formatDate(reservation.CommingTime)" /></td>
+          <td><input type="date" :value="formatDate(reservation.LeavingTime)" /></td>
+          <td>
+            <select v-model="reservation.BusinessGuest" :style="{ width: '130px' }">
+              <option value=0>No</option>
+              <option value=1>Yes</option>
+            </select>
+          </td>
+          <td>
+            <select v-model="reservation.Parking" :style="{ width: '130px' }">
+              <option value=0>No</option>
+              <option value=1>Yes</option>
+            </select>
+          </td>
+          <td>
+            <button class="ok-button" @click="updateService(service)">OK</button>
+            <button class="delete-button" @click="deleteService(service)">Delete</button>
+          </td>
+        </tr>
       </tbody>
     </table>
 
