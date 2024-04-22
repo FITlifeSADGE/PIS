@@ -3,7 +3,6 @@
     <button class="button" @click="ReturnToAllCustomers">Zpět na seznam</button>
 
     <button class="button" @click="ToggleTable()">{{ buttonLabel }}</button> 
-    <button class="button buttonR" v-if="showButton" @click="removeChanges">Zrušit změny</button>
     <p v-if="error">error</p>
 
     <div class="tableCustomers">
@@ -143,7 +142,7 @@
               <option value="">Do Not Index</option>
             </select>
           </td>
-          <td><input type=number min="0" v-model="filtersR.Cost"></td>
+          <td><input type=number min="0" v-model="filtersR.Cost" ></td>
           <td><input type=date v-model="newReservation.CommingTime"></td>
           <td><input type=date v-model="newReservation.LeavingTime"></td>
           <td> 
@@ -241,8 +240,8 @@
             </select>
           </td>
           <td>
-            <button class="ok-button" @click="updateService(service)">OK</button>
-            <button class="delete-button" @click="deleteService(service)">Delete</button>
+            <button class="ok-button" @click="updateReservation(reservation)">OK</button>
+            <button class="delete-button" @click="deleteReservation(reservation)">Delete</button>
           </td>
         </tr>
       </tbody>
@@ -270,26 +269,26 @@
     <table v-if="!editTable" class="tableData">
       <tbody v-if="customers && customers.length > 0">
         <td v-for="customer in customers" :key="customer.PersonID">
-          <tr><input v-model="customer.LastName"/></tr>
-          <tr><input v-model="customer.FirstName"/></tr>
+          <tr><input type="text" v-model="customer.LastName"/></tr>
+          <tr><input type="text" v-model="customer.FirstName"/></tr>
           <tr><input type="email" v-model="customer.Email" :style="{ width: '200px' }"/></tr>
           <tr><select v-model="customer.PhonePreselection" :style="{ width: '100px' }">
               <option value='+420'>+420</option>
               <option value='+421'>+421</option>
               <option value='+69'>+49</option>
             </select>
-            <input v-model="customer.PhoneNumber"/></tr>
-          <tr><input v-model="customer.DocumentNumber"/></tr>
+            <input type="text" v-model="customer.PhoneNumber"/></tr>
+          <tr><input type="text" v-model="customer.DocumentNumber"/></tr>
           
             <!-- FIXME: je treba opravit placeholder nefunguje-->
           <tr><input type="date" :value="formatDate(customer.dateOfBirth)"/> </tr>
             <!-- <input type="date" :value="formattedDateOfBirth(customer.dateOfBirth)" @input="formattedDateOfBirth(customer.dateOfBirth)" /> -->
-          <tr><input v-model="customer.Allergy" @change="saveField(customer)" /></tr>
+          <tr><input type="text" v-model="customer.Allergy" @change="saveField(customer)" /></tr>
           <tr><select v-model="customer.Handicap" :style="{ width: '100px' }">
               <option value=true>Ano</option>
               <option value=false>Ne</option>
             </select></tr>
-          <tr><input v-model="customer.Address" /></tr>
+          <tr><input type="text" v-model="customer.Address" /></tr>
           <tr><select v-model="customer.Subscription" :style="{ width: '100px' }">
               <option value=true>Přihlášen</option>
               <option value=false>Odhlášen</option>
@@ -312,7 +311,6 @@ data() {
     services: [], 
     reservations: [], 
     buttonLabel: 'Upravit informace',
-    showButton: false,
     ID: null,
     error: false,
     addingNew: false,
@@ -379,25 +377,6 @@ computed: {
       );
     });
   }
-  // filteredReservations() {
-  //   return this.reservations.filter(reservation => {
-  //     // Convert filter strings to lowercase for case-insensitive comparison
-  //     const filterState = this.filtersR.State.toLowerCase();
-  //     const filterCost = this.filtersR.Cost.toLowerCase();
-
-  //     // Check reservation against filter criteria
-  //     return (
-  //       (!this.filtersR.Start || reservation.Start >= this.filtersR.Start) &&
-  //       (!this.filtersR.End || reservation.End <= this.filtersR.End) &&
-  //       reservation.State.toLowerCase().includes(filterState) &&
-  //       reservation.Cost.toString().toLowerCase().includes(filterCost) &&
-  //       (!this.filtersR.CommingTime || reservation.CommingTime >= this.filtersR.CommingTime) &&
-  //       (!this.filtersR.LeavingTime || reservation.LeavingTime <= this.filtersR.LeavingTime) &&
-  //       (this.filtersR.BusinessGuest === null || reservation.BusinessGuest === this.filtersR.BusinessGuest) &&
-  //       (this.filtersR.Parking === null || reservation.Parking === this.filtersR.Parking)
-  //     );
-  //   });
-  // }
 },
 mounted() {
   const personID = this.$route.params.personID;
@@ -410,15 +389,9 @@ methods: {
   // ------------------------------------------------------------------------------------------------
   ToggleTable() {
     if(this.editTable == false)
-    {
-      this.showButton = false;
       this.buttonLabel = 'Upravit informace';
-    }
     else
-    {
-      this.buttonLabel = 'Uložit změny';
-      this.showButton = true;
-    }
+      this.buttonLabel = 'Zrušit změny';
     this.editTable = !this.editTable;
   },
 
@@ -447,7 +420,6 @@ methods: {
     .catch(error => {
       console.error('Error updating customer:', error);
     });
-    this.showButton = false;
     this.buttonLabel = 'Upravit informace';
     this.editTable = !this.editTable;
   },
@@ -576,7 +548,6 @@ methods: {
   },
   removeChanges(){
     this.editTable = !this.editTable;
-    this.showButton = false;
   },
   // -------------------------------------------- SERVICES ---------------------------------------------------
   toggleAddNew() {
@@ -938,32 +909,30 @@ background-color: #13568e;
 .edit-button:hover {
   background-color: #13568e;
 }
-input[type="text"] {
-  padding: 8px; /* upravte podle potřeby */
-  border: none; /* odstranění ohraničení */
-  border-radius: 4px; /* zaoblené rohy */
-  font-size: 16px; /* velikost písma */
-  border: 1px solid #2196F3;
-}
+
+input[type="date"],
+input[type="email"],
+input[type="text"],
 input[type=number] {
-  padding: 8px; /* upravte podle potřeby */
-  border: none; /* odstranění ohraničení */
-  border-radius: 4px; /* zaoblené rohy */
-  font-size: 16px; /* velikost písma */
+  padding: 8px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
   border: 1px solid #2196F3;
 }
+
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: inner-spin-button; /* Nastavení výchozího vzhledu */
+  -webkit-appearance: inner-spin-button;
   appearance: inner-spin-button;
-  color: #2196F3; /* Barva šipek */
-  font-size: 16px; /* Velikost písma šipek */
+  color: #2196F3;
+  font-size: 16px; 
 }
 select{
-  padding: 8px; /* upravte podle potřeby */
-  border: none; /* odstranění ohraničení */
-  border-radius: 4px; /* zaoblené rohy */
-  font-size: 16px; /* velikost písma */
+  padding: 8px; 
+  border: none; 
+  border-radius: 4px;
+  font-size: 16px; 
   border: 1px solid #2196F3;
 }
 

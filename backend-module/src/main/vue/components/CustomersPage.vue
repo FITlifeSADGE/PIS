@@ -98,32 +98,27 @@
     </script>
     
     <style scoped>
-    input[type="text"] {
-      padding: 8px; /* upravte podle potřeby */
-      border: none; /* odstranění ohraničení */
-      border-radius: 4px; /* zaoblené rohy */
-      font-size: 16px; /* velikost písma */
-      border: 1px solid #2196F3;
-    }
+    input[type="text"],
     input[type=number] {
-      padding: 8px; /* upravte podle potřeby */
-      border: none; /* odstranění ohraničení */
-      border-radius: 4px; /* zaoblené rohy */
-      font-size: 16px; /* velikost písma */
+      padding: 8px;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
       border: 1px solid #2196F3;
     }
+
     input[type="number"]::-webkit-inner-spin-button,
     input[type="number"]::-webkit-outer-spin-button {
-      -webkit-appearance: inner-spin-button; /* Nastavení výchozího vzhledu */
+      -webkit-appearance: inner-spin-button; 
       appearance: inner-spin-button;
-      color: #2196F3; /* Barva šipek */
-      font-size: 16px; /* Velikost písma šipek */
+      color: #2196F3;
+      font-size: 16px; 
     }
     select{
-      padding: 8px; /* upravte podle potřeby */
-      border: none; /* odstranění ohraničení */
-      border-radius: 4px; /* zaoblené rohy */
-      font-size: 16px; /* velikost písma */
+      padding: 8px; 
+      border: none; 
+      border-radius: 4px; 
+      font-size: 16px; 
       border: 1px solid #2196F3;
     }
     .hotel-management {
@@ -155,7 +150,7 @@
       display: flex;
       flex-direction: column;
       width: calc(100vw / 6);
-      margin-right: 20px; /* Add margin to align table with first button */
+      margin-right: 20px; 
     }
     .button {
       padding: 10px 20px;
