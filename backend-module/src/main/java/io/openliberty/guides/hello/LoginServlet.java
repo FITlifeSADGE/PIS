@@ -6,6 +6,11 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.ResultSet;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.TypedQuery;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -16,6 +21,8 @@ import jakarta.servlet.http.HttpSession;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.openliberty.guides.hello.model.LoginRequest;
 
+import io.openliberty.guides.hello.model.Person;
+
 
 @WebServlet("/loginVerify")
 public class LoginServlet extends HttpServlet {
@@ -23,6 +30,29 @@ public class LoginServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {  
+
+        // JPA
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-hibernate-mysql");
+        EntityManager em = emf.createEntityManager();
+        try {
+            TypedQuery<Person> query = em.createNamedQuery("Person.findById", Person.class);
+            query.setParameter("id", 1);
+            Person person = query.getSingleResult();
+            
+            System.out.println(person);
+            
+        } catch (NoResultException e) {
+            // User not found
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.getWriter().write("User not found");
+        } finally {
+            em.close();
+            emf.close();
+        }
+
+
+        // JPA
+
         ObjectMapper mapper = new ObjectMapper();
         LoginRequest loginRequest = mapper.readValue(request.getInputStream(), LoginRequest.class);
         String username = loginRequest.getUsername();
