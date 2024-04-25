@@ -1,8 +1,16 @@
 <template>
   <div class="table-container">
     <button class="button" @click="ReturnToAllCustomers">Zpět na seznam</button>
-
     <button class="button" @click="ToggleTable()">{{ buttonLabel }}</button> 
+    
+    <div v-if="popup" class="modal">
+      <div class="modal-content">
+        <p>Unsaved changes will be lost</p>
+        <button class="button" @click="closePopupLeave">Leave</button> 
+        <button class="button" @click="closePopupStay">Stay</button> 
+      </div>
+    </div>
+    
     <p v-if="error">error</p>
     <div class="tableWrapper">
       <div class="tableCustomers">
@@ -18,7 +26,7 @@
               <th>Email:</th><td>{{ customer.Email }}</td>
             </tr>
             <tr v-for="(customer, index) in customers" :key="'phone_number_' + index">
-              <th>Phone Number:</th><td>{{ formatPhoneNumber(customer.PhoneNumber) }}</td>
+              <th>Phone Number:</th><td>{{ formatPhoneNumber(customer.PhonePreselection, customer.PhoneNumber) }}</td>
             </tr>
             <tr v-for="(customer, index) in customers" :key="'document_number_' + index">
               <th>Document Number:</th><td>{{ customer.DocumentNumber }}</td>
@@ -51,8 +59,8 @@
         <tr>
           <th>Name</th>
           <th>Cost</th>
-          <th>Availability</th>
           <th>Description</th>
+          <th>Extra</th>
           <th>Edit</th>
         </tr>
       </thead>
@@ -61,13 +69,9 @@
         <tr v-if="addingNew">
           <td><input type="text" v-model="newService.Name" placeholder="name of service"></td>
           <td><input type=number min="1" v-model="newService.Cost"></td>
-          <td> 
-            <select v-model="newService.Availability" :style="{ width: '130px' }" >
-              <option value="Available">Available</option>
-              <option value="Closed">Closed</option>
-            </select>
-          </td>
+          
           <td><input type="text" v-model="newService.Description" placeholder="description of service"></td>
+          <td><input type="text" v-model="newService.Extra" placeholder="description of service"></td>
           <td>
             <button @click="addNewService" class="edit-button" >OK</button>
             <button @click="cancelNewService" class="delete-button" >Cancel</button>
@@ -82,31 +86,19 @@
         <tr>
         <td><input type="text" v-model="filters.Name"></td>
         <td><input type=number min="0" v-model="filters.Cost"></td>
-        <td> 
-          <select v-model="filters.Availability" :style="{ width: '140px' }">
-            <option value="Available">Available</option>
-            <option value="Closed">Closed</option>
-            <option value="">Do Not Index</option>
-          </select>
-        </td>
         <td><input type="text" v-model="filters.Description"></td>
+        <td><input type="text" v-model="filters.Extra"></td>
         <td></td>
         </tr>
 
         <tr v-for="service in filteredServices" :key="service.ServiceID">
-          <td v-if="!service.editable">{{ service.Name }}</td>
-          <td v-else><input type="text" v-model="service.Name" :style="{ width: getServiceInputWidth(service.Name) }"></td>
-          <td v-if="!service.editable">{{ service.Cost }}</td>
-          <td v-else><input type=number min="1" v-model="service.Cost" :style="{ width: '50px' }"></td>
-          <td v-if="!service.editable">{{ service.Availability }}</td>
-          <td v-else> 
-            <select v-model="service.Availability" :style="{ width: '130px' }">
-              <option value="Available">Available</option>
-              <option value="Closed">Closed</option>
-            </select>
-          </td>
-          <td v-if="!service.editable">{{ service.Description }}</td>
-          <td v-else><input type="text" v-model="service.Description" :style="{ width: getServiceInputWidth(service.Description) }"></td>
+          <td>{{ service.Name }}</td>
+          <td>{{ service.Cost }}</td>
+          <td>{{ service.Description }}</td>
+          <!-- <td v-else><input type="text" v-model="service.Description" :style="{ width: getServiceInputWidth(service.Description) }"></td> -->
+          <td v-if="!service.editable">{{ service.Extra }}</td>
+          <td v-else><input type="text" v-model="service.Extra" :style="{ width: getServiceInputWidth(service.Extra) }"></td>
+         
           <td>
             <button v-if="!service.editable" class="edit-button" @click="toggleEdit(service)">Edit</button>
             <button v-else class="ok-button" @click="updateService(service)">OK</button>
@@ -405,11 +397,12 @@ data() {
     error: false,
     addingNew: false,
     addingNewReservation: false,
+    popup: false,
     filters: {
       Name: '',
       Cost: '',
-      Availability: '',
-      Description: ''
+      Description: '',
+      Extra: ''
     },
     filtersR: {
       Start: null,            // Initialize as null or new Date()
@@ -448,8 +441,8 @@ computed: {
       return (
         service.Name.toLowerCase().includes(this.filters.Name.toLowerCase()) &&
         service.Cost.toString().includes(this.filters.Cost) &&
-        service.Availability.toLowerCase().includes(this.filters.Availability.toLowerCase()) &&
-        service.Description.replace(/\s/g, '').toLowerCase().includes(this.filters.Description.replace(/\s/g, '').toLowerCase())
+        service.Description.replace(/\s/g, '').toLowerCase().includes(this.filters.Description.replace(/\s/g, '').toLowerCase()) &&
+        service.Extra.replace(/\s/g, '').toLowerCase().includes(this.filters.Extra.replace(/\s/g, '').toLowerCase())
       );
     });
   },
@@ -479,10 +472,21 @@ methods: {
   // ------------------------------------------------------------------------------------------------
   ToggleTable() {
     if(this.editTable == false)
-      this.buttonLabel = 'Upravit informace';
-    else
+    {
+      this.popup = !this.popup;
+    }
+    else{
       this.buttonLabel = 'Zrušit změny';
+      this.editTable = !this.editTable;
+    }
+  },
+  closePopupLeave(){
+    this.buttonLabel = 'Upravit informace';
     this.editTable = !this.editTable;
+    this.popup = !this.popup;
+  },
+  closePopupStay(){
+    this.popup = !this.popup;
   },
 
   updateToggleTable(customer) {        
@@ -570,13 +574,9 @@ methods: {
     console.log('View Customers');
   },
   // ---------------------------------------------- FORMATS -------------------------------------------------
-  formatPhoneNumber(phoneNumber)
+  formatPhoneNumber(PhonePreselection, phoneNumber)
   {
-    const countryCode = phoneNumber.slice(1, 4); // Assuming country code length is 3
-    const restOfNumber = phoneNumber.slice(4, phoneNumber.length - 1);
-
-    // Construct the formatted phone number
-    return `+${countryCode} ${restOfNumber}`;
+    return `+${PhonePreselection} ${phoneNumber}`;
   },
   formatDate(dateOfBirth)
   {
@@ -593,14 +593,13 @@ methods: {
     return `${year}-${formattedMonth}-${formattedDay}`;
   },
   formatHandicap(Handicap){
-    console.log(Handicap);
     if (Handicap == true)
       return 'Ano';
     else
       return 'Ne';
   },
-  formatSubscription(){
-    if (this.customers.Subscription == true)
+  formatSubscription(Subscription){
+    if (Subscription == true)
       return 'Přihlášen';
     else
       return 'Odhlášen';
@@ -1042,6 +1041,44 @@ select{
   border-radius: 4px;
   font-size: 16px; 
   border: 1px solid #2196F3;
+}
+
+.modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  /* width: 150px;
+  height: 100px; */
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: white;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 </style>

@@ -52,5 +52,6 @@ CREATE TABLE IF NOT EXISTS Service(
     Name varchar(255),
     Cost FLOAT,
     Availability varchar(255),
-    Description varchar(255)
+    Description varchar(255),
+    Extra varchar(255)
 );
