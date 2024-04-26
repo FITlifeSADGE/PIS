@@ -3,15 +3,21 @@ package io.openliberty.guides.hello;
 import java.io.BufferedReader;
 import java.io.IOException;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.TypedQuery;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import java.sql.SQLException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.openliberty.guides.hello.model.Room;
 
 @WebServlet("/UpdateRoom")
 public class UpdateRoomServlet extends HttpServlet {
@@ -19,20 +25,48 @@ public class UpdateRoomServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        
+        //read request
         BufferedReader reader = request.getReader();
         String line = reader.readLine();
         reader.close();
-        
+
+        //create tree 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(line);
 
-        try 
-        {
-            DatabaseUtil.Update(root, "Room", "RoomID");
-        } 
-        catch (SQLException e) {
-            e.printStackTrace();
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-hibernate-mysql");
+        EntityManager em = emf.createEntityManager();
+        try {
+
+            // find room by id
+            TypedQuery<Room> query = em.createNamedQuery("Room.findById", Room.class);
+            query.setParameter("id", root.path("RoomID").asInt()); 
+            Room room = query.getSingleResult();
+        
+            //udate room parameters
+            room.updateRoom(
+                root.path("TypeRoom").asText(), 
+                root.path("Cost").floatValue(),  
+                root.path("Equip").asText(),  
+                root.path("State").asText(),  
+                root.path("Beds").asInt()
+                );
+
+            //send room to db 
+            em.getTransaction().begin();
+            em.merge(room);
+            em.getTransaction().commit();
+        
+            System.out.println("Updated room: " + room);
+            
+        } catch (NoResultException e) {             
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.getWriter().write("Room not found");
+        } finally {
+            em.close();
+            emf.close();
         }
+
     }
 }

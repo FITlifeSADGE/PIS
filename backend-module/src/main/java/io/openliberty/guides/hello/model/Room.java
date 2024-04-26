@@ -2,6 +2,9 @@ package io.openliberty.guides.hello.model;
 
 import jakarta.persistence.*;
 
+@NamedQuery(name = "Room.findById", query = "SELECT r FROM Room r WHERE r.roomId = :id")
+@NamedQuery(name = "Room.findMaxId", query = "SELECT MAX(r.roomId) FROM Room r")
+@NamedQuery(name = "Room.allRows", query = "SELECT r FROM Room r")
 @Entity
 @Table(name = "Room")
 public class Room {
@@ -71,6 +74,14 @@ public class Room {
     }
 
     public void setBeds(int beds) {
+        this.beds = beds;
+    }
+
+    public void updateRoom(String typeRoom, float cost, String equip, String state, Integer beds) {
+        this.typeRoom = typeRoom;
+        this.cost = cost;
+        this.equip = equip;
+        this.state = state;
         this.beds = beds;
     }
 
