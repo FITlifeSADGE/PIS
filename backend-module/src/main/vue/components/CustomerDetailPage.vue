@@ -67,11 +67,15 @@
       <tbody>
         <!-- v-if="services && services.length > 0" -->
         <tr v-if="addingNew">
-          <td><input type="text" v-model="newService.Name" placeholder="name of service"></td>
-          <td><input type=number min="1" v-model="newService.Cost"></td>
+          <td>
+            <select v-model="newService"  placeholder="Select a service">
+              <option v-for="service in uniqueServices" :value="service">{{ service.Name }}</option>
+            </select>
+          </td>
+          <td>{{ newService.Cost }}</td>
           
-          <td><input type="text" v-model="newService.Description" placeholder="description of service"></td>
-          <td><input type="text" v-model="newService.Extra" placeholder="description of service"></td>
+          <td>{{ newService.Description }}</td>
+          <td><input type="text" v-model="newService.Extra" placeholder="description request"></td>
           <td>
             <button @click="addNewService" class="edit-button" >OK</button>
             <button @click="cancelNewService" class="delete-button" >Cancel</button>
@@ -431,7 +435,7 @@ data() {
       BusinessGuest: 'No',
       Parking: 'No',
       ReservationID: ''
-    }
+    },
   };
 },
 computed: {
@@ -459,6 +463,17 @@ computed: {
         (this.filtersR.Parking === null || reservation.Parking === this.filtersR.Parking)
       );
     });
+  },
+  uniqueServices() {
+    const uniqueNames = [];
+    const uniqueServices = [];
+    this.services.forEach(service => {
+      if (!uniqueNames.includes(service.Name)) {
+        uniqueNames.push(service.Name);
+        uniqueServices.push(service);
+      }
+    });
+    return uniqueServices;
   }
 },
 mounted() {
@@ -576,7 +591,7 @@ methods: {
   // ---------------------------------------------- FORMATS -------------------------------------------------
   formatPhoneNumber(PhonePreselection, phoneNumber)
   {
-    return `+${PhonePreselection} ${phoneNumber}`;
+    return `${PhonePreselection} ${phoneNumber}`;
   },
   formatDate(dateOfBirth)
   {
@@ -593,16 +608,40 @@ methods: {
     return `${year}-${formattedMonth}-${formattedDay}`;
   },
   formatHandicap(Handicap){
-    if (Handicap == true)
-      return 'Ano';
-    else
-      return 'Ne';
+    if (typeof Handicap === 'string') {
+      if (Handicap === 'true') {
+        return 'Ano';
+      }
+      else {
+        return 'Ne';
+      }
+    }
+    if (typeof Handicap === 'boolean') {
+      if (Handicap === true) {
+        return 'Ano';
+      }
+      else {
+        return 'Ne';
+      }
+    }
   },
   formatSubscription(Subscription){
-    if (Subscription == true)
-      return 'Přihlášen';
-    else
-      return 'Odhlášen';
+    if (typeof Subscription === 'string') {
+      if (Subscription === 'true') {
+        return 'Přihlášen';
+      }
+      else {
+        return 'Odhlášen';
+      }
+    }
+    if (typeof Subscription === 'boolean') {
+      if (Subscription === true) {
+        return 'Přihlášen';
+      }
+      else {
+        return 'Odhlášen';
+      }
+    }
   },
   // ---------------------------------------------- FORMATS -------------------------------------------------
   // ---------------------------------------------- CUSTOMER -------------------------------------------------

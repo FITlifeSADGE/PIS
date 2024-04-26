@@ -101,7 +101,7 @@ export default {
   computed: {
     filteredServices() {
       // Filter services based on filter criteria
-      return this.services.filter(service => {
+      return this.uniqueServices.filter(service => {
         return (
           service.Name.toLowerCase().includes(this.filters.Name.toLowerCase()) &&
           service.Cost.toString().includes(this.filters.Cost) &&
@@ -109,7 +109,18 @@ export default {
           service.Description.replace(/\s/g, '').toLowerCase().includes(this.filters.Description.replace(/\s/g, '').toLowerCase())
         );
       });
-    }
+    },
+    uniqueServices() {
+    const uniqueNames = [];
+    const uniqueServices = [];
+    this.services.forEach(service => {
+      if (!uniqueNames.includes(service.Name)) {
+        uniqueNames.push(service.Name);
+        uniqueServices.push(service);
+      }
+    });
+    return uniqueServices;
+  }
   },
   mounted() {
     this.fetchServices(); // Volanie funkcie na načítanie údajov po načítaní komponentu
