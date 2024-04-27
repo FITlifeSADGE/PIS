@@ -9,13 +9,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-<<<<<<< HEAD
-=======
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import jakarta.persistence.TypedQuery;
->>>>>>> origin/main
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -25,12 +22,9 @@ import jakarta.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-<<<<<<< HEAD
-=======
 import io.openliberty.guides.hello.model.Service;
 
 import java.sql.SQLException;
->>>>>>> origin/main
 
 @WebServlet("/Services/GetServices")
 public class ServicesServlet extends HttpServlet {
@@ -50,43 +44,6 @@ public class ServicesServlet extends HttpServlet {
         }
 
         System.out.println("Get for Service Data");
-<<<<<<< HEAD
-        try {
-            // Získanie údajov zo servera (napr. z databázy)
-            ResultSet resultSet = DatabaseUtil.Selecet("Service");
-
-            List<Map<String, Object>> rows = new ArrayList<>();
-            ResultSetMetaData metaData = resultSet.getMetaData();
-            int columnCount = metaData.getColumnCount();
-
-            while (resultSet.next()) 
-            {
-                Map<String, Object> rowData = new HashMap<>();
-                for (int i = 1; i <= columnCount; i++) 
-                {
-                    String columnName = metaData.getColumnName(i);
-                    Object value = resultSet.getObject(i);
-                    rowData.put(columnName, value);
-                }
-                rows.add(rowData);
-            }
-
-            // Konverzia údajov na JSON reťazec
-            ObjectMapper mapper = new ObjectMapper();
-            String jsonString = mapper.writeValueAsString(rows);
-
-            // Nastavenie typu obsahu a odoslanie JSON reťazca ako odpoveď
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write(jsonString);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            // Spracovanie chyby
-        }
-    }
-}
-=======
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-hibernate-mysql");
         EntityManager em = emf.createEntityManager();
         
@@ -117,4 +74,3 @@ public class ServicesServlet extends HttpServlet {
 
     }
 }
->>>>>>> origin/main

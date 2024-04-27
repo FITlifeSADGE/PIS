@@ -201,6 +201,10 @@ fetchCustomerNames() {
   reservation.Start = new Date(reservation.Start).toISOString().split('T')[0];
   reservation.End = new Date(reservation.End).toISOString().split('T')[0];
   
+  //format the parking and business guest to integer
+  reservation.Parking = reservation.Parking ? 1 : 0;
+  reservation.BusinessGuest = reservation.BusinessGuest ? 1 : 0;
+
   // Send the data to the server
   fetch('/Home/UpdateReservation', {
     method: 'POST',
@@ -220,31 +224,6 @@ fetchCustomerNames() {
     console.error('Error updating reservation:', error);
   });
 },
-
-    updateReservationServicees(reservation) {
-      // Implementation of reservation update
-      console.log('Updating reservation services:', reservation);
-      reservation.editable = false; // Close the editing mode
-
-      // Send the data to the server
-      fetch('/Home/UpdateReservationServices', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(reservation),
-      })
-      .then(response => {
-        if (response.ok) {
-          console.log('Reservation Services updated successfully');
-        } else {
-          throw new Error('Failed to update reservation services');
-        }
-      })
-      .catch(error => {
-        console.error('Error updating reservation:', error);
-      });
-    },
 
     deleteReservation(reservation) {
       console.log('Deleting reservation:', reservation);

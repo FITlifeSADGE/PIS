@@ -192,10 +192,7 @@ export default {
       this.addingNew = true;
     },
     addNewService() {
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/main
       if (this.newService.Name && this.newService.Cost && this.newService.Availability) 
       {
 

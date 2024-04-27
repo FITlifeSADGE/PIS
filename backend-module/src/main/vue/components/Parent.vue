@@ -63,7 +63,6 @@ export default {
       this.$router.push('/Home/Services');
     },
     createReservation() {
-<<<<<<< HEAD
       this.$router.push('/Home/CreateReservation');
     },
     viewReservations() {
@@ -71,15 +70,6 @@ export default {
     },
     viewCustomers() {
       this.$router.push('/Home/Customers');
-=======
-      console.log('Create Reservation');
-    },
-    viewReservations() {
-      console.log('View Reservations');
-    },
-    viewCustomers() {
-      console.log('View Customers');
->>>>>>> origin/main
     }
   },
 };

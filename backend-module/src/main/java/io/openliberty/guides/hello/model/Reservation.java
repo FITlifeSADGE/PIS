@@ -1,9 +1,20 @@
 package io.openliberty.guides.hello.model;
 
 import jakarta.persistence.*;
+
+import java.sql.Time;
 import java.util.Date;
+import java.util.List;
 
 @Entity
+@NamedQuery(name = "Reservation.findById", query = "SELECT r FROM Reservation r WHERE r.reservationId = :id")
+@NamedQuery(name = "Reservation.allRows", query = "SELECT r FROM Reservation r")
+@NamedQuery(name = "Reservation.findMaxId", query = "SELECT MAX(r.reservationId) FROM Reservation r")
+@NamedQuery(name = "Reservation.findByState", query = "SELECT r FROM Reservation r WHERE r.state = :state")
+@NamedQuery(name = "Reservation.findByDate", query = "SELECT r FROM Reservation r WHERE r.start = :date")
+@NamedQuery(name = "Reservation.findByBusinessGuest", query = "SELECT r FROM Reservation r WHERE r.businessGuest = :businessGuest")
+@NamedQuery(name = "Reservation.findByParking", query = "SELECT r FROM Reservation r WHERE r.parking = :parking")
+@NamedQuery(name = "Reservation.findByCost", query = "SELECT r FROM Reservation r WHERE r.cost = :cost")
 @Table(name = "Reservation")
 public class Reservation {
 
@@ -11,9 +22,11 @@ public class Reservation {
     @Column(name = "ReservationID")
     private int reservationId;
 
+    @Temporal(TemporalType.DATE)
     @Column(name = "Start")
     private Date start;
 
+    @Temporal(TemporalType.DATE)
     @Column(name = "End")
     private Date end;
 
@@ -24,10 +37,10 @@ public class Reservation {
     private float cost;
 
     @Column(name = "CommingTime")
-    private Date commingTime;
+    private Time commingTime;
 
     @Column(name = "LeavingTime")
-    private Date leavingTime;
+    private Time leavingTime;
 
     @Column(name = "BusinessGuest")
     private boolean businessGuest;
@@ -76,19 +89,18 @@ public class Reservation {
         this.cost = cost;
     }
 
-    public Date getCommingTime() {
+    public Time getCommingTime() {
         return commingTime;
     }
-
-    public void setCommingTime(Date commingTime) {
+    public void setCommingTime(Time commingTime) {
         this.commingTime = commingTime;
     }
 
-    public Date getLeavingTime() {
+    public Time getLeavingTime() {
         return leavingTime;
     }
 
-    public void setLeavingTime(Date leavingTime) {
+    public void setLeavingTime(Time leavingTime) {
         this.leavingTime = leavingTime;
     }
 
@@ -107,6 +119,23 @@ public class Reservation {
     public void setParking(boolean parking) {
         this.parking = parking;
     }
+
+    public void updateReservation(Date start, Date end, float cost, String state, boolean businessGuest, boolean parking) {
+        this.start = start;
+        this.end = end;
+        this.cost = cost;
+        this.state = state;
+        this.businessGuest = businessGuest;
+        this.parking = parking;
+    }
+
+    public void removeServices(EntityManager em) {
+        em.createQuery("DELETE FROM ReservationService rs WHERE rs.id.reservationId = :reservationId")
+          .setParameter("reservationId", this.reservationId)
+          .executeUpdate();
+    }
+    
+
 
     @Override
     public String toString() {
