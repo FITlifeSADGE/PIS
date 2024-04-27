@@ -9,6 +9,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+<<<<<<< HEAD
+=======
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.TypedQuery;
+>>>>>>> origin/main
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -18,6 +25,12 @@ import jakarta.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+<<<<<<< HEAD
+=======
+import io.openliberty.guides.hello.model.Service;
+
+import java.sql.SQLException;
+>>>>>>> origin/main
 
 @WebServlet("/Services/GetServices")
 public class ServicesServlet extends HttpServlet {
@@ -37,6 +50,7 @@ public class ServicesServlet extends HttpServlet {
         }
 
         System.out.println("Get for Service Data");
+<<<<<<< HEAD
         try {
             // Získanie údajov zo servera (napr. z databázy)
             ResultSet resultSet = DatabaseUtil.Selecet("Service");
@@ -72,3 +86,35 @@ public class ServicesServlet extends HttpServlet {
         }
     }
 }
+=======
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-hibernate-mysql");
+        EntityManager em = emf.createEntityManager();
+        
+        TypedQuery<Service> query = em.createNamedQuery("Service.allRows", Service.class);
+        List<Service> services = query.getResultList();
+        
+        // Transform data 
+        List<Map<String, Object>> rows = new ArrayList<>();
+        for (Service service : services) {
+            Map<String, Object> rowData = new HashMap<>();
+            rowData.put("ServiceID", service.getServiceId());
+            rowData.put("Name", service.getName());
+            rowData.put("Cost", service.getCost());
+            rowData.put("Availability", service.getAvailability());
+            rowData.put("Description", service.getDescription());
+
+            rows.add(rowData);
+        }
+        
+        // Conversion data to json
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonString = mapper.writeValueAsString(rows);
+
+        // Set type and send data to page
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.getWriter().write(jsonString);
+
+    }
+}
+>>>>>>> origin/main

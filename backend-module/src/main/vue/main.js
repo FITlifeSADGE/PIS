@@ -72,6 +72,9 @@ const router = new VueRouter({
     },
     {
       path: '/Home/Reservations',
+    },
+    {
+      path: '/Home/Services',
       component: Parent,
       children: [
         {

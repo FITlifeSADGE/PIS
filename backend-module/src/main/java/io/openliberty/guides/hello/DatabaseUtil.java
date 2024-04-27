@@ -112,6 +112,10 @@ public class DatabaseUtil {
                 else
                     sqlQuery.append(columnName).append("=").append(jsonValue).append(",");
             }
+            if (!jsonValue.matches("-?\\d+(\\.\\d+)?"))  // Ak sa nejedna o cislo
+                sqlQuery.append(columnName).append("=").append("\"" + jsonValue + "\"").append(",");
+            else
+                sqlQuery.append(columnName).append("=").append(jsonValue).append(",");
         }
         sqlQuery.deleteCharAt(sqlQuery.length() - 1); //odstranenie podslednej ciarky
         sqlQuery.append(" WHERE "+ ID + " = ").append(root.path(ID).asText()).append(";");
@@ -153,59 +157,8 @@ public class DatabaseUtil {
                 throw e;
             }
         }
-    }
-    
-    public static int AddPerson(String lastName, String firstName, String email,
-    String phonePreselection, String phoneNumber,
-    String documentNumber, String dateOfBirth) throws SQLException {
-try (Connection connection = getConnection()) {
-String sqlQuery = "INSERT INTO Person (LastName, FirstName, Email, " +
-  "PhonePreselection, PhoneNumber, DocumentNumber, dateOfBirth) " +
-  "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS);
-preparedStatement.setString(1, lastName);
-preparedStatement.setString(2, firstName);
-preparedStatement.setString(3, email);
-preparedStatement.setString(4, phonePreselection);
-preparedStatement.setString(5, phoneNumber);
-preparedStatement.setString(6, documentNumber);
-preparedStatement.setString(7, dateOfBirth);
-
-preparedStatement.executeUpdate();
-
-// Retrieve the auto-generated PersonID
-ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-if (generatedKeys.next()) {
-return generatedKeys.getInt(1);
-} else {
-throw new SQLException("Failed to retrieve generated PersonID");
-}
-}
-}
-
-public static void AddCustomer(int personId, String allergy, boolean handicap,
-       String address, boolean subscription) throws SQLException {
-try (Connection connection = getConnection()) {
-String sqlQuery = "INSERT INTO Customer (CustomerID, Allergy, Handicap, Address, Subscription) " +
-  "VALUES (?, ?, ?, ?, ?)";
-
-PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
-preparedStatement.setInt(1, personId);
-preparedStatement.setString(2, allergy);
-preparedStatement.setBoolean(3, handicap);
-preparedStatement.setString(4, address);
-preparedStatement.setBoolean(5, subscription);
-
-preparedStatement.executeUpdate();
-}
-}
-    
-    
-    
-    
-    
-    
+            }
 
     public static void Add(JsonNode root, String Enitity, String ID) throws SQLException, IOException 
     {
@@ -255,8 +208,11 @@ preparedStatement.executeUpdate();
 
             connection.close();
         }
- 
-   }
+    }
+    
+   
+
+
 
    // Method to delete associated services
     public static void Delete2(JsonNode root, String Entity, String ReservationID) throws SQLException, IOException {
@@ -281,3 +237,4 @@ preparedStatement.executeUpdate();
      }
     }
 }
+

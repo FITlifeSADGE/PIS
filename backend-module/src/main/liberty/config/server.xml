@@ -33,5 +33,9 @@
     <applicationLocation id="ServicesPage" location="ServicesPage.war" contextRoot="${app.context.root}/Services" />
     <applicationLocation id="ReservationsPage" location="ReservationsPage.war" contextRoot="${app.context.root}/Reservations" />
     <applicationLocation id="ReservationForm"  location="ReservationForm.war" contextRoot="${app.context.root}/CreateReservation" />
+    <applicationLocation id="Login" location="Login.war" contextRoot="${app.context.root}/login" />
+    <applicationLocation id="LoginSuccess" location="LoginSuccess.war" contextRoot="${app.context.root}/success" />
+    <applicationLocation id="RoomsPage" location="RoomsPage.war" contextRoot="${app.context.root}/Rooms" />
+    <applicationLocation id="ServicesPage" location="ServicesPage.war" contextRoot="${app.context.root}/Services" />
 </server>
 
