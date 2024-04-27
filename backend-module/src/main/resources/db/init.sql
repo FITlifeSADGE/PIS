@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS Employee (
     EmployeeID int not null primary key,
     Assignment varchar(255),
     Password varchar(255),
-    WorkShift date,
+    WorkShift date, -- Changed back to date
     FOREIGN KEY (EmployeeID) REFERENCES Person(PersonID)
 );
 
@@ -26,17 +26,7 @@ CREATE TABLE IF NOT EXISTS Customer (
     FOREIGN KEY (CustomerID) REFERENCES Person(PersonID)
 );
 
-CREATE TABLE IF NOT EXISTS Reservation(
-    ReservationID int not null primary key,
-    Start DATE,
-    End DATE,
-    State varchar(255),
-    Cost FLOAT,
-    CommingTime DATE,
-    LeavingTime DATE,
-    BusinessGuest BOOLEAN,
-    Parking BOOLEAN
-);
+
 
 CREATE TABLE IF NOT EXISTS Room(
     RoomID int not null primary key,
@@ -52,5 +42,31 @@ CREATE TABLE IF NOT EXISTS Service(
     Name varchar(255),
     Cost FLOAT,
     Availability varchar(255),
-    Description varchar(255)
+    Description varchar(255),
+    State varchar(255)
+);
+
+
+CREATE TABLE IF NOT EXISTS Reservation(
+    ReservationID int not null primary key,
+    CustomerID int,
+    RoomID int,
+    Start DATE,
+    End DATE,
+    State varchar(255),
+    Cost FLOAT,
+    CommingTime TIME,
+    LeavingTime TIME,
+    BusinessGuest BOOLEAN,
+    Parking BOOLEAN,
+    FOREIGN KEY (CustomerID) REFERENCES Customer(CustomerID),
+    FOREIGN KEY (RoomID) REFERENCES Room(RoomID)
+);
+
+CREATE TABLE IF NOT EXISTS ReservationService(
+    ReservationID int,
+    ServiceID int,
+    FOREIGN KEY (ReservationID) REFERENCES Reservation(ReservationID),
+    FOREIGN KEY (ServiceID) REFERENCES Service(ServiceID),
+    PRIMARY KEY (ReservationID, ServiceID)
 );

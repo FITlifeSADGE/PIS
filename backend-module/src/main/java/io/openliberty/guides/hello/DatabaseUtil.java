@@ -8,6 +8,9 @@ import java.sql.Statement;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
+import java.util.Set;
+import java.util.HashSet;
+
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -121,6 +124,88 @@ public class DatabaseUtil {
         connection.close();
         }
     }
+    public static void Update2(JsonNode root, String Entity, String ReservationID, int[] ServiceIDs) throws SQLException, IOException {
+        try (Connection connection = getConnection()) {
+            // Begin a transaction
+            connection.setAutoCommit(false);
+    
+            try {
+                // Delete existing records for the given ReservationID
+                String deleteQuery = "DELETE FROM " + Entity + " WHERE " + ReservationID + " = ?";
+                PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery);
+                deleteStatement.setInt(1, root.get(ReservationID).asInt());
+                deleteStatement.executeUpdate();
+    
+                // Insert new records for each ServiceID in the list
+                String insertQuery = "INSERT INTO " + Entity + " (" + ReservationID + ", " + "ServiceID" + ") VALUES (?, ?)";
+                PreparedStatement insertStatement = connection.prepareStatement(insertQuery);
+                for (int serviceID : ServiceIDs) {
+                    insertStatement.setInt(1, root.get(ReservationID).asInt());
+                    insertStatement.setInt(2, serviceID);
+                    insertStatement.executeUpdate();
+                }
+    
+                // Commit the transaction
+                connection.commit();
+            } catch (SQLException e) {
+                // Rollback the transaction if there's an error
+                connection.rollback();
+                throw e;
+            }
+        }
+    }
+    
+    public static int AddPerson(String lastName, String firstName, String email,
+    String phonePreselection, String phoneNumber,
+    String documentNumber, String dateOfBirth) throws SQLException {
+try (Connection connection = getConnection()) {
+String sqlQuery = "INSERT INTO Person (LastName, FirstName, Email, " +
+  "PhonePreselection, PhoneNumber, DocumentNumber, dateOfBirth) " +
+  "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery, Statement.RETURN_GENERATED_KEYS);
+preparedStatement.setString(1, lastName);
+preparedStatement.setString(2, firstName);
+preparedStatement.setString(3, email);
+preparedStatement.setString(4, phonePreselection);
+preparedStatement.setString(5, phoneNumber);
+preparedStatement.setString(6, documentNumber);
+preparedStatement.setString(7, dateOfBirth);
+
+preparedStatement.executeUpdate();
+
+// Retrieve the auto-generated PersonID
+ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+if (generatedKeys.next()) {
+return generatedKeys.getInt(1);
+} else {
+throw new SQLException("Failed to retrieve generated PersonID");
+}
+}
+}
+
+public static void AddCustomer(int personId, String allergy, boolean handicap,
+       String address, boolean subscription) throws SQLException {
+try (Connection connection = getConnection()) {
+String sqlQuery = "INSERT INTO Customer (CustomerID, Allergy, Handicap, Address, Subscription) " +
+  "VALUES (?, ?, ?, ?, ?)";
+
+PreparedStatement preparedStatement = connection.prepareStatement(sqlQuery);
+preparedStatement.setInt(1, personId);
+preparedStatement.setString(2, allergy);
+preparedStatement.setBoolean(3, handicap);
+preparedStatement.setString(4, address);
+preparedStatement.setBoolean(5, subscription);
+
+preparedStatement.executeUpdate();
+}
+}
+    
+    
+    
+    
+    
+    
 
     public static void Add(JsonNode root, String Enitity, String ID) throws SQLException, IOException 
     {
@@ -170,5 +255,29 @@ public class DatabaseUtil {
 
             connection.close();
         }
+ 
+   }
+
+   // Method to delete associated services
+    public static void Delete2(JsonNode root, String Entity, String ReservationID) throws SQLException, IOException {
+     try (Connection connection = getConnection()) {
+          // Begin a transaction
+          connection.setAutoCommit(false);
+    
+          try {
+                // Delete existing records for the given ReservationID
+                String deleteQuery = "DELETE FROM " + Entity + " WHERE " + ReservationID + " = ?";
+                PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery);
+                deleteStatement.setInt(1, root.get(ReservationID).asInt());
+                deleteStatement.executeUpdate();
+    
+                // Commit the transaction
+                connection.commit();
+          } catch (SQLException e) {
+                // Rollback the transaction if there's an error
+                connection.rollback();
+                throw e;
+          }
+     }
     }
 }
