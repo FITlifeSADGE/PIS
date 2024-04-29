@@ -93,7 +93,13 @@ const router = new VueRouter({
 
     {
       path: '/Home/CreateReservation',
-      component: ReservationForm
+      component: Parent,
+      children: [
+        {
+          path: '',
+          component: ReservationForm
+        }
+      ]
     }
   ]
 });

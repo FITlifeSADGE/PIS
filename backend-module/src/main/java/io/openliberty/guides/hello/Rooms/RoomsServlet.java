@@ -1,4 +1,4 @@
-package io.openliberty.guides.hello;
+package io.openliberty.guides.hello.Rooms;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -17,6 +17,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.openliberty.guides.hello.DatabaseUtil;
 
 
 @WebServlet("/Rooms/GetRooms")
