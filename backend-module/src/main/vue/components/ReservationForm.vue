@@ -209,7 +209,7 @@ export default {
     async submitForm() {
       this.reservation.Cost = this.totalCost;
       try {
-        const response = await fetch('/Home/AddReservation', {
+        const response = await fetch('/Home/Reservations/AddReservation', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json'
@@ -259,7 +259,7 @@ export default {
   reservation.BusinessGuest = reservation.BusinessGuest ? 1 : 0;
 
   // Send the data to the server
-  fetch('/Home/UpdateReservation', {
+  fetch('/Home/Reservations/UpdateReservation', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -279,7 +279,7 @@ export default {
 },
 
     fetchCustomers() {
-  fetch('Customers/GetCustomers') // Replace with the appropriate endpoint URL of your servlet
+  fetch('/Home/Customer/GetCustomers') // Replace with the appropriate endpoint URL of your servlet
     .then(response => response.json())
     .then(data => {
       // Set the retrieved customer data to the "customers" variable
@@ -318,7 +318,7 @@ addNewCustomer() {
 
     createCustomer() {
       // Send a POST request to the servlet to create a new customer
-      fetch('/Home/AddCustomer', {
+      fetch('/Home/Customer/AddCustomer', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -345,7 +345,7 @@ addNewCustomer() {
 
     addReservationServices(){
       // Send a POST request to the servlet to add a new service to the reservation
-      fetch('/Home/AddReservationServices', {
+      fetch('/Home/Reservations/AddReservationServices', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

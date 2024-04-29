@@ -1,4 +1,4 @@
-package io.openliberty.guides.hello;
+package io.openliberty.guides.hello.Services;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,7 +19,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.openliberty.guides.hello.model.Service;
 
-@WebServlet("/DeleteService")
+@WebServlet("/Services/DeleteService")
 public class DeleteServiceServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 

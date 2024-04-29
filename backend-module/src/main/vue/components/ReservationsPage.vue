@@ -206,7 +206,7 @@ fetchCustomerNames() {
   reservation.BusinessGuest = reservation.BusinessGuest ? 1 : 0;
 
   // Send the data to the server
-  fetch('/Home/UpdateReservation', {
+  fetch('/Home/Reservations/UpdateReservation', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -233,7 +233,7 @@ fetchCustomerNames() {
       if (index !== -1) {
         this.reservations.splice(index, 1);
       }
-      fetch('/Home/DeleteReservation', {
+      fetch('/Home/Reservations/DeleteReservation', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

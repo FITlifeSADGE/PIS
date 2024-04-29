@@ -37,7 +37,7 @@ export default {
   },
   methods: {
     fetchCustomers() {
-      fetch('/Home/Customers/GetCustomers') // Call your servlet to retrieve data from the database
+      fetch('/Home/Customer/GetCustomers') // Call your servlet to retrieve data from the database
         .then(response => response.json())
         .then(data => {
           this.customers = data; // Set the fetched data to the customers variable
@@ -47,7 +47,6 @@ export default {
         });
     },
     getDetail(personID) {
-      // Redirect to the /Home/customers/detail page with the ID parameter
       this.$router.push(`/Home/Customers/detail/${personID}`);
     },
     logout() {

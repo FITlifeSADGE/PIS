@@ -1,4 +1,4 @@
-package io.openliberty.guides.hello;
+package io.openliberty.guides.hello.Reservations;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,7 +6,6 @@ import java.sql.Date;
 import java.sql.Time;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.text.ParseException;
 
 import jakarta.persistence.EntityManager;
@@ -27,7 +26,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.openliberty.guides.hello.model.Reservation;
 
-@WebServlet("/AddReservation")
+@WebServlet("/Reservations/AddReservation")
 public class AddReservationServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 

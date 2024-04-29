@@ -1,4 +1,4 @@
-package io.openliberty.guides.hello;
+package io.openliberty.guides.hello.Customer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,6 +14,8 @@ import java.sql.SQLException;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.openliberty.guides.hello.DatabaseUtil;
 
 @WebServlet("/Customer/UpdateService")
 public class CustomerDetailUpdateServicesServlet extends HttpServlet {

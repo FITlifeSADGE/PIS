@@ -69,9 +69,9 @@ VALUES
 -- Inserting sample data into the Reservation table
 INSERT IGNORE INTO Reservation (ReservationID, CustomerID, RoomID, Start, End, State, Cost, CommingTime, LeavingTime, BusinessGuest, Parking)
 VALUES
-(1, 3, 420, '08:00:00', '12:00:00', 'Confirmed', 500.00, '08:00:00', '12:00:00', 0, 0),
-(2, 3, 421, '10:00:00', '14:00:00', 'Pending', 800.00, '10:00:00', '14:00:00', 1, 1),
-(3, 3, 422, '09:00:00', '13:00:00', 'Confirmed', 700.00, '09:00:00', '13:00:00', 0, 1);
+(1, 3, 420, '2024-04-10', '2024-04-12', 'Confirmed', 500.00, '08:00:00', '12:00:00', 0, 0),
+(2, 3, 421, '2024-04-10', '2024-04-12', 'Pending', 800.00, '10:00:00', '14:00:00', 1, 1),
+(3, 3, 422, '2024-04-10', '2024-04-12', 'Confirmed', 700.00, '09:00:00', '13:00:00', 0, 1);
 
 
 

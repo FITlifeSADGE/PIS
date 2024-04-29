@@ -142,7 +142,7 @@ export default {
       room.editable = false; // Zatvorenie editovacieho režimu
 
       // Odoslanie údajov na server
-      fetch('/Home/UpdateRoom', {
+      fetch('/Home/Rooms/UpdateRoom', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -170,7 +170,7 @@ export default {
       {
         this.rooms.splice(index, 1);
       }
-      fetch('/Home/DeleteRoom', {
+      fetch('/Home/Rooms/DeleteRoom', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -204,7 +204,7 @@ export default {
         this.newRoom.RoomID = maxRoomID + 1;
 
         this.rooms.push({ ...this.newRoom, editable: false });
-        fetch('/Home/AddRoom', {
+        fetch('/Home/Rooms/AddRoom', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -1,4 +1,4 @@
-package io.openliberty.guides.hello;
+package io.openliberty.guides.hello.Customer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,7 +22,9 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@WebServlet("/Customers/GetCustomer")
+import io.openliberty.guides.hello.DatabaseUtil;
+
+@WebServlet("/Customer/GetCustomer")
 public class CustomerDetailServlet extends HttpServlet{
     private static final long serialVersionUID = 1L;
 

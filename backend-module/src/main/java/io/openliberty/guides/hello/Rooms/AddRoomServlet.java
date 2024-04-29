@@ -1,4 +1,4 @@
-package io.openliberty.guides.hello;
+package io.openliberty.guides.hello.Rooms;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,37 +14,39 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.openliberty.guides.hello.model.Room;
 
-@WebServlet("/UpdateRoom")
-public class UpdateRoomServlet extends HttpServlet {
+@WebServlet("/Rooms/AddRoom")
+public class AddRoomServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        //read request
+
         BufferedReader reader = request.getReader();
         String line = reader.readLine();
         reader.close();
-
-        //create tree 
+        
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(line);
+
 
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-hibernate-mysql");
         EntityManager em = emf.createEntityManager();
         try {
+            //create and update new room 
+            Room room = new Room();
 
-            // find room by id
-            TypedQuery<Room> query = em.createNamedQuery("Room.findById", Room.class);
-            query.setParameter("id", root.path("RoomID").asInt()); 
-            Room room = query.getSingleResult();
-        
-            //udate room parameters
+            //get the biggest Roomid
+            TypedQuery<Integer> query = em.createNamedQuery("Room.findMaxId", Integer.class);
+            int newid = query.getSingleResult();
+
+            room.setRoomId(newid+1);
             room.updateRoom(
                 root.path("TypeRoom").asText(), 
                 root.path("Cost").floatValue(),  
@@ -53,20 +55,31 @@ public class UpdateRoomServlet extends HttpServlet {
                 root.path("Beds").asInt()
                 );
 
-            //send room to db 
-            em.getTransaction().begin();
-            em.merge(room);
-            em.getTransaction().commit();
+            em.getTransaction().begin();    //start transakcion
+            em.persist(room);               //send data to db
+            em.getTransaction().commit();   //end transakcion
         
-            System.out.println("Updated room: " + room);
+            System.out.println("Room was created");
             
         } catch (NoResultException e) {             
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            response.getWriter().write("Room not found");
+            response.getWriter().write("Room was not created");
         } finally {
             em.close();
             emf.close();
         }
 
+
+
+
+
+        
+        // try 
+        // {
+        //     DatabaseUtil.Add(root, "Room", "RoomID");
+        // } 
+        // catch (SQLException e) {
+        //     e.printStackTrace();
+        // }
     }
 }

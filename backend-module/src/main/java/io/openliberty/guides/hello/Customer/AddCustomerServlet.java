@@ -1,4 +1,4 @@
-package io.openliberty.guides.hello;
+package io.openliberty.guides.hello.Customer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -8,12 +8,10 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.client.Entity;
 
 import java.sql.Date;
 import java.util.logging.Logger;
 
-import java.sql.SQLException;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -26,7 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.openliberty.guides.hello.model.Customer;
 import io.openliberty.guides.hello.model.Person;
 
-@WebServlet("/AddCustomer")
+@WebServlet("/Customer/AddCustomer")
 public class AddCustomerServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = Logger.getLogger(AddCustomerServlet.class.getName());

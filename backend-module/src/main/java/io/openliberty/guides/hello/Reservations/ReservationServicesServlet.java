@@ -1,11 +1,8 @@
-package io.openliberty.guides.hello;
+package io.openliberty.guides.hello.Reservations;
 
 
 
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,7 +18,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import jakarta.ws.rs.client.Entity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 

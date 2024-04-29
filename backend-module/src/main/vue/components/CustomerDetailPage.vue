@@ -115,7 +115,7 @@
     <!-- SERVICES -->
     <!-- RESERVATION -->
 
-    <table>
+    <table v-if="editTable">
       <thead>
         <tr>
           <th>Reservation ID</th>
@@ -138,64 +138,75 @@
         <tr v-for="reservation in reservations" :key="reservation.ReservationID">
           <!-- Display reservation details -->
           <td>{{ reservation.ReservationID }}</td>
-          <td>
-            <span v-if="!reservation.editable">{{ reservation.CustomerID }}</span>
-            <input v-if="reservation.editable" type="text" v-model="reservation.CustomerID">
+          <td v-if="!reservation.editable">
+            <span>{{ reservation.CustomerID }}</span>
           </td>
-          <td>
-            <span v-if="!reservation.editable">{{ reservation.RoomID }}</span>
-            <input v-if="reservation.editable" type="text" v-model="reservation.RoomID">
+          <td v-else>
+            <input type="text" v-model="reservation.CustomerID">
           </td>
-          <td>
-  <span v-if="!reservation.editable">
-    {{ reservation.ServiceIDs ? reservation.ServiceIDs.map(id => services_available.find(service => service.ID === id).Name).join(', ') : '' }}
-  </span>
-  <select v-if="reservation.editable" v-model="reservation.ServiceIDs" multiple>
-    <option v-for="service in services_available" :key="service.ID" :value="service.ID">{{ service.Name }}</option>
-  </select>
-</td>
 
+          <td v-if="!reservation.editable">
+            <span>{{ reservation.RoomID }}</span>
+          </td>
+          <td v-else>
+            <input ype="text" v-model="reservation.RoomID">
+          </td>
 
+          <td v-if="!reservation.editable">
+            <span>
+              {{ reservation.ServiceIDs ? reservation.ServiceIDs.map(id => services_available.find(service => service.ID === id).Name).join(', ') : '' }}
+            </span>
+          </td>
+          <td v-else>
+            <select v-model="reservation.ServiceIDs" multiple>
+              <option v-for="service in services_available" :key="service.ID" :value="service.ID">{{ service.Name }}</option>
+            </select>
+          </td>
 
+          <td v-if="!reservation.editable">
+            <span>{{ new Date(reservation.Start).toISOString().split('T')[0] }}</span>
+          </td>
+          <td v-else>
+            <input type="date" v-model="reservation.Start">
+          </td>
 
-          <td>
-  <span v-if="!reservation.editable">{{ new Date(reservation.Start).toISOString().split('T')[0] }}</span>
-  <input v-if="reservation.editable" type="date" v-model="reservation.Start">
-</td>
-<td>
-  <span v-if="!reservation.editable">{{ new Date(reservation.End).toISOString().split('T')[0] }}</span>
-  <input v-if="reservation.editable" type="date" v-model="reservation.End">
-</td>
+          <td v-if="!reservation.editable">
+            <span>{{ new Date(reservation.End).toISOString().split('T')[0] }}</span>
+          </td>
+          <td v-else>
+            <input type="date" v-model="reservation.End">
+          </td>
+          
           <td>
             <span v-if="!reservation.editable">{{ reservation.State }}</span>
-            <select v-if="reservation.editable" v-model="reservation.State" :style="{ width: '130px' }">
+            <select v-else v-model="reservation.State" :style="{ width: '130px' }">
               <option value="Confirmed">Confirmed</option>
               <option value="Pending">Pending</option>
             </select>
           </td>
           <td>
             <span v-if="!reservation.editable">{{ reservation.Cost }}</span>
-            <input v-if="reservation.editable" type="number" min="0" v-model="reservation.Cost">
+            <input v-else type="number" min="0" v-model="reservation.Cost">
           </td>
           <td>
             <span v-if="!reservation.editable">{{ reservation.CommingTime }}</span>
-            <input v-if="reservation.editable" type="time" v-model="reservation.CommingTime">
+            <input v-else type="time" v-model="reservation.CommingTime">
           </td>
           <td>
             <span v-if="!reservation.editable">{{ reservation.LeavingTime }}</span>
-            <input v-if="reservation.editable" type="time" v-model="reservation.LeavingTime">
+            <input v-else type="time" v-model="reservation.LeavingTime">
           </td>
           <td>
             <span v-if="!reservation.editable">{{ reservation.BusinessGuest ? 'Yes' : 'No' }}</span>
-            <input v-if="reservation.editable" type="checkbox" v-model="reservation.BusinessGuest">
+            <input v-else type="checkbox" v-model="reservation.BusinessGuest">
           </td>
           <td>
             <span v-if="!reservation.editable">{{ reservation.Parking ? 'Yes' : 'No' }}</span>
-            <input v-if="reservation.editable" type="checkbox" v-model="reservation.Parking">
+            <input v-else type="checkbox" v-model="reservation.Parking">
           </td>
           <td>
             <button v-if="!reservation.editable" class="edit-button" @click="toggleEdit(reservation)">Edit</button>
-            <button v-if="reservation.editable" class="ok-button" @click="updateReservation(reservation)">OK</button>
+            <button v-else class="ok-button" @click="updateReservation(reservation)">OK</button>
             <button v-if="reservation.editable" class="delete-button" @click="deleteReservation(reservation)">Delete</button>
           </td>
         </tr>
@@ -469,7 +480,7 @@ methods: {
     }
 
     console.log('Updating customer:', customer);
-    fetch('/Home/UpdateCustomer', {
+    fetch('/Home/Customer/UpdateCustomer', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -492,7 +503,7 @@ methods: {
   // ---------------------------------------- FETCH --------------------------------------------------------
 
   fetchServices() {
-    fetch('/Home/Customers/GetServices') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
+    fetch('/Home/Customer/GetServices') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
       .then(response => response.json())
       .then(data => {
         // Nastavenie údajov do premennej services a pridanie atribútu editable pre úpravu
@@ -503,28 +514,28 @@ methods: {
       });
   },
   fetchReservations() {
-    fetch('/Home/Customers/GetReservations') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
+    fetch('/Home/Customer/GetReservations') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
       .then(response => response.json())
       .then(data => {
         // Nastavenie údajov do premennej services a pridanie atribútu editableR pre úpravu
-        this.reservations = data.map(reservation => ({ ...reservation, editableR: false }));
+        this.reservations = data.map(reservation => ({ ...reservation, editable: false }));
       })
       .catch(error => {
         console.error('Error fetching reservations:', error);
       });
   },
-  fetchReservationsAndServices() {
-      fetch('/Home/Reservations/GetReservations')
-        .then(response => response.json())
-        .then(data => {
-          this.reservations = data.map(reservation => ({ ...reservation, editable: false }));
-          // After fetching reservations data, call the method to fetch reservation services
-          this.fetchReservationServices(); 
-        })
-        .catch(error => {
-          console.error('Error fetching reservations:', error);
-        });
-    },
+  // fetchReservationsAndServices() {
+  //     fetch('/Home/Reservations/GetReservations')
+  //       .then(response => response.json())
+  //       .then(data => {
+  //         this.reservations = data.map(reservation => ({ ...reservation, editable: false }));
+  //         // After fetching reservations data, call the method to fetch reservation services
+  //         this.fetchReservationServices(); 
+  //       })
+  //       .catch(error => {
+  //         console.error('Error fetching reservations:', error);
+  //       });
+  //   },
     fetchReservationServices() {
   fetch('/Home/Reservations/GetReservationServices')
     .then(response => response.json())
@@ -566,7 +577,7 @@ methods: {
 
 
   fetchCustomers(personID) {
-    fetch('/Home/Customers/GetCustomer', {
+    fetch('/Home/Customer/GetCustomer', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -701,7 +712,7 @@ methods: {
 
       this.services.push({ ...this.newService, editable: false });
 
-      fetch('/Home/AddService', {
+      fetch('/Home/Services/AddService', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -744,7 +755,9 @@ methods: {
     this.addingNew = false;
   },
   toggleEdit(service) {
+    console.log('Toggling edit mode for service: ', service);
     service.editable = !service.editable; // Prepnutie hodnoty editable
+    console.log('Service in edit mode: ', service.editable);
   },
   updateService(service) {
     // Implementácia aktualizácie služby
@@ -813,9 +826,9 @@ methods: {
     let maxReservationID = Math.max(...this.reservations.map(reservation => reservation.ReservationID));
     this.newReservation.ReservationID = maxReservationID + 1;
 
-    this.reservations.push({ ...this.newReservation, editableR: false });
+    this.reservations.push({ ...this.newReservation, editable: false });
 
-    fetch('/Home/AddReservation', {
+    fetch('/Home/Reservations/AddReservation', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -858,12 +871,12 @@ methods: {
   this.addingNewReservation = false;
   },
   toggleEditReservation(reservation) {
-    reservation.editableR = !reservation.editablR; // Prepnutie hodnoty editableR
+    reservation.editable = !reservation.editabl; // Prepnutie hodnoty editableR
   },
   updateReservation(reservation) {
     // Implementácia aktualizácie služby
     console.log('Updating reservation:', reservation);
-    reservation.editableR = false; // Zatvorenie editovacieho režimu
+    reservation.editable = false; // Zatvorenie editovacieho režimu
 
     // Odoslanie údajov na server
     fetch('/Home/Customer/UpdateReservation', {
@@ -887,7 +900,7 @@ methods: {
 
   deleteReservation(reservation) {
     console.log('Deleting reservation:', reservation);
-    reservation.editableR = false; // Zatvorenie editovacieho režimu
+    reservation.editable = false; // Zatvorenie editovacieho režimu
 
     const index = this.reservations.indexOf(reservation);
     if (index !== -1) 

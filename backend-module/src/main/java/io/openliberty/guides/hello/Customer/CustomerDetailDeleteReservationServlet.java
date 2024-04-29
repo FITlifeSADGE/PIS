@@ -1,4 +1,4 @@
-package io.openliberty.guides.hello;
+package io.openliberty.guides.hello.Customer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,8 +13,10 @@ import java.sql.SQLException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@WebServlet("/Customer/DeleteService")
-public class CustomerDetailDeleteServicesServlet extends HttpServlet {
+import io.openliberty.guides.hello.DatabaseUtil;
+
+@WebServlet("/Customer/DeleteReservation")
+public class CustomerDetailDeleteReservationServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -29,7 +31,7 @@ public class CustomerDetailDeleteServicesServlet extends HttpServlet {
 
         try 
         {
-            DatabaseUtil.Delete(root, "Service", "ServiceID");
+            DatabaseUtil.Delete(root, "Reservation", "ReservationID");
         } 
         catch (SQLException e) {
             e.printStackTrace();

@@ -1,4 +1,4 @@
-package io.openliberty.guides.hello;
+package io.openliberty.guides.hello.Reservations;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,9 +12,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.ws.rs.client.Entity;
-
-import java.sql.SQLException;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -23,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.openliberty.guides.hello.model.Reservation;
 import io.openliberty.guides.hello.model.ReservationService;
 
-@WebServlet("/DeleteReservation")
+@WebServlet("/Reservations/DeleteReservation")
 public class DeleteReservationServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
