@@ -1,4 +1,4 @@
-package io.openliberty.guides.hello;
+package io.openliberty.guides.hello.Rooms;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,10 +17,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.openliberty.guides.hello.model.Service;
+import io.openliberty.guides.hello.model.Room;
 
-@WebServlet("/AddService")
-public class AddServiceServlet extends HttpServlet {
+@WebServlet("/Rooms/DeleteRoom")
+public class DeleteRoomServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -37,32 +37,22 @@ public class AddServiceServlet extends HttpServlet {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-hibernate-mysql");
         EntityManager em = emf.createEntityManager();
         try {
-            //create and update new service 
-            Service service = new Service();
 
-            //get the biggest Serviceid
-            TypedQuery<Integer> query = em.createNamedQuery("Service.findMaxId", Integer.class);
-            int newid = query.getSingleResult();
-        
-            service.setServiceId(newid+1);
-            //udate service parameters
-            service.updateService(
-                root.path("Name").asText(), 
-                root.path("Cost").floatValue(),   
-                root.path("Availability").asText(),  
-                root.path("Description").asText()
-                );
+            // find room by id
+            TypedQuery<Room> query = em.createNamedQuery("Room.findById", Room.class);
+            query.setParameter("id", root.path("RoomID").asInt()); 
+            Room room = query.getSingleResult();
 
-            //send service to db 
+            //remove room from db 
             em.getTransaction().begin();
-            em.persist(service);
+            em.remove(room);
             em.getTransaction().commit();
         
-            System.out.println("Service was created");
+            System.out.println("Deleted room: " + room);
             
         } catch (NoResultException e) {             
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            response.getWriter().write("Service was not created");
+            response.getWriter().write("Room not found");
         } finally {
             em.close();
             emf.close();

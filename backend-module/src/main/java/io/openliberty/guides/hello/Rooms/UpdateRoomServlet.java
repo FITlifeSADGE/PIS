@@ -1,4 +1,4 @@
-package io.openliberty.guides.hello;
+package io.openliberty.guides.hello.Rooms;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,20 +19,21 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.openliberty.guides.hello.model.Room;
 
-@WebServlet("/DeleteRoom")
-public class DeleteRoomServlet extends HttpServlet {
+@WebServlet("/Rooms/UpdateRoom")
+public class UpdateRoomServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-
+        
+        //read request
         BufferedReader reader = request.getReader();
         String line = reader.readLine();
         reader.close();
-        
+
+        //create tree 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(line);
-
 
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-hibernate-mysql");
         EntityManager em = emf.createEntityManager();
@@ -42,13 +43,22 @@ public class DeleteRoomServlet extends HttpServlet {
             TypedQuery<Room> query = em.createNamedQuery("Room.findById", Room.class);
             query.setParameter("id", root.path("RoomID").asInt()); 
             Room room = query.getSingleResult();
+        
+            //udate room parameters
+            room.updateRoom(
+                root.path("TypeRoom").asText(), 
+                root.path("Cost").floatValue(),  
+                root.path("Equip").asText(),  
+                root.path("State").asText(),  
+                root.path("Beds").asInt()
+                );
 
-            //remove room from db 
+            //send room to db 
             em.getTransaction().begin();
-            em.remove(room);
+            em.merge(room);
             em.getTransaction().commit();
         
-            System.out.println("Deleted room: " + room);
+            System.out.println("Updated room: " + room);
             
         } catch (NoResultException e) {             
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -57,5 +67,6 @@ public class DeleteRoomServlet extends HttpServlet {
             em.close();
             emf.close();
         }
+
     }
 }

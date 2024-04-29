@@ -101,7 +101,7 @@ export default {
   computed: {
     filteredServices() {
       // Filter services based on filter criteria
-      return this.services.filter(service => {
+      return this.uniqueServices.filter(service => {
         return (
           service.Name.toLowerCase().includes(this.filters.Name.toLowerCase()) &&
           service.Cost.toString().includes(this.filters.Cost) &&
@@ -109,7 +109,18 @@ export default {
           service.Description.replace(/\s/g, '').toLowerCase().includes(this.filters.Description.replace(/\s/g, '').toLowerCase())
         );
       });
-    }
+    },
+    uniqueServices() {
+    const uniqueNames = [];
+    const uniqueServices = [];
+    this.services.forEach(service => {
+      if (!uniqueNames.includes(service.Name)) {
+        uniqueNames.push(service.Name);
+        uniqueServices.push(service);
+      }
+    });
+    return uniqueServices;
+  }
   },
   mounted() {
     this.fetchServices(); // Volanie funkcie na načítanie údajov po načítaní komponentu
@@ -137,7 +148,7 @@ export default {
       service.editable = false; // Zatvorenie editovacieho režimu
 
       // Odoslanie údajov na server
-      fetch('/Home/UpdateService', {
+      fetch('/Home/Services/UpdateService', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -165,7 +176,7 @@ export default {
       {
         this.services.splice(index, 1);
       }
-      fetch('/Home/DeleteService', {
+      fetch('/Home/Services/DeleteService', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -201,7 +212,7 @@ export default {
 
         this.services.push({ ...this.newService, editable: false });
 
-        fetch('/Home/AddService', {
+        fetch('/Home/Services/AddService', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

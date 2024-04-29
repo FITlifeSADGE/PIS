@@ -1,4 +1,4 @@
-package io.openliberty.guides.hello;
+package io.openliberty.guides.hello.Services;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -19,31 +19,32 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.openliberty.guides.hello.model.Service;
 
-@WebServlet("/UpdateService")
-public class UpdateServiceServlet extends HttpServlet {
+@WebServlet("/Services/AddService")
+public class AddServiceServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
-        //read request
+
         BufferedReader reader = request.getReader();
         String line = reader.readLine();
         reader.close();
-
-        //create tree 
+        
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(line);
+
 
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-hibernate-mysql");
         EntityManager em = emf.createEntityManager();
         try {
+            //create and update new service 
+            Service service = new Service();
 
-            // find service by id
-            TypedQuery<Service> query = em.createNamedQuery("Service.findById", Service.class);
-            query.setParameter("id", root.path("ServiceID").asInt()); 
-            Service service = query.getSingleResult();
+            //get the biggest Serviceid
+            TypedQuery<Integer> query = em.createNamedQuery("Service.findMaxId", Integer.class);
+            int newid = query.getSingleResult();
         
+            service.setServiceId(newid+1);
             //udate service parameters
             service.updateService(
                 root.path("Name").asText(), 
@@ -54,14 +55,14 @@ public class UpdateServiceServlet extends HttpServlet {
 
             //send service to db 
             em.getTransaction().begin();
-            em.merge(service);
+            em.persist(service);
             em.getTransaction().commit();
         
-            System.out.println("Updated service: " + service);
+            System.out.println("Service was created");
             
         } catch (NoResultException e) {             
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            response.getWriter().write("Service not found");
+            response.getWriter().write("Service was not created");
         } finally {
             em.close();
             emf.close();

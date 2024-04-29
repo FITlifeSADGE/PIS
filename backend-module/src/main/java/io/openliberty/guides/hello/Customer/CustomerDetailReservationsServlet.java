@@ -1,4 +1,4 @@
-package io.openliberty.guides.hello;
+package io.openliberty.guides.hello.Customer;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -18,14 +18,17 @@ import jakarta.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.openliberty.guides.hello.DatabaseUtil;
 
-@WebServlet("/Rooms/GetRooms")
-public class RoomsServlet extends HttpServlet {
+
+@WebServlet("/Customer/GetReservations")
+public class CustomerDetailReservationsServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {  
 
+        
         // Koukne jestli existuje session pro uživatele
         HttpSession session = request.getSession(false);
         if (session == null) {
@@ -34,11 +37,11 @@ public class RoomsServlet extends HttpServlet {
             response.sendRedirect("/Home/login");
             return;
         }
-        
-        System.out.println("Get for Room Data");
+
+        System.out.println("Get for Reservation Data");
         try {
             // Získanie údajov zo servera (napr. z databázy)
-            ResultSet resultSet = DatabaseUtil.Selecet("Room");
+            ResultSet resultSet = DatabaseUtil.Selecet("Reservation");
 
             List<Map<String, Object>> rows = new ArrayList<>();
             ResultSetMetaData metaData = resultSet.getMetaData();
