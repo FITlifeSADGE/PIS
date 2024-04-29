@@ -27,6 +27,7 @@ public class Person {
     @Column(name = "DocumentNumber")
     private String documentNumber;
 
+    @Temporal(TemporalType.DATE)
     @Column(name = "dateOfBirth")
     private Date dateOfBirth;
 

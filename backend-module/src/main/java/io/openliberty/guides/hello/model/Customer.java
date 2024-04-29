@@ -3,6 +3,8 @@ package io.openliberty.guides.hello.model;
 import jakarta.persistence.*;
 
 @Entity
+@NamedQuery(name = "Customer.allRows", query = "SELECT c FROM Customer c")
+@NamedQuery(name = "Customer.findMaxId", query = "SELECT MAX(c.customerId) FROM Customer c")
 @Table(name = "Customer")
 public class Customer {
 

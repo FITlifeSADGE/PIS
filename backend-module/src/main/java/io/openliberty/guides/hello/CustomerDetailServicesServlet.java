@@ -19,13 +19,14 @@ import jakarta.servlet.http.HttpSession;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 
-@WebServlet("/Rooms/GetRooms")
-public class RoomsServlet extends HttpServlet {
+@WebServlet("/Customers/GetServices")
+public class CustomerDetailServicesServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {  
 
+        
         // Koukne jestli existuje session pro uživatele
         HttpSession session = request.getSession(false);
         if (session == null) {
@@ -34,11 +35,11 @@ public class RoomsServlet extends HttpServlet {
             response.sendRedirect("/Home/login");
             return;
         }
-        
-        System.out.println("Get for Room Data");
+
+        System.out.println("Get for Service Data");
         try {
             // Získanie údajov zo servera (napr. z databázy)
-            ResultSet resultSet = DatabaseUtil.Selecet("Room");
+            ResultSet resultSet = DatabaseUtil.Selecet("Service");
 
             List<Map<String, Object>> rows = new ArrayList<>();
             ResultSetMetaData metaData = resultSet.getMetaData();

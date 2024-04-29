@@ -63,13 +63,13 @@ export default {
       this.$router.push('/Home/Services');
     },
     createReservation() {
-      console.log('Create Reservation');
+      this.$router.push('/Home/CreateReservation');
     },
     viewReservations() {
-      console.log('View Reservations');
+      this.$router.push('/Home/Reservations');
     },
     viewCustomers() {
-      console.log('View Customers');
+      this.$router.push('/Home/Customers');
     }
   },
 };
