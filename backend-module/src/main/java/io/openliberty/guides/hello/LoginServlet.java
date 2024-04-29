@@ -23,6 +23,11 @@ import io.openliberty.guides.hello.model.LoginRequest;
 
 import io.openliberty.guides.hello.model.Person;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.nio.charset.StandardCharsets;
+import java.math.BigInteger;
+
 
 @WebServlet("/loginVerify")
 public class LoginServlet extends HttpServlet {
@@ -56,7 +61,10 @@ public class LoginServlet extends HttpServlet {
         ObjectMapper mapper = new ObjectMapper();
         LoginRequest loginRequest = mapper.readValue(request.getInputStream(), LoginRequest.class);
         String username = loginRequest.getUsername();
-        String password = loginRequest.getPassword();
+        String password = hashPassword(loginRequest.getPassword());
+
+        System.out.println("Password: " + password);
+
         if (username != null && password != null) {
             try {
                 Connection connection = DatabaseUtil.getConnection();
@@ -97,6 +105,21 @@ public class LoginServlet extends HttpServlet {
         } else {
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Chybějící nebo neplatné údaje
             response.getWriter().write("Error: Username or password not provided");
+        }
+    }
+
+    private String hashPassword(String password) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] hash = md.digest(password.getBytes(StandardCharsets.UTF_8));
+            BigInteger number = new BigInteger(1, hash);
+            StringBuilder hexString = new StringBuilder(number.toString(16));
+            while (hexString.length() < 32) {
+                hexString.insert(0, '0');
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
         }
     }
 }

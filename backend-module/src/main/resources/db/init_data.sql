@@ -8,8 +8,13 @@ VALUES
 -- Inserting sample data into the Employee table
 INSERT IGNORE INTO Employee (EmployeeID, Assignment, Password, WorkShift)
 VALUES 
-(1, 'Manager', 'password1', '2024-04-10'),
-(2, 'Salesperson', 'password2', '2024-04-11');
+(1, 'Manager', 'b14d501a594442a01c6859541bcb3e8164d183d32937b851835442f69d5c94e', '2024-04-10'),
+(2, 'Salesperson', '6cf615d5bcaac778352a8f1f3360d23f02f34ec182e259897fd6ce485d7870d4', '2024-04-11');
+
+-- password2
+-- (2, 'Salesperson', 'password2', '2024-04-11');
+-- (1, 'Manager', 'password1', '2024-04-10'),
+-- password1
 
 -- Inserting sample data into the Customer table
 INSERT IGNORE INTO Customer (CustomerID, Allergy, Handicap, Address, Subscription)
