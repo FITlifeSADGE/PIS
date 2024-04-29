@@ -148,7 +148,7 @@ export default {
       service.editable = false; // Zatvorenie editovacieho režimu
 
       // Odoslanie údajov na server
-      fetch('/Home/UpdateService', {
+      fetch('/Home/Services/UpdateService', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -176,7 +176,7 @@ export default {
       {
         this.services.splice(index, 1);
       }
-      fetch('/Home/DeleteService', {
+      fetch('/Home/Services/DeleteService', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -212,7 +212,7 @@ export default {
 
         this.services.push({ ...this.newService, editable: false });
 
-        fetch('/Home/AddService', {
+        fetch('/Home/Services/AddService', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

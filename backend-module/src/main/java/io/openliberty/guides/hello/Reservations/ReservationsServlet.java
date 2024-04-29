@@ -1,4 +1,4 @@
-package io.openliberty.guides.hello;
+package io.openliberty.guides.hello.Reservations;
 
 import java.io.IOException;
 import java.util.ArrayList;

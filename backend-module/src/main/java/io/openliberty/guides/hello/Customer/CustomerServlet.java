@@ -1,4 +1,4 @@
-package io.openliberty.guides.hello;
+package io.openliberty.guides.hello.Customer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,7 +16,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +23,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.openliberty.guides.hello.model.Customer;
 
 
-@WebServlet("/Customers/GetCustomers")
+@WebServlet("/Customer/GetCustomers")
 public class CustomerServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 

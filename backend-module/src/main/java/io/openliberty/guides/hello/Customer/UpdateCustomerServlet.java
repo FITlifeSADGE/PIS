@@ -1,4 +1,4 @@
-package io.openliberty.guides.hello;
+package io.openliberty.guides.hello.Customer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,11 +16,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.xml.crypto.Data;
-
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-@WebServlet("/UpdateCustomer")
+import io.openliberty.guides.hello.DatabaseUtil;
+
+@WebServlet("/Customer/UpdateCustomer")
 public class UpdateCustomerServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 

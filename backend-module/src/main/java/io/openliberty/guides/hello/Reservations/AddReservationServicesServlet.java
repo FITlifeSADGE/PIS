@@ -1,4 +1,4 @@
-package io.openliberty.guides.hello;
+package io.openliberty.guides.hello.Reservations;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -21,7 +21,7 @@ import io.openliberty.guides.hello.model.Reservation;
 import io.openliberty.guides.hello.model.ReservationService;
 import io.openliberty.guides.hello.model.Service;
 
-@WebServlet("/AddReservationServices")
+@WebServlet("/Reservations/AddReservationServices")
 public class AddReservationServicesServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 

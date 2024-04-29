@@ -1,6 +1,5 @@
 package io.openliberty.guides.hello.model;
 
-import jakarta.inject.Named;
 import jakarta.persistence.*;
 
 @Entity

@@ -1,4 +1,4 @@
-package io.openliberty.guides.hello;
+package io.openliberty.guides.hello.Customer;
 
 import java.io.IOException;
 import java.sql.ResultSet;
@@ -18,9 +18,11 @@ import jakarta.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.openliberty.guides.hello.DatabaseUtil;
 
-@WebServlet("/Customers/GetReservations")
-public class CustomerDetailReservationsServlet extends HttpServlet {
+
+@WebServlet("/Customer/GetServices")
+public class CustomerDetailServicesServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -36,10 +38,10 @@ public class CustomerDetailReservationsServlet extends HttpServlet {
             return;
         }
 
-        System.out.println("Get for Reservation Data");
+        System.out.println("Get for Service Data");
         try {
             // Získanie údajov zo servera (napr. z databázy)
-            ResultSet resultSet = DatabaseUtil.Selecet("Reservation");
+            ResultSet resultSet = DatabaseUtil.Selecet("Service");
 
             List<Map<String, Object>> rows = new ArrayList<>();
             ResultSetMetaData metaData = resultSet.getMetaData();
