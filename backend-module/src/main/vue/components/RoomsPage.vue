@@ -16,7 +16,7 @@
         <!-- Add new -->
         <tr v-if="addingNew">
           <td><input type="text" v-model="newRoom.TypeRoom" ></td>
-          <td><input type=number min="1" v-model="newRoom.Cost" ></td>
+          <td><input type=number min="0.5" step="0.5" v-model="newRoom.Cost" ></td>
           <td><input type="text" v-model="newRoom.Equip"></td>
           <td> 
             <select v-model="newRoom.State" :style="{ width: '130px' }" >
@@ -39,7 +39,7 @@
         <!-- Filter row -->
         <tr>
           <td><input type="text" v-model="filters.TypeRoom"></td>
-          <td><input type="text" v-model="filters.Cost"></td>
+          <td><input type=number step="0.5" v-model="filters.Cost"></td>
           <td><input type="text" v-model="filters.Equip"></td>
           <td> 
             <select v-model="filters.State" :style="{ width: '130px' }">
@@ -48,7 +48,7 @@
               <option value="">Do Not Index</option>
             </select>
           </td>
-          <td><input type="text" v-model="filters.Beds"></td>
+          <td><input type=number min="1" v-model="filters.Beds"></td>
           <td></td> <!-- Empty cell for buttons -->
         </tr>
 
@@ -57,7 +57,7 @@
           <td v-if="!room.editable">{{ room.TypeRoom }}</td>
           <td v-else><input type="text" v-model="room.TypeRoom" :style="{ width: getRoomInputWidth(room.TypeRoom) }"></td>
           <td v-if="!room.editable">{{ room.Cost }}</td>
-          <td v-else><input type= number min="0" v-model="room.Cost" :style="{ width: '50px' }"></td>
+          <td v-else><input type= number step="0.5" v-model="room.Cost" :style="{ width: '50px' }"></td>
           <td v-if="!room.editable">{{ room.Equip }}</td>
           <td v-else><input type="text" v-model="room.Equip" :style="{ width: getRoomInputWidth(room.Equip) }"></td>
           <td v-if="!room.editable">{{ room.State }}</td>
@@ -97,7 +97,7 @@ export default {
       addingNew: false,
       newRoom: {
         TypeRoom: 'Double',
-        Cost: '15',
+        Cost: '15.0',
         Equip: 'Desk, Chair, Wardrobe, Bed',
         State: 'Available',
         Beds: '2'
@@ -224,7 +224,7 @@ export default {
 
         this.newRoom = {
           TypeRoom: 'Double',
-          Cost: '15',
+          Cost: '15.0',
           Equip: 'Desk, Chair, Wardrobe, Bed',
           State: 'Available',
           Beds: '2'
@@ -239,7 +239,7 @@ export default {
     cancelNewRoom() {
       this.newRoom = {
         TypeRoom: 'Double',
-        Cost: '15',
+        Cost: '15.0',
         Equip: 'Desk, Chair, Wardrobe, Bed',
         State: 'Available',
         Beds: '2'

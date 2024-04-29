@@ -15,7 +15,7 @@
         <!-- Add new -->
         <tr v-if="addingNew">
           <td><input type="text" v-model="newService.Name" placeholder="name of service"></td>
-          <td><input type=number min="1" v-model="newService.Cost"></td>
+          <td><input type=number min="0.5" step="0.5" v-model="newService.Cost"></td>
           <td> 
             <select v-model="newService.Availability" :style="{ width: '130px' }" >
               <option value="Available">Available</option>
@@ -37,7 +37,7 @@
         <!-- Filter row -->
         <tr>
           <td><input type="text" v-model="filters.Name"></td>
-          <td><input type=number min="0" v-model="filters.Cost"></td>
+          <td><input type=number step="0.5" v-model="filters.Cost"></td>
           <td> 
             <select v-model="filters.Availability" :style="{ width: '130px' }">
               <option value="Available">Available</option>
@@ -54,7 +54,7 @@
           <td v-if="!service.editable">{{ service.Name }}</td>
           <td v-else><input type="text" v-model="service.Name" :style="{ width: getServiceInputWidth(service.Name) }"></td>
           <td v-if="!service.editable">{{ service.Cost }}</td>
-          <td v-else><input type=number min="1" v-model="service.Cost" :style="{ width: '50px' }"></td>
+          <td v-else><input type=number step="0.5" v-model="service.Cost" :style="{ width: '50px' }"></td>
           <td v-if="!service.editable">{{ service.Availability }}</td>
           <td v-else> 
             <select v-model="service.Availability" :style="{ width: '130px' }">
@@ -91,7 +91,7 @@ export default {
       addingNew: false,
       newService: {
         Name: '',
-        Cost: '10',
+        Cost: '1.0',
         Availability: 'Available',
         Description: '',
         ServiceID: ''
@@ -232,7 +232,7 @@ export default {
 
         this.newService = {
           Name: '',
-          Cost: '10',
+          Cost: '1.0',
           Availability: 'Available',
           Description: '',
           ServiceID: ''
@@ -247,7 +247,7 @@ export default {
     cancelNewService() {
       this.newService = {
         Name: '',
-        Cost: '10',
+        Cost: '1.0',
         Availability: 'Available',
         Description: '',
         ServiceID: ''

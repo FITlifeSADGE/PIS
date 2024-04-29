@@ -50,7 +50,7 @@ public class AddRoomServlet extends HttpServlet {
             room.setRoomId(newid+1);
             room.updateRoom(
                 root.path("TypeRoom").asText(), 
-                root.path("Cost").floatValue(),  
+                Float.parseFloat(root.path("Cost").asText()),  
                 root.path("Equip").asText(),  
                 root.path("State").asText(),  
                 root.path("Beds").asInt()
