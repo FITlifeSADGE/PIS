@@ -54,7 +54,7 @@
     <!-- CUSTOMER -->
     <!-- SERVICES -->
 
-    <table v-if="editTable">
+    <!--<table v-if="editTable">
       <thead>
         <tr>
           <th>Name</th>
@@ -66,7 +66,7 @@
       </thead>
       <tbody>
         <!-- v-if="services && services.length > 0" -->
-        <tr v-if="addingNew">
+       <!-- <tr v-if="addingNew">
           <td>
             <select v-model="newService"  placeholder="Select a service">
               <option v-for="service in uniqueServices" :value="service">{{ service.Name }}</option>
@@ -99,8 +99,8 @@
           <td>{{ service.Name }}</td>
           <td>{{ service.Cost }}</td>
           <td>{{ service.Description }}</td>
-          <!-- <td v-else><input type="text" v-model="service.Description" :style="{ width: getServiceInputWidth(service.Description) }"></td> -->
-          <td v-if="!service.editable">{{ service.Extra }}</td>
+          <td v-else><input type="text" v-model="service.Description" :style="{ width: getServiceInputWidth(service.Description) }"></td> -->
+          <!--<td v-if="!service.editable">{{ service.Extra }}</td>
           <td v-else><input type="text" v-model="service.Extra" :style="{ width: getServiceInputWidth(service.Extra) }"></td>
          
           <td>
@@ -115,132 +115,88 @@
     <!-- SERVICES -->
     <!-- RESERVATION -->
 
-    <table v-if="editTable">
+    <table>
       <thead>
         <tr>
-          <th>Start</th>
-          <th>End</th>
+          <th>Reservation ID</th>
+          <th>Customer</th>
+          <th>Room </th>
+          <th>Services</th>
+          <th>Start Date</th>
+          <th>End Date</th>
           <th>State</th>
           <th>Cost</th>
-          <th>Check-In</th>
-          <th>Check-Out</th>
+          <th>Comming Time</th>
+          <th>Leaving Time</th>
           <th>Business Guest</th>
           <th>Parking</th>
           <th>Edit</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-if="addingNewReservation">
-          <td><input type=date v-model="newReservation.Start"></td>
-          <td><input type=date v-model="newReservation.End"></td>
-          <td> 
-            <select v-model="filtersR.State" :style="{ width: '140px' }">
-              <option value="Available">Cancelled</option>
-              <option value="Closed">Comfirmed</option>
-              <option value="Pending">Pending</option>
-              <option value="">Do Not Index</option>
-            </select>
-          </td>
-          <td><input type=number min="0" v-model="filtersR.Cost" ></td>
-          <td><input type=date v-model="newReservation.CommingTime"></td>
-          <td><input type=date v-model="newReservation.LeavingTime"></td>
-          <td> 
-            <select v-model="filtersR.BusinessGuest" :style="{ width: '140px' }">
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-              <option value="">Do Not Index</option>
-            </select>
-          </td>
-          <td> 
-            <select v-model="filtersR.Parking" :style="{ width: '140px' }">
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-              <option value="">Do Not Index</option>
-            </select>
+        <!-- Data rows -->
+        <tr v-for="reservation in reservations" :key="reservation.ReservationID">
+          <!-- Display reservation details -->
+          <td>{{ reservation.ReservationID }}</td>
+          <td>
+            <span v-if="!reservation.editable">{{ reservation.CustomerID }}</span>
+            <input v-if="reservation.editable" type="text" v-model="reservation.CustomerID">
           </td>
           <td>
-            <button @click="addNewReservation" class="edit-button" >OK</button>
-            <button @click="cancelNewReservation" class="delete-button" >Cancel</button>
+            <span v-if="!reservation.editable">{{ reservation.RoomID }}</span>
+            <input v-if="reservation.editable" type="text" v-model="reservation.RoomID">
           </td>
-        </tr>
-        <tr v-else>
-          <td colspan="9" style="text-align: center;">
-            <button @click="toggleAddNewReservation" class="edit-button">Add New</button>
-          </td>
-        </tr>
-        <tr>
-          <td><input type=date v-model="filtersR.Start"></td>
-          <td><input type=date v-model="filtersR.End"></td>
-          <td> 
-              <select v-model="filtersR.State" :style="{ width: '140px' }">
-              <option value="Available">Cancelled</option>
-              <option value="Closed">Comfirmed</option>
-              <option value="Pending">Pending</option>
-              <option value="">Do Not Index</option>
-            </select>
-          </td>
-          <td><input type=number min="0" v-model="filtersR.Cost"></td>
-          <td><input type=date v-model="filtersR.CommingTime"></td>
-          <td><input type=date v-model="filtersR.LeavingTime"></td>
-          <td> 
-            <select v-model="filtersR.BusinessGuest" :style="{ width: '140px' }">
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-              <option value="">Do Not Index</option>
-            </select>
-          </td>
-          <td> 
-            <select v-model="filtersR.Parking" :style="{ width: '140px' }">
-              <option value="0">No</option>
-              <option value="1">Yes</option>
-              <option value="">Do Not Index</option>
-            </select>
-          </td>
-          <td></td>
-        </tr>
+          <td>
+  <span v-if="!reservation.editable">
+    {{ reservation.ServiceIDs ? reservation.ServiceIDs.map(id => services_available.find(service => service.ID === id).Name).join(', ') : '' }}
+  </span>
+  <select v-if="reservation.editable" v-model="reservation.ServiceIDs" multiple>
+    <option v-for="service in services_available" :key="service.ID" :value="service.ID">{{ service.Name }}</option>
+  </select>
+</td>
 
-        <!-- <tr v-for="reservation in reservations" :key="reservation.ReservationID"> -->
-        <tr v-if="!reservation.editableR" v-for="reservation in filteredReservations" :key="reservation.ReservationID">
-          <td>{{ formatDate(reservation.Start) }}</td>
-          <td>{{ formatDate(reservation.End) }}</td>
-          <td>{{ reservation.State }}</td>
-          <td>{{ reservation.Cost }}</td>
-          <td>{{ formatDate(reservation.CommingTime) }}</td>
-          <td>{{ formatDate(reservation.LeavingTime) }}</td>
-          <td>{{ reservation.BusinessGuest }}</td>
-          <td>{{ reservation.Parking }}</td>
-          <td><button class="edit-button" @click="toggleEditReservation(reservation)">Edit</button></td>
-        </tr>
-        <tr v-if="reservation.editableR" v-for="reservation in filteredReservations" :key="reservation.ReservationID">
-          <td><input type="date" :value="formatDate(reservation.Start)" /></td>
-          <td><input type="date" :value="formatDate(reservation.End)" /></td>
+
+
+
           <td>
-            <select v-model="reservation.State" :style="{ width: '130px' }">
+  <span v-if="!reservation.editable">{{ new Date(reservation.Start).toISOString().split('T')[0] }}</span>
+  <input v-if="reservation.editable" type="date" v-model="reservation.Start">
+</td>
+<td>
+  <span v-if="!reservation.editable">{{ new Date(reservation.End).toISOString().split('T')[0] }}</span>
+  <input v-if="reservation.editable" type="date" v-model="reservation.End">
+</td>
+          <td>
+            <span v-if="!reservation.editable">{{ reservation.State }}</span>
+            <select v-if="reservation.editable" v-model="reservation.State" :style="{ width: '130px' }">
               <option value="Confirmed">Confirmed</option>
               <option value="Pending">Pending</option>
-              <option value="Cancelled">Cancelled</option>
-            </select>
-          </td>
-          <td><input type="text" v-model="reservation.LastName" :style="{ width: getReservationInputWidth(reservation.LastName) }"></td>
-          <td><input type="text" v-model="reservation.FirstName" :style="{ width: getReservationInputWidth(reservation.FirstName) }"></td>
-          <td><input type=number min="1" v-model="reservation.Cost" :style="{ width: '50px' }"></td>
-          <td><input type="date" :value="formatDate(reservation.CommingTime)" /></td>
-          <td><input type="date" :value="formatDate(reservation.LeavingTime)" /></td>
-          <td>
-            <select v-model="reservation.BusinessGuest" :style="{ width: '130px' }">
-              <option value=0>No</option>
-              <option value=1>Yes</option>
             </select>
           </td>
           <td>
-            <select v-model="reservation.Parking" :style="{ width: '130px' }">
-              <option value=0>No</option>
-              <option value=1>Yes</option>
-            </select>
+            <span v-if="!reservation.editable">{{ reservation.Cost }}</span>
+            <input v-if="reservation.editable" type="number" min="0" v-model="reservation.Cost">
           </td>
           <td>
-            <button class="ok-button" @click="updateReservation(reservation)">OK</button>
-            <button class="delete-button" @click="deleteReservation(reservation)">Delete</button>
+            <span v-if="!reservation.editable">{{ reservation.CommingTime }}</span>
+            <input v-if="reservation.editable" type="time" v-model="reservation.CommingTime">
+          </td>
+          <td>
+            <span v-if="!reservation.editable">{{ reservation.LeavingTime }}</span>
+            <input v-if="reservation.editable" type="time" v-model="reservation.LeavingTime">
+          </td>
+          <td>
+            <span v-if="!reservation.editable">{{ reservation.BusinessGuest ? 'Yes' : 'No' }}</span>
+            <input v-if="reservation.editable" type="checkbox" v-model="reservation.BusinessGuest">
+          </td>
+          <td>
+            <span v-if="!reservation.editable">{{ reservation.Parking ? 'Yes' : 'No' }}</span>
+            <input v-if="reservation.editable" type="checkbox" v-model="reservation.Parking">
+          </td>
+          <td>
+            <button v-if="!reservation.editable" class="edit-button" @click="toggleEdit(reservation)">Edit</button>
+            <button v-if="reservation.editable" class="ok-button" @click="updateReservation(reservation)">OK</button>
+            <button v-if="reservation.editable" class="delete-button" @click="deleteReservation(reservation)">Delete</button>
           </td>
         </tr>
       </tbody>
@@ -394,8 +350,6 @@ data() {
   return {
     editTable: true,
     customers: [], // pole na uchovávanie údajov
-    services: [], 
-    reservations: [], 
     buttonLabel: 'Upravit informace',
     ID: null,
     error: false,
@@ -436,6 +390,9 @@ data() {
       Parking: 'No',
       ReservationID: ''
     },
+    reservations: [], // array to store reservation data
+      services: [], // array to store service data
+      services_available: [], // array to store available services
   };
 },
 computed: {
@@ -556,6 +513,58 @@ methods: {
         console.error('Error fetching reservations:', error);
       });
   },
+  fetchReservationsAndServices() {
+      fetch('/Home/Reservations/GetReservations')
+        .then(response => response.json())
+        .then(data => {
+          this.reservations = data.map(reservation => ({ ...reservation, editable: false }));
+          // After fetching reservations data, call the method to fetch reservation services
+          this.fetchReservationServices(); 
+        })
+        .catch(error => {
+          console.error('Error fetching reservations:', error);
+        });
+    },
+    fetchReservationServices() {
+  fetch('/Home/Reservations/GetReservationServices')
+    .then(response => response.json())
+    .then(data => {
+      // Create an object to store services indexed by their service ID
+      const serviceMap = {};
+
+      this.fetchServices(); // Fetch available services
+      // Populate the serviceMap with service objects
+      data.forEach(service => {
+        const serviceID = service.ServiceID;
+        if (!serviceMap[serviceID]) {
+          serviceMap[serviceID] = {
+            ServiceID: serviceID,
+            reservations: []
+          };
+        }
+        serviceMap[serviceID].reservations.push(service.ReservationID);
+      });
+
+      // Convert the serviceMap values back to an array of service objects
+      this.services = Object.values(serviceMap);
+
+      // Log or inspect the services array to ensure correct associations
+      console.log('Services:', this.services);
+
+      // Populate the ServiceIDs array for each reservation
+      this.reservations.forEach(reservation => {
+        const serviceIDs = data
+          .filter(service => service.ReservationID === reservation.ReservationID)
+          .map(service => service.ServiceID);
+        reservation.ServiceIDs = serviceIDs;
+      });
+    })
+    .catch(error => {
+      console.error('Error fetching services:', error);
+    });
+},
+
+
   fetchCustomers(personID) {
     fetch('/Home/Customers/GetCustomer', {
       method: 'POST',

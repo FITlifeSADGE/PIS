@@ -11,91 +11,63 @@
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td><input type="text" v-model="filters.LastName"></td>
-          <td><input type="text" v-model="filters.FirstName"></td>
-          <td><input type="text" v-model="filters.Email"></td>
-          <td><input type="text" v-model="filters.PhoneNumber"></td>
-        </tr>
-
-        <tr v-for="customer in filteredCustomers" :key="customer.PersonID">
-          <td>{{ customer.LastName }}</td>
-          <td>{{ customer.FirstName }}</td>
-          <td>{{ customer.Email }}</td>
-          <td>{{ customer.PhonePreselection + ' ' + customer.PhoneNumber }}</td>
+        <tr v-for="customer in customers" :key="customer.PersonID">
+          <td>{{ customer.person.lastName }}</td>
+          <td>{{ customer.person.firstName }}</td>
+          <td>{{ customer.person.email }}</td>
+          <td>{{ customer.person.phoneNumber }}</td>
           <td>
-            <button class="button" @click="getDetail(customer.PersonID)">View details</button>
+            <button class="button" @click="getDetail(customer.person.personID)">View details</button>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
-    
-    </template>
-    
-    <script>
-    export default {
-      data() {
-        return {
-          customers: [], // pole na uchovávanie údajov
-          filters: {
-            LastName: '',
-            FirstName: '',
-            Email: '',
-            PhoneNumber: ''
-          },
-        };
-      },
-      computed: {
-        filteredCustomers() {
-          // Filter services based on filter criteria
-          return this.customers.filter(customer => {
-            return (
-              customer.LastName.toLowerCase().includes(this.filters.LastName.toLowerCase()) &&
-              customer.FirstName.toLowerCase().includes(this.filters.FirstName.toLowerCase()) &&
-              customer.Email.toLowerCase().includes(this.filters.Email.toLowerCase()) &&
-              customer.PhoneNumber.toString().includes(this.filters.PhoneNumber.toString())
-            );
-          });
-        }
-      },
-      mounted() {
-        this.fetchCustomers(); // Volanie funkcie na načítanie údajov po načítaní komponentu
-      },
-      methods: {
-      fetchCustomers() {
-      fetch('/Home/Customers/GetCustomers') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
-          .then(response => response.json())
-          .then(data => {
-          this.customers = data; // Nastavenie údajov do premennej customers
-          })
-          .catch(error => {
-          console.error('Error fetching customers:', error);
-          });
-        },
-      getDetail(personID) {
-      // Přesměrování na stránku /Home/customers/detail s přidáním parametru ID
-      this.$router.push(`/Home/Customers/detail/${personID}`);
-      },
-        logout() {
-          console.log('Logout');
-        },
-        manageHotelServices() {
-          console.log('Manage Hotel Services');
-        },
-        createReservation() {
-          console.log('Create Reservation');
-        },
-        viewReservations() {
-          console.log('View Reservations');
-        },
-        viewCustomers() {
-          console.log('View Customers');
-        },
-    
-      }
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      customers: [], // Array to store customer data
     };
-    </script>
+  },
+  mounted() {
+    this.fetchCustomers(); // Call the function to fetch data upon component load
+  },
+  methods: {
+    fetchCustomers() {
+      fetch('/Home/Customers/GetCustomers') // Call your servlet to retrieve data from the database
+        .then(response => response.json())
+        .then(data => {
+          this.customers = data; // Set the fetched data to the customers variable
+        })
+        .catch(error => {
+          console.error('Error fetching customers:', error);
+        });
+    },
+    getDetail(personID) {
+      // Redirect to the /Home/customers/detail page with the ID parameter
+      this.$router.push(`/Home/Customers/detail/${personID}`);
+    },
+    logout() {
+      console.log('Logout');
+    },
+    manageHotelServices() {
+      console.log('Manage Hotel Services');
+    },
+    createReservation() {
+      console.log('Create Reservation');
+    },
+    viewReservations() {
+      console.log('View Reservations');
+    },
+    viewCustomers() {
+      console.log('View Customers');
+    },
+  },
+};
+</script>
     
     <style scoped>
     input[type="text"],

@@ -8,9 +8,6 @@ import java.sql.Statement;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
-import java.util.Set;
-import java.util.HashSet;
-
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -103,15 +100,6 @@ public class DatabaseUtil {
             String columnName = NameOfColumns.getString("COLUMN_NAME");
             String jsonValue = root.path(columnName).asText(); root.path(columnName);
 
-            if (jsonValue.matches("true|false")) {
-                sqlQuery.append(columnName).append("=").append(root.path(columnName).asBoolean()).append(",");
-            } // Ak sa jedna o boolean hodnotu
-            else {
-                if (!jsonValue.matches("-?\\d+(\\.\\d+)?"))  // Ak sa nejedna o cislo
-                    sqlQuery.append(columnName).append("=").append("\"" + jsonValue + "\"").append(",");
-                else
-                    sqlQuery.append(columnName).append("=").append(jsonValue).append(",");
-            }
             if (!jsonValue.matches("-?\\d+(\\.\\d+)?"))  // Ak sa nejedna o cislo
                 sqlQuery.append(columnName).append("=").append("\"" + jsonValue + "\"").append(",");
             else
@@ -128,37 +116,6 @@ public class DatabaseUtil {
         connection.close();
         }
     }
-    public static void Update2(JsonNode root, String Entity, String ReservationID, int[] ServiceIDs) throws SQLException, IOException {
-        try (Connection connection = getConnection()) {
-            // Begin a transaction
-            connection.setAutoCommit(false);
-    
-            try {
-                // Delete existing records for the given ReservationID
-                String deleteQuery = "DELETE FROM " + Entity + " WHERE " + ReservationID + " = ?";
-                PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery);
-                deleteStatement.setInt(1, root.get(ReservationID).asInt());
-                deleteStatement.executeUpdate();
-    
-                // Insert new records for each ServiceID in the list
-                String insertQuery = "INSERT INTO " + Entity + " (" + ReservationID + ", " + "ServiceID" + ") VALUES (?, ?)";
-                PreparedStatement insertStatement = connection.prepareStatement(insertQuery);
-                for (int serviceID : ServiceIDs) {
-                    insertStatement.setInt(1, root.get(ReservationID).asInt());
-                    insertStatement.setInt(2, serviceID);
-                    insertStatement.executeUpdate();
-                }
-    
-                // Commit the transaction
-                connection.commit();
-            } catch (SQLException e) {
-                // Rollback the transaction if there's an error
-                connection.rollback();
-                throw e;
-            }
-        }
-
-            }
 
     public static void Add(JsonNode root, String Enitity, String ID) throws SQLException, IOException 
     {
@@ -209,32 +166,4 @@ public class DatabaseUtil {
             connection.close();
         }
     }
-    
-   
-
-
-
-   // Method to delete associated services
-    public static void Delete2(JsonNode root, String Entity, String ReservationID) throws SQLException, IOException {
-     try (Connection connection = getConnection()) {
-          // Begin a transaction
-          connection.setAutoCommit(false);
-    
-          try {
-                // Delete existing records for the given ReservationID
-                String deleteQuery = "DELETE FROM " + Entity + " WHERE " + ReservationID + " = ?";
-                PreparedStatement deleteStatement = connection.prepareStatement(deleteQuery);
-                deleteStatement.setInt(1, root.get(ReservationID).asInt());
-                deleteStatement.executeUpdate();
-    
-                // Commit the transaction
-                connection.commit();
-          } catch (SQLException e) {
-                // Rollback the transaction if there's an error
-                connection.rollback();
-                throw e;
-          }
-     }
-    }
 }
-

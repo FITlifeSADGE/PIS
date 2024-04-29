@@ -16,17 +16,11 @@ INSERT IGNORE INTO Customer (CustomerID, Allergy, Handicap, Address, Subscriptio
 VALUES 
 (3, 'Gluten intolerance', false, '789 Oak Street, Somewhere, USA', true);
 
-<<<<<<< HEAD
--- Inserting sample data into the Service table
 INSERT IGNORE INTO Service (ServiceID, Name, Cost, Availability, Description)
-=======
-INSERT IGNORE INTO Service (ServiceID, Name, Cost, Availability, Description, Extra)
->>>>>>> Main+Sima
 VALUES 
-(33, 'Breakfast', 10.00, 'Available', 'Continental breakfast served from 7 AM to 10 AM', '-'),
-(34, 'Laundry', 20.00, 'Available', 'Laundry service available from 9 AM to 5 PM', 'Dont mix colors!'),
-(35, 'Airport Shuttle', 30.00, 'Available', 'Shuttle service to and from the airport available upon request', '-');
--- (36, 'Pancakes', 12.00, 'Available', 'Pancakes', 'Add extra topings');
+    (33, 'Breakfast', 10.00, 'Available', 'Continental breakfast served from 7 AM to 10 AM'),
+    (34, 'Laundry', 20.00, 'Available', 'Laundry service available from 9 AM to 5 PM'),
+    (35, 'Airport Shuttle', 30.00, 'Available', 'Shuttle service to and from the airport available upon request');
 
 INSERT IGNORE INTO Room (RoomID, TypeRoom, Cost, Equip, State, Beds)
 VALUES 
@@ -78,6 +72,9 @@ VALUES
 (1, 3, 420, '08:00:00', '12:00:00', 'Confirmed', 500.00, '08:00:00', '12:00:00', 0, 0),
 (2, 3, 421, '10:00:00', '14:00:00', 'Pending', 800.00, '10:00:00', '14:00:00', 1, 1),
 (3, 3, 422, '09:00:00', '13:00:00', 'Confirmed', 700.00, '09:00:00', '13:00:00', 0, 1);
+
+
+
 
 
 -- Inserting sample data into the ReservationService table
