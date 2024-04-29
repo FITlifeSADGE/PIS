@@ -1,5 +1,7 @@
 package io.openliberty.guides.hello;
 
+
+
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -9,13 +11,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.TypedQuery;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.ws.rs.client.Entity;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.openliberty.guides.hello.model.ReservationService;
 
 @WebServlet("/Reservations/GetReservationServices")
 public class ReservationServicesServlet extends HttpServlet {
@@ -24,37 +34,39 @@ public class ReservationServicesServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        System.out.println("Get for Reservation Services Data");
-        try {
-            // Retrieving data from the server (e.g., from the database)
-            ResultSet resultSet = DatabaseUtil.Selecet("ReservationService");
 
-            List<Map<String, Object>> rows = new ArrayList<>();
-            ResultSetMetaData metaData = resultSet.getMetaData();
-            int columnCount = metaData.getColumnCount();
-
-            while (resultSet.next()) {
-                Map<String, Object> rowData = new HashMap<>();
-                for (int i = 1; i <= columnCount; i++) {
-                    String columnName = metaData.getColumnName(i);
-                    Object value = resultSet.getObject(i);
-                    rowData.put(columnName, value);
-                }
-                rows.add(rowData);
+        // Check if there is a session for the user
+         HttpSession session = request.getSession(false);
+            if (session == null) {
+                // Otherwise, redirect to the login page
+                System.out.println("Session not found");
+                response.sendRedirect("/Home/login");
+                return;
             }
+            
 
-            // Converting data to a JSON string
-            ObjectMapper mapper = new ObjectMapper();
-            String jsonString = mapper.writeValueAsString(rows);
+        System.out.println("Get for Reservation Services Data");
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-hibernate-mysql");
+        EntityManager em = emf.createEntityManager();
+        
+    TypedQuery<ReservationService> query = em.createNamedQuery("ReservationService.allRows", ReservationService.class);
+    List<ReservationService> reservationServices = query.getResultList();
 
-            // Setting content type and sending the JSON string as a response
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write(jsonString);
+    // Transform data
+    List<Map<String, Object>> rows = new ArrayList<>();
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            // Handling the error
-        }
+
+    for (ReservationService reservationService : reservationServices) {
+    Map<String, Object> row = new HashMap<>();
+    row.put("ReservationID", reservationService.getReservationId());
+    row.put("ServiceID", reservationService.getServiceId());
+    rows.add(row);
     }
+
+    ObjectMapper mapper = new ObjectMapper();
+    response.setContentType("application/json");
+    response.getWriter().write(mapper.writeValueAsString(rows));
+    
+
+}
 }

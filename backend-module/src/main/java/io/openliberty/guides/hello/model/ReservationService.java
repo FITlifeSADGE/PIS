@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 @Entity
 @NamedQuery(name = "ReservationService.findByReservationId", query = "SELECT rs FROM ReservationService rs WHERE rs.id.reservationId = :reservationId")
+@NamedQuery(name = "ReservationService.allRows", query = "SELECT rs FROM ReservationService rs")
 @Table(name = "ReservationService")
 public class ReservationService {
 

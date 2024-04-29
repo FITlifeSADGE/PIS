@@ -3,7 +3,7 @@ package io.openliberty.guides.hello;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Date;
-import java.text.SimpleDateFormat;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,6 +41,10 @@ public class UpdateReservationServlet extends HttpServlet {
 
         System.out.println("Received JSON data: " + line);
 
+        DateFormat formatter = new SimpleDateFormat("HH:mm");
+Time comingTime;
+Time leavingTime;
+
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-hibernate-mysql");
         EntityManager em = emf.createEntityManager();
 
@@ -53,6 +57,15 @@ public class UpdateReservationServlet extends HttpServlet {
             System.out.println("Retrieved reservation: " + reservation);
             System.out.println("Updating reservation...");
 
+            // parse comingTime and leavingTime to java.sql.Time
+    try {
+        comingTime = new Time(formatter.parse(root.path("CommingTime").asText()).getTime());
+        leavingTime = new Time(formatter.parse(root.path("LeavingTime").asText()).getTime());
+    } catch (ParseException e) {
+        response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        response.getWriter().write("Invalid time format");
+        return;
+    }
             // Update reservation parameters
             // Parse JSON data
             Date startDate = Date.valueOf(root.path("Start").asText());
@@ -63,7 +76,7 @@ public class UpdateReservationServlet extends HttpServlet {
             boolean parking = root.path("Parking").asInt() == 1;
 
             // Call updateReservation method
-            reservation.updateReservation(startDate, endDate, cost, state, businessGuest, parking);
+            reservation.updateReservation(startDate, endDate, cost, state, businessGuest, parking, comingTime, leavingTime );
 
             // Send reservation to db
             em.getTransaction().begin();

@@ -1,9 +1,6 @@
 package io.openliberty.guides.hello;
 
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,7 +21,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.openliberty.guides.hello.model.Service;
 
-import java.sql.SQLException;
 
 @WebServlet("/Services/GetServices")
 public class ServicesServlet extends HttpServlet {

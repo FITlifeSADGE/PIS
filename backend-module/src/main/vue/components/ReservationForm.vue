@@ -1,217 +1,395 @@
 <template>
-   <!-- Step 1: Create Customer -->
-<div v-if="currentStep === 1">
-  <h2>Create Customer</h2>
-  <form @submit.prevent="createCustomer">
-    <label for="lastName">Last Name:</label>
-    <input type="text" id="lastName" v-model="customer.lastName" required>
-    
-    <label for="firstName">First Name:</label>
-    <input type="text" id="firstName" v-model="customer.firstName" required>
-    
-    <label for="email">Email:</label>
-    <input type="email" id="email" v-model="customer.email" required>
-    
-    <label for="phone">Phone Number:</label>
-    <input type="text" id="phone" v-model="customer.phoneNumber" required>
-    
-    <label for="documentNumber">Document Number:</label>
-    <input type="text" id="documentNumber" v-model="customer.documentNumber" required>
-    
-    <label for="dateOfBirth">Date of Birth:</label>
-    <input type="date" id="dateOfBirth" v-model="customer.dateOfBirth" required>
-    
-    <label for="allergy">Allergy:</label>
-    <input type="text" id="allergy" v-model="customer.allergy">
-    
-    <label for="handicap">Handicap:</label>
-    <input type="checkbox" id="handicap" v-model="customer.handicap">
-    
-    <label for="address">Address:</label>
-    <textarea id="address" v-model="customer.address"></textarea>
-    
-    <button type="submit">Next</button>
-  </form>
+  <div class="reservation-form">
+    <h2>Create a Reservation</h2>
+    <form @submit.prevent="submitForm">
+      <div>
+        <label for="customer-id">Customer Name</label>
+        <select id="customer-id" v-model="reservation.CustomerID" required>
+  <option value="" disabled>Select a customer</option>
+  <option v-for="customer in customers" :key="customer.customerId" :value="customer.customerId">
+    {{ customer.person.firstName }} {{ customer.person.lastName }}
+  </option>
+</select>
+        <button @click.prevent="addNewCustomer">New Customer</button>
+      </div>
+      <div>
+  <label for="room-id">Rooms</label>
+  <select id="room-id" v-model="reservation.RoomID" required>
+    <option value="" disabled>Select a room</option>
+    <option v-for="room in rooms" :value="room.RoomID">{{ room.RoomID }} (Beds: {{ room.Beds }})</option>
+  </select>
+</div>
+      <div>
+        <label for="start-date">Start Date</label>
+        <input id="start-date" type="date" v-model="reservation.Start" required>
+      </div>
+      <div>
+        <label for="end-date">End Date</label>
+        <input id="end-date" type="date" v-model="reservation.End" required>
+      </div>
+      <div>
+        <label for="coming-time">Coming Time</label>
+        <input id="coming-time" type="time" v-model="reservation.ComingTime" required>
+      </div>
+      <div>
+        <label for="leaving-time">Leaving Time</label>
+        <input id="leaving-time" type="time" v-model="reservation.LeavingTime" required>
+      </div>
+      <div>
+        <label for="business-guest">Business Guest</label>
+        <input id="business-guest" type="checkbox" v-model="reservation.BusinessGuest">
+      </div>
+      <div>
+        <label for="parking">Parking</label>
+        <input id="parking" type="checkbox" v-model="reservation.Parking">
+      </div>
+      <div>
+  <label for="cost">Cost</label>
+  <input id="cost" type="number" min="0" step="0.01" v-model="totalCost" readonly>
+</div>
+      <button type="submit">Create Reservation</button>
+    </form>
 
-  
-      <!-- Step 2: Select Room -->
-      <div v-if="currentStep === 2">
-        <h2>Select Room</h2>
-        <!-- Room selection goes here -->
-        <button @click="previousStep">Back</button>
-        <button @click="nextStep">Next</button>
-      </div>
-  
-      <!-- Step 3: Add Services -->
-      <div v-if="currentStep === 3">
-        <h2>Add Services</h2>
-        <!-- Service selection goes here -->
-        <button @click="previousStep">Back</button>
-        <button @click="nextStep">Next</button>
-      </div>
-  
-      <!-- Step 4: Additional Information -->
-      <div v-if="currentStep === 4">
-        <h2>Additional Information</h2>
-        <!-- Additional information form goes here -->
-        <button @click="previousStep">Back</button>
-        <button @click="createReservation">Create Reservation</button>
-      </div>
-  
-      <!-- Success Message -->
-      <div v-if="reservationCreated">
-        <h2>Reservation Created Successfully!</h2>
-        <!-- Display reservation details here -->
+     <!-- Display reservation details if successfully created -->
+     <div v-if="reservationCreated">
+      <h2>Reservation Details</h2>
+      <p><strong>Customer Name:</strong> {{ selectedCustomerName }}</p>
+      <p><strong>Room:</strong> {{ selectedRoom }}</p>
+      <p><strong>Start Date:</strong> {{ reservation.Start }}</p>
+      <p><strong>End Date:</strong> {{ reservation.End }}</p>
+      <p><strong>Cost:</strong> {{ reservation.Cost }}</p>
+      <p><strong>Coming Time:</strong> {{ reservation.ComingTime }}</p>
+      <p><strong>Leaving Time:</strong> {{ reservation.LeavingTime }}</p>
+      <p><strong>Business Guest:</strong> {{ reservation.BusinessGuest }}</p>
+      <p><strong>Parking:</strong> {{ reservation.Parking }}</p>
+
+ <!-- Option to add services -->
+ <h3>Add Services</h3>
+<label for="service-name">Service Name:</label>
+<select id="service-name" v-model="selectedServices" multiple>
+  <option v-for="service in services" :key="service.ServiceID" :value="service.ServiceID">{{ service.Name }}</option>
+</select>
+<button v-if="showAddServicesButton" @click.prevent="addReservationServices">Add Services</button>
+<ul>
+  <li v-for="serviceId in reservation.Services" :key="serviceId">{{ getServiceName(serviceId) }}</li>
+</ul>
+</div>
+
+
+  <div v-if="showNewCustomerForm">
+      <h2>Create a New Customer</h2>
+      <form @submit.prevent="createCustomer">
+        <div>
+            <label for="new-customer-firstname">First Name</label>
+            <input id="new-customer-firstname" v-model="newCustomer.FirstName" required>
+          </div>
+          <div>
+            <label for="new-customer-lastname">Last Name</label>
+            <input id="new-customer-lastname" v-model="newCustomer.LastName" required>
+          </div>
+          <div>
+            <label for="new-customer-email">Email</label>
+            <input id="new-customer-email" v-model="newCustomer.Email" required>
+          </div>
+          <div>
+            <label for="new-customer-phone">Phone</label>
+            <input id="new-customer-phone" v-model="newCustomer.PhoneNumber" required>
+          </div>
+          <div>
+            <label for="new-customer-document">Document Number</label>
+            <input id="new-customer-document" v-model="newCustomer.DocumentNumber" required>
+          </div>
+          <div>
+            <label for="new-customer-dob">Date of Birth</label>
+            <input id="new-customer-dob" type="date" v-model="newCustomer.DateOfBirth" required>
+          </div>
+          <div>
+            <label for="new-customer-phone-preselection">Phone Preselection</label>
+            <input id="new-customer-phone-preselection" v-model="newCustomer.PhonePreselection" required>
+          </div>
+          <div>
+            <label for="new-customer-allergy">Allergy</label>
+            <input id="new-customer-allergy" v-model="newCustomer.Allergy" required>
+          </div>
+          <div>
+            <label for="new-customer-handicap">Handicap</label>
+            <input id="new-customer-handicap" type="checkbox" v-model="newCustomer.Handicap">
+          </div>
+          <div>
+            <label for="new-customer-address">Address</label>
+            <input id="new-customer-address" v-model="newCustomer.Address" required>
+          </div>
+          <div>
+            <label for="new-customer-subscription">Subscription</label>
+            <input id="new-customer-subscription" type="checkbox" v-model="newCustomer.Subscription">
+          </div>
+        
+          <button type="submit">Create Customer</button>
+        </form>
       </div>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    data() {
-  return {
-    currentStep: 1,
-    reservationCreated: false,
-   customer: {
-    LastName: '',
-    FirstName: '',
-    Email: '',
-    PhoneNumber: '',
-    DocumentNumber: '',
-    DateOfBirth: '',
-    Allergy: '',
-    Handicap: false,
-    Address: '',
-    CustomerID : ''
-   },
-    customers: [], // Add this line to define an empty array for customers
-  };
-},
+</template>
 
-    methods: {
-      nextStep() {
-        this.currentStep += 1;
+<script>
+export default {
+  data() {
+    return {
+      customers: [],
+      rooms: [],
+      services: [],
+      reservation: {
+        CustomerID: '',
+        RoomID: '',
+        Start: '',
+        End: '',
+        Cost: 0,
+        ComingTime: '',
+        LeavingTime: '',
+        BusinessGuest: false,
+        Parking: false,
+        reservationId: 0
       },
-      previousStep() {
-        this.currentStep -= 1;
+      newCustomer: {
+        LastName: '',
+        FirstName: '',
+        Email: '',
+        PhonePreselection: '',
+        PhoneNumber: '',
+        DocumentNumber: '',
+        DateOfBirth: '',
+        Allergy: '',
+        Handicap: false,
+        Address: '',
+        Subscription: false
+    
       },
-      createCustomer() {
-  if (
-    this.customer.lastName &&
-    this.customer.firstName &&
-    this.customer.email &&
-    this.customer.phoneNumber &&
-    this.customer.documentNumber &&
-    this.customer.dateOfBirth
-  ) {
-    // Generate a unique customer ID
-    let maxCustomerId = Math.max(...this.customers.map(cust => cust.customerId), 0); // Make sure to handle the case where there are no existing customers
-    this.customer.customerId = maxCustomerId + 1;
+      ReservationID : 0,
+      showNewCustomerForm: false,
+      reservationCreated: false,
+      showAddServicesButton: true,
+      selectedCustomerName: '',
+      selectedRoom: '',
+      newServiceName: '',
+      services: [],
+      selectedServices: [],
 
-    // Perform any additional logic or API calls here
-    fetch('/Home/AddCustomer', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(this.customer),
-    })
-    .then(response => {
-      if (response.ok) {
-        console.log('Customer added successfully');
-        // Move to the next step or perform any other necessary actions
-        this.nextStep();
-      } else {
-        throw new Error('Failed to add customer');
+    };
+  },
+  mounted() {
+    this.fetchCustomers(); 
+    this.fetchRooms();
+    this.fetchServices();// Volanie funkcie na načítanie údajov po načítaní komponentu
+  },
+  computed: {
+  totalCost() {
+    if (this.reservation.Start && this.reservation.End && this.reservation.RoomID) {
+      const startDate = new Date(this.reservation.Start);
+      const endDate = new Date(this.reservation.End);
+      const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+      const room = this.rooms.find(room => room.RoomID === this.reservation.RoomID);
+      let cost = days * room.Cost;
+
+      if (this.reservation.BusinessGuest) {
+        // Add additional cost for business guest
+        cost += 50;
       }
-    })
-    .catch(error => {
-      console.error('Error adding customer:', error);
-    });
-  } else {
-    alert('Please fill in all fields for the new customer.');
+
+      if (this.reservation.Parking) {
+        // Add additional cost for parking
+        cost += 10;
+      }
+
+      return cost.toFixed(2);
+    }
+
+    return 0;
   }
 },
+  methods: {
+    async submitForm() {
+      this.reservation.Cost = this.totalCost;
+      try {
+        const response = await fetch('/Home/AddReservation', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(this.reservation)
+        });
 
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Reservation created successfully');
 
-      createReservation() {
-        // TODO: Implement reservation creation logic
-        // Once the reservation is created, set reservationCreated to true
-        // and display the success message and reservation details
-        this.reservationCreated = true;
-      },
+           // Check the reservationId value
+            console.log('Reservation ID:', data.reservationId);
+
+          this.ReservationID = data.reservationId;
+          
+
+          // Clear the form or redirect to another page
+          this.reservationCreated = true;
+          this.selectedCustomerName = this.customers.find(customer => customer.customerId === this.reservation.CustomerID).person.firstName + ' ' + this.customers.find(customer => customer.customerId === this.reservation.CustomerID).person.lastName;
+          this.selectedRoom = this.rooms.find(room => room.RoomID === this.reservation.RoomID).RoomID;
+        } else {
+          console.error('Failed to create reservation');
+          // Handle error case
+        }
+      } catch (error) {
+        console.error('An error occurred:', error);
+        // Handle error case
+      }
     },
-  };
-  </script>
 
-<style scoped>
-.edit-button{
-  padding: 10px 20px;
-  margin-bottom: 10px;
-  border: none;
-  border-radius: 5px;
-  background-color: #2196f3;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
+    getServiceName(serviceId) {
+      return this.services.find(service => service.ServiceID === serviceId).Name;
+    },
+
+    updateReservation(reservation) {
+  // Implementation of reservation update
+  console.log('Updating reservation:', reservation);
+  reservation.editable = false; // Close the editing mode
+
+  // Format the date to 'YYYY-MM-DD' format
+  reservation.Start = new Date(reservation.Start).toISOString().split('T')[0];
+  reservation.End = new Date(reservation.End).toISOString().split('T')[0];
+  
+  //format the parking and business guest to integer
+  reservation.Parking = reservation.Parking ? 1 : 0;
+  reservation.BusinessGuest = reservation.BusinessGuest ? 1 : 0;
+
+  // Send the data to the server
+  fetch('/Home/UpdateReservation', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(reservation),
+  })
+  .then(response => {
+    if (response.ok) {
+      console.log('Reservation updated successfully');
+    } else {
+      throw new Error('Failed to update reservation');
+    }
+  })
+  .catch(error => {
+    console.error('Error updating reservation:', error);
+  });
+},
+
+    fetchCustomers() {
+  fetch('Customers/GetCustomers') // Replace with the appropriate endpoint URL of your servlet
+    .then(response => response.json())
+    .then(data => {
+      // Set the retrieved customer data to the "customers" variable
+      this.customers = data.map(customer => ({ ...customer, editable: false }));
+    })
+    .catch(error => {
+      console.error('Error fetching customers:', error);
+    });
+},
+fetchRooms() {
+      fetch('/Home/Rooms/GetRooms') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
+        .then(response => response.json())
+        .then(data => {
+          this.rooms = data.map(room => ({ ...room, editable: false })); // Nastavenie údajov do premennej rooms
+        })
+        .catch(error => {
+          console.error('Error fetching rooms:', error);
+        });
+    },
+
+
+  fetchServices() {
+      fetch('/Home/Services/GetServices') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
+        .then(response => response.json())
+        .then(data => {
+          this.services = data.map(service => ({ ...service, editable: false })); // Nastavenie údajov do premennej rooms
+        })
+        .catch(error => {
+          console.error('Error fetching services:', error);
+        });
+    },
+
+addNewCustomer() {
+      this.showNewCustomerForm = true;
+    },
+
+    createCustomer() {
+      // Send a POST request to the servlet to create a new customer
+      fetch('/Home/AddCustomer', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(this.newCustomer),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          // Add the newly created customer to the customers array
+          this.customers.push(data);
+          
+          // Close the popup form
+          this.showNewCustomerForm = false;
+
+          // Set the newly created customer as the selected value in the select element
+          this.reservation.CustomerID = data.customerId;
+
+        })
+        .catch((error) => {
+          console.error('Error creating customer:', error);
+          // Handle error case
+        });
+    },
+
+    addReservationServices(){
+      // Send a POST request to the servlet to add a new service to the reservation
+      fetch('/Home/AddReservationServices', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ reservationId: this.ReservationID, serviceIds: this.selectedServices }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          this.newServiceName = '';
+
+           // Hide the button
+          this.showAddServicesButton = false;
+        })
+        .catch((error) => {
+          console.error('Error adding service:', error);
+          // Handle error case
+        });
+
+    }
+  }
+};
+</script>
+
+<style>
+.reservation-form {
+  max-width: 400px;
+  margin: 0 auto;
 }
-.edit-button:hover {
-  background-color: #13568e;
+
+.reservation-form h2 {
+  text-align: center;
 }
-.ok-button{
-  padding: 10px 10px;
-  margin-bottom: 10px;
-  border: none;
-  border-radius: 5px;
-  background-color: #2196f3;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
+
+.reservation-form form {
+  display: flex;
+  flex-direction: column;
 }
-.ok-button:hover {
-  background-color: #13568e;
+
+.reservation-form label {
+  margin-bottom: 0.5rem;
 }
-.delete-button{
-  padding: 10px 10px;
-  margin-bottom: 10px;
-  border: none;
-  border-radius: 5px;
-  background-color: #f32f21;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-}
-.delete-button:hover {
-  background-color: #951e16;
-}
-input[type="text"],
-input[type="date"],
-input[type="time"] {
-  padding: 8px; /* upravte podle potřeby */
-  border: none; /* odstranění ohraničení */
-  border-radius: 4px; /* zaoblené rohy */
-  font-size: 16px; /* velikost písma */
-  border: 1px solid #2196F3;
-}
-input[type="number"] {
-  padding: 8px; /* upravte podle potřeby */
-  border: none; /* odstranění ohraničení */
-  border-radius: 4px; /* zaoblené rohy */
-  font-size: 16px; /* velikost písma */
-  border: 1px solid #2196F3;
-}
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: inner-spin-button; /* Nastavení výchozího vzhledu */
-  appearance: inner-spin-button;
-  color: #2196F3; /* Barva šipek */
-  font-size: 16px; /* Velikost písma šipek */
-}
-select{
-  padding: 8px; /* upravte podle potřeby */
-  border: none; /* odstranění ohraničení */
-  border-radius: 4px; /* zaoblené rohy */
-  font-size: 16px; /* velikost písma */
-  border: 1px solid #2196F3;
+
+.reservation-form input,
+.reservation-form select {
+  margin-bottom: 1rem;
 }
 </style>

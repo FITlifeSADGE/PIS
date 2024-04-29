@@ -30,17 +30,21 @@ public class Reservation {
     @Column(name = "End")
     private Date end;
 
+    @Temporal(TemporalType.TIME)
+    @Column(name = "CommingTime")
+    private Time commingTime;
+
+    @Temporal(TemporalType.TIME)
+    @Column(name = "LeavingTime")
+    private Time leavingTime;
+
     @Column(name = "State")
     private String state;
 
     @Column(name = "Cost")
     private float cost;
 
-    @Column(name = "CommingTime")
-    private Time commingTime;
-
-    @Column(name = "LeavingTime")
-    private Time leavingTime;
+ 
 
     @Column(name = "BusinessGuest")
     private boolean businessGuest;
@@ -48,7 +52,17 @@ public class Reservation {
     @Column(name = "Parking")
     private boolean parking;
 
+    // CustomerID and RoomID
+    @ManyToOne
+    @JoinColumn(name = "CustomerID")
+    private Customer customer;
+
+    @ManyToOne
+    @JoinColumn(name = "RoomID")
+    private Room room;
+
     // Getters and Setters
+
     public int getReservationId() {
         return reservationId;
     }
@@ -112,6 +126,8 @@ public class Reservation {
         this.businessGuest = businessGuest;
     }
 
+    
+
     public boolean isParking() {
         return parking;
     }
@@ -120,13 +136,41 @@ public class Reservation {
         this.parking = parking;
     }
 
-    public void updateReservation(Date start, Date end, float cost, String state, boolean businessGuest, boolean parking) {
+    public Customer getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+   
+    public void setCustomerID(int customerID) {
+        this.customer = new Customer();
+        this.customer.setCustomerId(customerID);
+    }
+
+    public void setRoomID(int roomID) {
+        this.room = new Room();
+        this.room.setRoomId(roomID);
+    }
+
+    public Room getRoom() {
+        return room;
+    }
+
+    public void setRoom(Room room) {
+        this.room = room;
+    }
+
+    public void updateReservation(Date start, Date end, float cost, String state, boolean businessGuest, boolean parking, Time commingTime, Time leavingTime) {
         this.start = start;
         this.end = end;
         this.cost = cost;
         this.state = state;
         this.businessGuest = businessGuest;
         this.parking = parking;
+        this.commingTime = commingTime;
+        this.leavingTime = leavingTime;
     }
 
     public void removeServices(EntityManager em) {
@@ -134,8 +178,6 @@ public class Reservation {
           .setParameter("reservationId", this.reservationId)
           .executeUpdate();
     }
-    
-
 
     @Override
     public String toString() {
