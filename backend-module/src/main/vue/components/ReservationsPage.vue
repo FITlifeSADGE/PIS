@@ -90,7 +90,9 @@
               <button v-if="reservation.editable" class="delete-button" @click="deleteReservation(reservation)">Delete</button>
             </td>
             <td>
-              <button v-if="!reservation.editable" :disabled="!isDateValid" @click="toggleCheckIn(reservation)">Check-In</button>
+              <button v-if="reservation.State==='Pending'" class="edit-button" @click="toggleCheckIn(reservation)">Check-In</button>
+              <button v-else-if="reservation.State==='Confirmed'" class="edit-button" @click="toggleCheckIn(reservation)">Check-Out</button>
+              <p v-else-if="reservation.State==='Paid'">Paid</p>
             </td>
           </tr>
         </tbody>
@@ -102,16 +104,29 @@
   
     <div v-if="popup" class="modal">
       <div class="modal-content">
-        <p>Reservation</p>
-        <table class="threadTable" style="width: 20%;">
-          <tbody>
-            <tr v-for="reservation in reservations" :key="reservationCheckIn.ReservationID" v-if="reservation.ReservationID === reservationCheckIn.ReservationID">
-              <th> Room: </th><td>{{ reservation.RoomID }}</td>
-              <th> Cost: </th><td>{{ reservation.Cost }}</td>
-            </tr>
-          </tbody>
-        </table>
-        <button class="button" @click="closePopupLCheckIn()">Check-In</button> 
+          <div>
+            <div v-for="reservation in reservations" :key="reservationCheckIn.ReservationID" v-if="reservation.ReservationID === reservationCheckIn.ReservationID">
+              <p>First Name: {{ reservation.CustomerFirstName }}</p>
+              <p>Last Name: {{ reservation.CustomerLastName}}</p>
+              <p>Email: {{ reservation.CustomerName}}</p>
+              <p>Start Date: {{ formatDate(reservation.Start) }}</p>
+              <p> End Date: {{ formatDate(reservation.End) }}</p>
+              <p> Room: {{ reservation.RoomID }}</p>
+              <p> Cost: {{ reservation.Cost }}</p>
+              <p> Bussines Guest: {{ reservation.BusinessGuest }}</p>
+              <p> Parking: {{ reservation.Parking }}</p>
+              <p> Services: </p>
+              <div v-for="service in reservation.ServiceIDs" :key="reservation.ID">
+                <ul>
+                  <li>{{ getServiceName(service) }}</li> 
+                </ul>
+              </div>
+
+              <button v-if="reservation.State==='Pending'" class="button" @click="closePopupCheckIn(reservation)">Check-In</button> 
+              <button v-else-if="reservation.State==='Confirmed'" class="button" @click="closePopupCheckIn(reservation)">Check-Out</button> 
+              </div>
+          </div>
+          </table>
         <button class="button" @click="closePopupCancel()">Cancel</button> 
       </div>
     </div>
@@ -243,6 +258,8 @@ export default {
               data.forEach(customer => {
                 if (customer.customerId === customerID) {
                   reservation.CustomerName = customer.person.email; // Assuming the API returns the customer's email as 'email'
+                  reservation.CustomerFirstName = customer.person.firstName; // Assuming the API returns the customer's email as 'email'
+                  reservation.CustomerLastName = customer.person.lastName; // Assuming the API returns the customer's email as 'email'
                 }
               });
             });
@@ -318,16 +335,24 @@ export default {
         console.error('Error deleting reservation:', error);
       });
     },
-    closePopupCheckIn(){
-    this.editTable = !this.editTable;
-    this.popup = !this.popup;
+    closePopupCheckIn(reservation){
+      if(reservation.State === "Pending")
+        reservation.State = "Confirmed";
+      else if(reservation.State === "Confirmed")
+        reservation.State = "Paid";
+      this.editTable = !this.editTable;
+      this.popup = !this.popup;
     },
     closePopupCancel(){
       this.popup = !this.popup;
     },
     toggleCheckIn(Reservation){
+      // if(Reservation.state === "Pending")
+
+      // if(Reservation.state === "Confirmed")
       this.popup = !this.popup;
       this.reservationCheckIn = Reservation;
+      console.log(this.reservations);
       console.log('Check-In:', this.reservationCheckIn);
     },
     showModalFunc(reservation) {
