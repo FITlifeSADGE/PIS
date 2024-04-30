@@ -85,12 +85,12 @@
               <input v-if="reservation.editable" type="checkbox" v-model="reservation.Parking">
             </td>
             <td>
-              <button v-if="!reservation.editable" class="edit-button" @click="toggleEdit(reservation)">Edit</button>
+              <button v-if="!reservation.editable" :disabled="!isDateValid" @click="toggleEdit(reservation)">Edit</button>
               <button v-else @click="updateReservation(reservation)" :disabled="!isDateValid">OK</button>
               <button v-if="reservation.editable" class="delete-button" @click="deleteReservation(reservation)">Delete</button>
             </td>
             <td>
-              <button v-if="!reservation.editable" class="edit-button" @click="toggleCheckIn(reservation)">Check-In</button>
+              <button v-if="!reservation.editable" :disabled="!isDateValid" @click="toggleCheckIn(reservation)">Check-In</button>
             </td>
           </tr>
         </tbody>
@@ -366,6 +366,15 @@ export default {
     const month = parseInt(parts[1], 10) - 1; // Měsíce jsou v JavaScriptu 0-indexované
     const day = parseInt(parts[2], 10);
     const date = new Date(year, month, day).getTime();
+    console.log('Date:', date);
+    if (typeof reservation.End === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(reservation.End)) {
+      const endParts = reservation.End.split('-');
+      const endYear = parseInt(endParts[0], 10);
+      const endMonth = parseInt(endParts[1], 10) - 1;
+      const endDay = parseInt(endParts[2], 10);
+      reservation.End = new Date(endYear, endMonth, endDay).getTime();
+    }
+    console.log('Reservation end:', reservation.End);
     if (date >= reservation.End) {
       this.invalidStartDate = true;
     }
@@ -386,6 +395,15 @@ export default {
     const month = parseInt(parts[1], 10) - 1; // Měsíce jsou v JavaScriptu 0-indexované
     const day = parseInt(parts[2], 10);
     const date = new Date(year, month, day).getTime();
+    console.log('Date:', date);
+    if (typeof reservation.Start === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(reservation.End)) {
+      const endParts = reservation.End.split('-');
+      const endYear = parseInt(endParts[0], 10);
+      const endMonth = parseInt(endParts[1], 10) - 1;
+      const endDay = parseInt(endParts[2], 10);
+      reservation.Start = new Date(endYear, endMonth, endDay).getTime();
+    }
+    console.log('Reservation start:', reservation.Start);
     if (date <= reservation.Start) {
       this.invalidEndDate = true;
     }
