@@ -24,7 +24,7 @@
           <!-- Data rows -->
           <tr v-for="reservation in reservations" :key="reservation.ReservationID">
             <!-- Display reservation details -->
-            <td>{{ reservation.ReservationID }}</td>
+            <!-- <td>{{ reservation.ReservationID }}</td> -->
             <td>
               <span v-if="!reservation.editable">{{ reservation.CustomerName }}</span>
               <input v-if="reservation.editable" type="text" v-model="reservation.CustomerName">
