@@ -1,14 +1,15 @@
 package io.openliberty.guides.hello.Rooms;
 
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import jakarta.persistence.TypedQuery;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -18,7 +19,7 @@ import jakarta.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.openliberty.guides.hello.DatabaseUtil;
+import io.openliberty.guides.hello.model.Room;
 
 
 @WebServlet("/Rooms/GetRooms")
@@ -38,25 +39,24 @@ public class RoomsServlet extends HttpServlet {
         }
         
         System.out.println("Get for Room Data");
-        try {
-            // Získanie údajov zo servera (napr. z databázy)
-            ResultSet resultSet = DatabaseUtil.Selecet("Room");
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-hibernate-mysql");
+        EntityManager em = emf.createEntityManager();
 
-            List<Map<String, Object>> rows = new ArrayList<>();
-            ResultSetMetaData metaData = resultSet.getMetaData();
-            int columnCount = metaData.getColumnCount();
+        TypedQuery<Room> query = em.createNamedQuery("Room.allRows", Room.class);
+        List<Room> rooms = query.getResultList();
 
-            while (resultSet.next()) 
-            {
-                Map<String, Object> rowData = new HashMap<>();
-                for (int i = 1; i <= columnCount; i++) 
-                {
-                    String columnName = metaData.getColumnName(i);
-                    Object value = resultSet.getObject(i);
-                    rowData.put(columnName, value);
-                }
-                rows.add(rowData);
-            }
+        // Transform data 
+        List<Map<String, Object>> rows = new ArrayList<>();
+        for (Room room : rooms) {
+            Map<String, Object> rowData = new HashMap<>();
+            rowData.put("RoomID", room.getRoomId());
+            rowData.put("TypeRoom", room.getTypeRoom());
+            rowData.put("Cost", room.getCost());
+            rowData.put("Equip", room.getEquip());
+            rowData.put("State", room.getState());
+            rowData.put("Beds", room.getBeds());
+            rows.add(rowData);
+        }
 
             // Konverzia údajov na JSON reťazec
             ObjectMapper mapper = new ObjectMapper();
@@ -66,10 +66,5 @@ public class RoomsServlet extends HttpServlet {
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(jsonString);
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            // Spracovanie chyby
-        }
     }
 }

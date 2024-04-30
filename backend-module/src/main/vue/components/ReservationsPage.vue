@@ -37,9 +37,7 @@
               <span v-if="!reservation.editable">
                 {{ reservation.ServiceIDs ? reservation.ServiceIDs.map(id => services_available.find(service => service.ID === id).Name).join(', ') : '' }}
               </span>
-              <select v-if="reservation.editable" v-model="reservation.ServiceIDs" multiple>
-                <option v-for="service in services_available" :key="service.ID" :value="service.ID">{{ service.Name }}</option>
-              </select>
+              <button v-else @click="showModalFunc(reservation)">Edit Services</button>
             </td>
 
 
@@ -93,21 +91,41 @@
       </table>
     </div>
 
+    <div v-if="isLoading">
+      <b-spinner label="Loading..."></b-spinner>
+    </div>
   
     <div v-if="popup" class="modal">
       <div class="modal-content">
         <p>Reservation</p>
-        <table class="threadTable">
+        <table class="threadTable" style="width: 20%;">
           <tbody>
-            <tr v-for="reservation in reservations" :key="this.reservationCheckIn">
-              <th> Room: </th><td>{{ reservation.Room }}</td>
+            <tr v-for="reservation in reservations" :key="reservationCheckIn.ReservationID" v-if="reservation.ReservationID === reservationCheckIn.ReservationID">
+              <th> Room: </th><td>{{ reservation.RoomID }}</td>
+              <th> Cost: </th><td>{{ reservation.Cost }}</td>
             </tr>
           </tbody>
         </table>
-        <button class="button" @click="closePopupLCheckIn">Check-In</button> 
-        <button class="button" @click="closePopupCancel">Cancel</button> 
+        <button class="button" @click="closePopupLCheckIn()">Check-In</button> 
+        <button class="button" @click="closePopupCancel()">Cancel</button> 
       </div>
     </div>
+
+    <div v-if="showModal" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="showModal = false">&times;</span>
+        <h4>Select Services</h4>
+          <div v-for="reservation in reservations" :key="selectedServices.ReservationID" v-if="reservation.ReservationID === selectedServices.ReservationID">
+            <div v-for="service in services_available" :key="service.ID">
+              <input type="checkbox" :id="service.ID" :value="service.ID" v-model="reservation.ServiceIDs">
+              <label :for="service.ID">{{ getServiceName(service.ID) }}</label>
+            </div>
+          </div>
+        <button @click="showModal = false">Confirm</button>
+      </div>
+    </div>
+
+    
   </div>
 </template>
 
@@ -124,76 +142,75 @@ export default {
       services_available: [], // array to store available services
       popup: false,
       reservationCheckIn: [],
-    
+      showModal: false,
+      selectedServices: [],
+      isLoading: true,
     };
   },
-  mounted() {
-    this.fetchReservationsAndServices();
+  async mounted() {
+    await this.fetchServices();
+    await this.fetchReservationsAndServices();
+    await this.fetchReservationServices();
+    this.isLoading = false;
   },
   methods: {
-    fetchReservationsAndServices() {
-      fetch('/Home/Reservations/GetReservations')
-        .then(response => response.json())
-        .then(data => {
-          this.reservations = data.map(reservation => ({ ...reservation, editable: false }));
-          console.log('Reservations:', this.reservations);
-          // After fetching reservations data, call the method to fetch reservation services
-          this.fetchReservationServices(); 
-        })
-        .catch(error => {
-          console.error('Error fetching reservations:', error);
-        });
+    async fetchServices() {
+      try {
+        const response = await fetch('/Home/Services/GetServices');
+        const data = await response.json();
+        this.services_available = data.map(service => ({ ID: service.ServiceID, Name: service.Name, ...service, editable: false }));
+      } catch (error) {
+        console.error('Error fetching services:', error);
+      }
     },
-    fetchReservationServices() {
-  fetch('/Home/Reservations/GetReservationServices')
-    .then(response => response.json())
-    .then(data => {
-      // Create an object to store services indexed by their service ID
-      const serviceMap = {};
+    async fetchReservationsAndServices() {
+      try {
+        const response = await fetch('/Home/Reservations/GetReservations');
+        const data = await response.json();
+        this.reservations = data.map(reservation => ({ ...reservation, editable: false }));
+      } catch (error) {
+        console.error('Error fetching reservations:', error);
+      }
+    },
+    async fetchReservationServices() {
+      try {
+        const response = await fetch('/Home/Reservations/GetReservationServices');
+        const data = await response.json();
+        // Create an object to store services indexed by their service ID
+        const serviceMap = {};
 
-      this.fetchServices(); // Fetch available services
-      // Populate the serviceMap with service objects
-      data.forEach(service => {
-        const serviceID = service.ServiceID;
-        if (!serviceMap[serviceID]) {
-          serviceMap[serviceID] = {
-            ServiceID: serviceID,
-            reservations: []
-          };
-        }
-        serviceMap[serviceID].reservations.push(service.ReservationID);
-      });
+        // Populate the serviceMap with service objects
+        data.forEach(service => {
+          const serviceID = service.ServiceID;
+          if (!serviceMap[serviceID]) {
+            serviceMap[serviceID] = {
+              ServiceID: serviceID,
+              reservations: []
+            };
+          }
+          serviceMap[serviceID].reservations.push(service.ReservationID);
+        });
 
-      // Convert the serviceMap values back to an array of service objects
-      this.services = Object.values(serviceMap);
+        // Convert the serviceMap values back to an array of service objects
+        this.services = Object.values(serviceMap);
 
-      // Log or inspect the services array to ensure correct associations
-      console.log('Services:', this.services);
+        // Log or inspect the services array to ensure correct associations
+        console.log('Services:', this.services);
 
-      // Populate the ServiceIDs array for each reservation
-      this.reservations.forEach(reservation => {
-        const serviceIDs = data
-          .filter(service => service.ReservationID === reservation.ReservationID)
-          .map(service => service.ServiceID);
-        reservation.ServiceIDs = serviceIDs;
-      });
-    })
-    .catch(error => {
-      console.error('Error fetching services:', error);
-    });
-},
+        // Populate the ServiceIDs array for each reservation
+        this.reservations.forEach(reservation => {
+          const serviceIDs = data
+            .filter(service => service.ReservationID === reservation.ReservationID)
+            .map(service => service.ServiceID);
+          reservation.ServiceIDs = serviceIDs;
+        });
 
-fetchServices() {
-  fetch('/Home/Services/GetServices')
-    .then(response => response.json())
-    .then(data => {
-      // Create an array of service objects with an 'ID' property
-      this.services_available = data.map(service => ({ ID: service.ServiceID, Name: service.Name, ...service, editable: false }));
-    })
-    .catch(error => {
-      console.error('Error fetching services:', error);
-    });
-},
+        console.log('Reservations with services:', this.reservations);
+      } catch (error) {
+        console.error('Error fetching reservation services:', error);
+      }
+    },
+
 
 fetchCustomerNames() {
     // Extract unique customer IDs from reservations
@@ -287,9 +304,20 @@ fetchCustomerNames() {
     toggleCheckIn(Reservation){
       this.popup = !this.popup;
       this.reservationCheckIn = Reservation;
-    }
-
-
+      console.log('Check-In:', this.reservationCheckIn);
+    },
+    showModalFunc(reservation) {
+      this.showModal = true;
+      this.selectedServices = reservation;
+      console.log('Selected services:', this.selectedServices);
+    },
+    getServiceName(serviceId) {
+      console.log('Service ID:', serviceId);
+      console.log('Services:', this.services_available);
+      const service_name = this.services_available.find(service => service.ID === serviceId).Name;
+      console.log('Service name:', service_name);
+      return service_name;
+    },
   }
 };
 
@@ -365,7 +393,7 @@ select{
   font-size: 16px; /* velikost písma */
   border: 1px solid #2196F3;
 }
-.modal {
+/* .modal {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -375,8 +403,6 @@ select{
   top: 0;
   width: 100%;
   height: 100%;
-  /* width: 150px;
-  height: 100px; */
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.4);
 }
@@ -387,5 +413,30 @@ select{
   padding: 20px;
   border: 1px solid #888;
   width: 80%;
+} */
+.modal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  width: 300px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.close {
+  float: right;
+  font-size: 28px;
+  cursor: pointer;
 }
 </style>
