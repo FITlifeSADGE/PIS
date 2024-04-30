@@ -26,8 +26,8 @@
             <!-- Display reservation details -->
             <td>{{ reservation.ReservationID }}</td>
             <td>
-              <span v-if="!reservation.editable">{{ reservation.CustomerID }}</span>
-              <input v-if="reservation.editable" type="text" v-model="reservation.CustomerID">
+              <span v-if="!reservation.editable">{{ reservation.CustomerName }}</span>
+              <input v-if="reservation.editable" type="text" v-model="reservation.CustomerName">
             </td>
             <td>
               <span v-if="!reservation.editable">{{ reservation.RoomID }}</span>
@@ -44,12 +44,18 @@
 
 
             <td>
-              <span v-if="!reservation.editable">{{ new Date(reservation.Start).toISOString().split('T')[0] }}</span>
-              <input v-if="reservation.editable" type="date" v-model="reservation.Start">
+              <span v-if="!reservation.editable">{{ formatDate(reservation.Start) }}</span>
+              <input v-if="reservation.editable" type="date" 
+                    :style="{ 'border': invalidStartDate ? '2px solid red' : '' }"
+                    :value="formatDate(reservation.Start)" 
+                    @input="updateStartDate($event.target.value, reservation)" />
             </td>
             <td>
-              <span v-if="!reservation.editable">{{ new Date(reservation.End).toISOString().split('T')[0] }}</span>
-              <input v-if="reservation.editable" type="date" v-model="reservation.End">
+              <span v-if="!reservation.editable">{{ formatDate(reservation.End) }}</span>
+              <input v-if="reservation.editable" type="date" 
+                    :style="{ 'border': invalidEndDate ? '2px solid red' : '' }"
+                    :value="formatDate(reservation.End)" 
+                    @input="updateEndDate($event.target.value, reservation)" />
             </td>
             <!-- <td>
               <span v-if="!reservation.editable">{{ reservation.State }}</span>
@@ -80,7 +86,7 @@
             </td>
             <td>
               <button v-if="!reservation.editable" class="edit-button" @click="toggleEdit(reservation)">Edit</button>
-              <button v-else class="ok-button" @click="updateReservation(reservation)">OK</button>
+              <button v-else @click="updateReservation(reservation)" :disabled="!isDateValid">OK</button>
               <button v-if="reservation.editable" class="delete-button" @click="deleteReservation(reservation)">Delete</button>
             </td>
             <td>
@@ -92,7 +98,6 @@
     </div>
 
     <div v-if="isLoading">
-      <b-spinner label="Loading..."></b-spinner>
     </div>
   
     <div v-if="popup" class="modal">
@@ -145,13 +150,22 @@ export default {
       showModal: false,
       selectedServices: [],
       isLoading: true,
+      invalidEndDate: false,
+      invalidStartDate: false,
     };
   },
   async mounted() {
     await this.fetchServices();
     await this.fetchReservationsAndServices();
     await this.fetchReservationServices();
+    await this.fetchCustomerNames();
     this.isLoading = false;
+  },
+  computed: {
+    isDateValid() {
+      console.log('Invalid start date:', this.invalidStartDate);
+      return !this.invalidStartDate && !this.invalidEndDate;
+    },
   },
   methods: {
     async fetchServices() {
@@ -204,7 +218,6 @@ export default {
             .map(service => service.ServiceID);
           reservation.ServiceIDs = serviceIDs;
         });
-
         console.log('Reservations with services:', this.reservations);
       } catch (error) {
         console.error('Error fetching reservation services:', error);
@@ -212,25 +225,36 @@ export default {
     },
 
 
-fetchCustomerNames() {
-    // Extract unique customer IDs from reservations
-    const customerIDs = [...new Set(this.reservations.map(reservation => reservation.CustomerID))];
-    // Fetch customer names for each customer ID
-    customerIDs.forEach(customerID => {
-      fetch(`/Home/Customer/GetCustomerName?id=${customerID}`)
-        .then(response => response.json())
-        .then(data => {
-          // Find the reservation with the corresponding customer ID and update its customer name
-          const reservation = this.reservations.find(reservation => reservation.CustomerID === customerID);
-          if (reservation) {
-            reservation.CustomerName = data.name; // Assuming the API returns the customer's name as 'name'
+    async fetchCustomerNames() {
+      try {
+        // Extract unique customer IDs from reservations
+        const customerIDs = [...new Set(this.reservations.map(reservation => reservation.CustomerID))];
+
+        // Fetch customer data from server
+        const response = await fetch(`/Home/Customer/GetCustomers`);
+        const data = await response.json();
+        console.log('Customer data:', data);
+
+        // Loop through each customer ID to find and update reservations
+        customerIDs.forEach(customerID => {
+          const matchingReservations = this.reservations.filter(reservation => reservation.CustomerID === customerID);
+          if (matchingReservations.length > 0) {
+            matchingReservations.forEach(reservation => {
+              data.forEach(customer => {
+                if (customer.customerId === customerID) {
+                  reservation.CustomerName = customer.person.email; // Assuming the API returns the customer's email as 'email'
+                }
+              });
+            });
           }
-        })
-        .catch(error => {
-          console.error(`Error fetching customer name for ID ${customerID}:`, error);
         });
-    });
-  },
+        console.log('Reservations:', this.reservations);
+      } catch (error) {
+        console.error('Error fetching customer names:', error);
+      }
+    },
+
+
 
     toggleEdit(reservation) {
       reservation.editable = !reservation.editable; // Toggle the editable property
@@ -241,8 +265,8 @@ fetchCustomerNames() {
   reservation.editable = false; // Close the editing mode
 
   // Format the date to 'YYYY-MM-DD' format
-  reservation.Start = new Date(reservation.Start).toISOString().split('T')[0];
-  reservation.End = new Date(reservation.End).toISOString().split('T')[0];
+  reservation.Start = this.formatDate(reservation.Start);
+  reservation.End = this.formatDate(reservation.End);
   
   //format the parking and business guest to integer
   reservation.Parking = reservation.Parking ? 1 : 0;
@@ -318,6 +342,59 @@ fetchCustomerNames() {
       console.log('Service name:', service_name);
       return service_name;
     },
+    formatDate(ReservDate) {
+      if (!ReservDate) return ''; 
+
+      const dateObj = new Date(ReservDate);
+      const month = dateObj.getMonth() + 1;
+      const day = dateObj.getDate();
+      const year = dateObj.getFullYear();
+
+      const formattedMonth = month < 10 ? `0${month}` : `${month}`;
+      const formattedDay = day < 10 ? `0${day}` : `${day}`;
+
+      return `${year}-${formattedMonth}-${formattedDay}`;
+    },
+    updateStartDate(newValue, reservation) {
+    if (!newValue) {
+      reservation.Start = null;
+      return;
+    }
+
+    const parts = newValue.split('-');
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1; // Měsíce jsou v JavaScriptu 0-indexované
+    const day = parseInt(parts[2], 10);
+    const date = new Date(year, month, day).getTime();
+    if (date >= reservation.End) {
+      this.invalidStartDate = true;
+    }
+    else {
+      this.invalidStartDate = false;
+      this.invalidEndDate = false;
+    }
+    reservation.Start = new Date(year, month, day).getTime(); // Aktualizace s novým časovým razítkem v ms
+  },
+  updateEndDate(newValue, reservation) {
+    if (!newValue) {
+      reservation.End = null;
+      return;
+    }
+
+    const parts = newValue.split('-');
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1; // Měsíce jsou v JavaScriptu 0-indexované
+    const day = parseInt(parts[2], 10);
+    const date = new Date(year, month, day).getTime();
+    if (date <= reservation.Start) {
+      this.invalidEndDate = true;
+    }
+    else {
+      this.invalidEndDate = false;
+      this.invalidStartDate = false;
+    }
+    reservation.End = new Date(year, month, day).getTime(); // Aktualizace s novým časovým razítkem v ms
+  },
   }
 };
 
