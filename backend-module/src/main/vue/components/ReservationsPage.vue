@@ -4,13 +4,11 @@
       <table>
         <thead>
           <tr>
-            <th>Reservation ID</th>
             <th>Customer</th>
             <th>Room </th>
             <th>Services</th>
             <th>Start Date</th>
             <th>End Date</th>
-            <!-- <th>State</th> -->
             <th>Cost</th>
             <th>Comming Time</th>
             <th>Leaving Time</th>
@@ -23,8 +21,6 @@
         <tbody>
           <!-- Data rows -->
           <tr v-for="reservation in reservations" :key="reservation.ReservationID">
-            <!-- Display reservation details -->
-            <!-- <td>{{ reservation.ReservationID }}</td> -->
             <td>
               <span v-if="!reservation.editable">{{ reservation.CustomerName }}</span>
               <input v-if="reservation.editable" type="text" v-model="reservation.CustomerName">
@@ -126,7 +122,6 @@
               <button v-else-if="reservation.State==='Confirmed'" class="button" @click="closePopupCheckIn(reservation)">Check-Out</button> 
               </div>
           </div>
-          </table>
         <button class="button" @click="closePopupCancel()">Cancel</button> 
       </div>
     </div>
@@ -167,6 +162,7 @@ export default {
       isLoading: true,
       invalidEndDate: false,
       invalidStartDate: false,
+      rooms: [],
     };
   },
   async mounted() {
@@ -175,6 +171,7 @@ export default {
     await this.fetchReservationServices();
     await this.fetchCustomerNames();
     this.isLoading = false;
+    this.fetchRooms();
   },
   computed: {
     isDateValid() {
@@ -276,6 +273,49 @@ export default {
     toggleEdit(reservation) {
       reservation.editable = !reservation.editable; // Toggle the editable property
     },
+    fetchRooms() {
+      fetch('/Home/Rooms/GetRooms') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
+        .then(response => response.json())
+        .then(data => {
+          this.rooms = data.map(room => ({ ...room, editable: false })); // Nastavenie údajov do premennej rooms
+        })
+        .catch(error => {
+          console.error('Error fetching rooms:', error);
+        });
+    },
+    totalCost(reservation) {
+      console.log('Calculating total cost:', reservation)
+      if (reservation.Start && reservation.End && reservation.RoomID) {
+        const startDate = new Date(reservation.Start);
+        const endDate = new Date(reservation.End);
+        const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+        const room = this.rooms.find(room => room.RoomID === reservation.RoomID);
+        let cost = days * room.Cost;
+
+        if (reservation.BusinessGuest) {
+          // Add additional cost for business guest
+          cost += 50;
+        }
+
+        if (reservation.Parking) {
+          // Add additional cost for parking
+          cost += 10;
+        }
+
+        if (reservation.ServiceIDs) {
+          // Add additional cost for services
+          reservation.ServiceIDs.forEach(serviceID => {
+            const service = this.services_available.find(service => service.ID === serviceID);
+            cost += service.Cost;
+          });
+        }
+
+        return cost.toFixed(2);
+
+      }
+
+      return 0;
+    },
     updateReservation(reservation) {
   // Implementation of reservation update
   console.log('Updating reservation:', reservation);
@@ -289,6 +329,8 @@ export default {
   reservation.Parking = reservation.Parking ? 1 : 0;
   reservation.BusinessGuest = reservation.BusinessGuest ? 1 : 0;
 
+  reservation.Cost = this.totalCost(reservation);
+  console.log('Updated reservation:', reservation);
   // Send the data to the server
   fetch('/Home/Reservations/UpdateReservation', {
     method: 'POST',

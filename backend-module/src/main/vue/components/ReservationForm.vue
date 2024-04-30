@@ -249,7 +249,7 @@ export default {
             console.log('Reservation ID:', data.reservationId);
 
           this.ReservationID = data.reservationId;
-          
+          console.log('Reservation ID:', this.ReservationID);
 
           // Clear the form or redirect to another page
           this.reservationCreated = true;
@@ -271,12 +271,13 @@ export default {
 
     updateReservation(reservation) {
   // Implementation of reservation update
+  reservation.reservationId = this.ReservationID;
   console.log('Updating reservation:', reservation);
   reservation.editable = false; // Close the editing mode
 
   // Format the date to 'YYYY-MM-DD' format
-  reservation.Start = new Date(reservation.Start).toISOString().split('T')[0];
-  reservation.End = new Date(reservation.End).toISOString().split('T')[0];
+  reservation.Start = this.formatDate(reservation.Start);
+  reservation.End = this.formatDate(reservation.End);
   
   //format the parking and business guest to integer
   reservation.Parking = reservation.Parking ? 1 : 0;
@@ -372,6 +373,17 @@ addNewCustomer() {
 
     addReservationServices(){
       // Send a POST request to the servlet to add a new service to the reservation
+      console.log('Selected services:', this.selectedServices);
+      console.log('Reservation:', this.reservation);
+      if (this.selectedServices.length > 0) {
+        this.selectedServices.forEach(service => { 
+          let serviceCost = parseFloat(this.services.find(s => s.ServiceID === service).Cost);
+          this.reservation.Cost = parseFloat(this.reservation.Cost) + serviceCost;
+        });
+      }
+      console.log('New reservation: ', this.reservation);
+      console.log('Total cost:', this.reservation.Cost);
+      this.updateReservation(this.reservation);
       fetch('/Home/Reservations/AddReservationServices', {
         method: 'POST',
         headers: {
@@ -429,6 +441,19 @@ addNewCustomer() {
       } else {
         return true; // Je unikátní, protože takový zákazník neexistuje
       }
+    },
+    formatDate(ReservDate) {
+      if (!ReservDate) return ''; 
+
+      const dateObj = new Date(ReservDate);
+      const month = dateObj.getMonth() + 1;
+      const day = dateObj.getDate();
+      const year = dateObj.getFullYear();
+
+      const formattedMonth = month < 10 ? `0${month}` : `${month}`;
+      const formattedDay = day < 10 ? `0${day}` : `${day}`;
+
+      return `${year}-${formattedMonth}-${formattedDay}`;
     },
   },
   watch: {
