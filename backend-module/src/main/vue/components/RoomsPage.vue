@@ -1,5 +1,11 @@
 <template>
   <div class="table-container">
+
+    <label for="start">Start Date:</label>
+    <input type="date" id="start" v-model="filters.startDate">
+    <label for="end">End Date:</label>
+    <input type="date" id="end" v-model="filters.endDate">
+
     <table>
       <thead>
         <tr>
@@ -52,6 +58,7 @@
           <td></td> <!-- Empty cell for buttons -->
         </tr>
 
+
         <!-- Data rows -->
         <tr v-for="room in filteredRooms" :key="room.RoomID">
           <td v-if="!room.editable">{{ room.TypeRoom }}</td>
@@ -86,13 +93,16 @@ import Parent from './Parent.vue';
 export default {
   data() {
     return {
-      rooms: [], // pole na uchovávanie údajov
+      rooms: [],
+      reservations: [],
       filters: {
         TypeRoom: '',
         Cost: '',
         Equip: '',
         State: '',
-        Beds: ''
+        Beds: '',
+        startDate: '', // Add start date to filters
+        endDate: '',   // Add end date to filters
       },
       addingNew: false,
       newRoom: {
@@ -104,7 +114,12 @@ export default {
       }
     };
   },
+  mounted() {
+    this.fetchRooms(); // Volanie funkcie na načítanie údajov po načítaní komponentu
+    this.fetchReservationsAndServices();
+  },
   computed: {
+    
     filteredRooms() {
       // Filter rooms based on filter criteria
       return this.rooms.filter(room => {
@@ -112,17 +127,44 @@ export default {
           room.TypeRoom.toLowerCase().includes(this.filters.TypeRoom.toLowerCase()) &&
           room.Cost.toString().includes(this.filters.Cost) &&
           room.Equip.toLowerCase().includes(this.filters.Equip.toLowerCase()) &&
-          room.State.toLowerCase().includes(this.filters.State.toLowerCase()) &&
-          room.Beds.toString().includes(this.filters.Beds)
+          room.Beds.toString().includes(this.filters.Beds) &&
+          ((this.filters.startDate && this.filters.endDate) ? this.checkRoomAvailable(room.RoomID, this.reservations, this.filters.startDate, this.filters.endDate) : true ) &&
+          room.State.toLowerCase().includes(this.filters.State.toLowerCase())
         );
       });
     }
   },
-  mounted() {
-    this.fetchRooms(); // Volanie funkcie na načítanie údajov po načítaní komponentu
-  },
   methods: {
-    fetchRooms() {
+    checkRoomAvailable(roomID, reservations, startDate, endDate) {
+      console.log("CHECK DATE FOR ROOM");
+      
+      const parts = startDate.split('-');
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1; // Měsíce jsou v JavaScriptu 0-indexované
+      const day = parseInt(parts[2], 10);
+      const Startdate = new Date(year, month, day).getTime();
+
+      const parts1 = endDate.split('-');
+      const year1 = parseInt(parts1[0], 10);
+      const month1 = parseInt(parts1[1], 10) - 1;
+      const day1 = parseInt(parts1[2], 10);
+      const EndDate = new Date(year1, month1, day1).getTime();
+
+      for (const reservation of reservations) {
+        if (
+          roomID === reservation.RoomID &&
+          EndDate >= reservation.Start && 
+          Startdate <= reservation.End
+        ) {
+          return false;
+        }
+      }
+      return true;
+    },
+
+
+
+    async fetchRooms() {
       fetch('/Home/Rooms/GetRooms') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
         .then(response => response.json())
         .then(data => {
@@ -135,6 +177,17 @@ export default {
     toggleEdit(room) {
       room.editable = !room.editable; // Prepnutie hodnoty editable
     },
+
+    async fetchReservationsAndServices() {
+      try {
+        const response = await fetch('/Home/Reservations/GetReservations');
+        const data = await response.json();
+        this.reservations = data.map(reservation => ({ ...reservation, editable: false }));
+      } catch (error) {
+        console.error('Error fetching reservations:', error);
+      }
+    },
+
 
     updateRoom(room) {
       // Implementácia aktualizácie služby
