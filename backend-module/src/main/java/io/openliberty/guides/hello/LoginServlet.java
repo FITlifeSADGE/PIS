@@ -20,9 +20,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.openliberty.guides.hello.model.LoginRequest;
 
-import io.openliberty.guides.hello.model.Person;
+import io.openliberty.guides.hello.model.Employee;
+import io.openliberty.guides.hello.model.LoginRequest;
 
 // Hash
 import java.security.MessageDigest;
@@ -42,85 +42,60 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException { 
            
-        // JPA
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-hibernate-mysql");
-        EntityManager em = emf.createEntityManager();
-        try {
-            TypedQuery<Person> query = em.createNamedQuery("Person.findById", Person.class);
-            query.setParameter("id", 1);
-            Person person = query.getSingleResult();
-            
-            System.out.println(person);
-            
-        } catch (NoResultException e) {
-            // User not found
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            response.getWriter().write("User not found");
-        } finally {
-            em.close();
-            emf.close();
-        }
-
-
-        // JPA
-
+        // Load form data
         ObjectMapper mapper = new ObjectMapper();
         LoginRequest loginRequest = mapper.readValue(request.getInputStream(), LoginRequest.class);
         String username = loginRequest.getUsername();
         String password = hashPassword(loginRequest.getPassword());
 
-        if (username != null && password != null) {
-            try {
-                Connection connection = DatabaseUtil.getConnection();
-                String query = "SELECT * FROM Employee Join Person on Employee.EmployeeID = Person.PersonID Where Email=?;";
-                PreparedStatement preparedStatement = connection.prepareStatement(query);
-                preparedStatement.setString(1, username);
-                ResultSet resultSet = preparedStatement.executeQuery();
-                
-                if (resultSet.next()) {
-                    String dbPassword = resultSet.getString("Password"); // Získat heslo z databáze
-                    String dbRole = resultSet.getString("Assignment"); // Získat heslo z databáze
-                    if (password.equals(dbPassword)) {
-                        // User found and password matched, login successful
+        // Connect to DB
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-hibernate-mysql");
+        EntityManager em = emf.createEntityManager();
+        try {
 
-                        // Generate JWT token
-                        Algorithm algorithm = Algorithm.HMAC256("abcdefg");
-                        String token = JWT.create()
-                        .withIssuer("PIS")
-                        .withClaim("username", username)
-                        .withClaim("role", dbRole)
-                        .withIssuedAt(new Date())
-                        .withExpiresAt(new Date(System.currentTimeMillis() + 8 * 60 * 60 * 1000)) // expire in 8 hours
-                        .sign(algorithm);
+            // Search for user
+            TypedQuery<Employee> query = em.createNamedQuery("Employee.findByEmail", Employee.class);
+            query.setParameter("email", username);
 
-                        // Send token to client
-                        String jsonString = Json.createObjectBuilder()
-                            .add("token", token)
-                            .build()
-                            .toString();
+            Employee employee = query.getSingleResult();
+            String dbRole = employee.getAssignment();
+            String dbPassword = employee.getPassword();
 
-                        response.setStatus(HttpServletResponse.SC_OK);
-                        response.getWriter().write(jsonString);
-                    } else {
-                        // Password incorrect
-                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                        response.getWriter().write("Incorrect password");
-                    }
-                } else {
-                    // User not found
-                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                    response.getWriter().write("User not found");
-                }
-                
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // Interní chyba serveru
-                response.getWriter().write("Error: Unable to process login");
+            // Check password
+            if (password.equals(dbPassword)){
+
+                // Generate JWT token
+                Algorithm algorithm = Algorithm.HMAC256("abcdefg");
+                String token = JWT.create()
+                .withIssuer("PIS")
+                .withClaim("username", username)
+                .withClaim("role", dbRole)
+                .withIssuedAt(new Date())
+                .withExpiresAt(new Date(System.currentTimeMillis() + 8 * 60 * 60 * 1000)) // expire in 8 hours
+                .sign(algorithm);
+
+                // Send token to client
+                String jsonString = Json.createObjectBuilder()
+                    .add("token", token)
+                    .build()
+                    .toString();
+
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.getWriter().write(jsonString);
+
+            } else {
+                // Password incorrect
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                response.getWriter().write("Incorrect password");
             }
-        } else {
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Chybějící nebo neplatné údaje
-            response.getWriter().write("Error: Username or password not provided");
+            
+        } catch (NoResultException e) {
+            // User not found
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.getWriter().write("Incorrect username");
+        } finally {
+            em.close();
+            emf.close();
         }
     }
 

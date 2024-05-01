@@ -3,6 +3,8 @@ package io.openliberty.guides.hello.model;
 import jakarta.persistence.*;
 import java.util.Date;
 
+@NamedQuery(name = "Employee.findByEmail",
+            query = "SELECT e FROM Employee e JOIN e.person p WHERE p.email = :email")
 @Entity
 @Table(name = "Employee")
 public class Employee {
