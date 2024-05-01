@@ -40,16 +40,17 @@ export default {
       })
       // Login when token is not valid
       .then(response => {
+        console.log(!response.ok);
         if (!response.ok) {
           this.$router.push('/Home/login');
         }
         return response.json();
       }) 
-      .then(response => response.json())
       .then(data => {
         this.username = data.username; // Nastavenie údajov do premennej rooms
       })
       .catch(error => {
+        console.error('Error:', error);
         this.$router.push('/Home/login');
       });
     },

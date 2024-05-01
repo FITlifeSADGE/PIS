@@ -15,7 +15,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -28,16 +27,6 @@ public class ServicesServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {  
-
-        
-        // Koukne jestli existuje session pro uživatele
-        HttpSession session = request.getSession(false);
-        if (session == null) {
-            // Jinak vrátí na login page
-            System.out.println("Session not found");
-            response.sendRedirect("/Home/login");
-            return;
-        }
 
         System.out.println("Get for Service Data");
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-hibernate-mysql");
