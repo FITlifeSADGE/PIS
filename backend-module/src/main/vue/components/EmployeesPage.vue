@@ -11,7 +11,6 @@
   <th style="width: 100px;">Phone Number</th>
   <th style="width: 120px;">Document Number</th>
   <th style="width: 120px;">Date of Birth</th>
-  <th style="width: 100px;">Work Shift</th>
   <th style="width: 150px;">Password</th>
   <th style="width: 50px;">Edit</th>
   </tr>
@@ -31,8 +30,7 @@
           <td><input type="text" style="width: 80px;" v-model="newEmployee.PhonePreselection" placeholder="Phone Preselection"></td>
           <td><input type="number" style="width: 100px;" v-model="newEmployee.PhoneNumber" placeholder="Phone Number" :class="{ 'required-field-empty': newEmployee.PhoneNumber === '' }" required></td>
           <td><input type="text" style="width: 120px;" v-model="newEmployee.DocumentNumber" placeholder="Document Number" :class="{ 'required-field-empty': newEmployee.DocumentNumber === '' }" required></td>
-          <td><input type="date" style="width: 120px;" v-model="newEmployee.DateOfBirth" placeholder="Date of Birth" :class="{ 'required-field-empty': newEmployee.DateOfBirth === '' }" required></td>
-          <td><input type="date" style="width: 100px;" v-model="newEmployee.WorkShift" placeholder="Work Shift"></td>
+          <td><input type="date" style="width: 120px;" v-model="newEmployee.DateOfBirth" placeholder="Date of Birth" :class="{ 'required-field-empty': newEmployee.DateOfBirth === '' }" required :max="getFormattedDateYears(18)"></td>
           <td><input type="password" style="width: 150px;" v-model="newEmployee.Password" placeholder="Password" :class="{ 'required-field-empty': newEmployee.Password === '' }" required></td>
           <td>
             <button @click="addNewEmployee" class="edit-button">OK</button>
@@ -53,6 +51,8 @@
           <td><input type="text" style="width: 80px;" v-model="filters.PhonePreselection"></td>
           <td><input type="number" style="width: 100px;" v-model="filters.PhoneNumber"></td>
           <td><input type="text" style="width: 120px;" v-model="filters.DocumentNumber"></td>
+          <td></td>
+          <td></td>
           <td></td>
         </tr>
   
@@ -80,9 +80,7 @@
           <td v-else><input type="text" style="width: 120px;" v-model="employee.DocumentNumber" :style="{ width: '150px' }" :class="{ 'required-field-empty': employee.DocumentNumber === '' }" required></td>
           <td v-if="!employee.editable">{{ formatDate(employee.DateOfBirth) }}</td>
           <td v-else><input type="date" style="width: 120px;" v-model="employee.DateOfBirth" :style="{ width: '150px' }" :class="{ 'required-field-empty': employee.DateOfBirth === '' }" required></td>
-          <td v-if="!employee.editable">{{ formatDate(employee.WorkShift) }}</td>
-          <td v-else><input type="date" style="width: 100px;" v-model="employee.WorkShift" :style="{ width: '150px' }"></td>
-          <td v-if="!employee.editable">{{ employee.Password }}</td>
+          <td v-if="!employee.editable"></td>
           <td v-else><input type="password" style="width: 150px;" v-model="employee.Password" :style="{ width: '150px' }" :class="{ 'required-field-empty': employee.Password === '' }" required></td>
           <td>
             <button v-if="!employee.editable" class="edit-button" @click="toggleEdit(employee)">Edit</button>
@@ -157,6 +155,14 @@ export default {
     },
     toggleAddNew() {
       this.addingNew = true;
+    },
+    getFormattedDateYears(years = 0) {
+      const today = new Date();
+      today.setDate(today.getDate());
+      const day = today.getDate().toString().padStart(2, '0');
+      const month = (today.getMonth() + 1).toString().padStart(2, '0');
+      const year = (today.getFullYear()-years);
+      return `${year}-${month}-${day}`;
     },
     addNewEmployee() {
       if (this.validateNewEmployee()) {
