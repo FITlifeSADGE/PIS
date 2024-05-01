@@ -137,25 +137,25 @@
         <!-- Data rows -->
 
         <tr>
-          <td></td>
+          <td><input type=number v-model="filtersR.Room"></td>
           <td></td>
           <td><input type=date v-model="filtersR.Start"></td>
           <td><input type=date v-model="filtersR.End"></td>
 
           <td><input type=number min="0" v-model="filtersR.Cost"></td>
-          <td><input type=date v-model="filtersR.CommingTime"></td>
-          <td><input type=date v-model="filtersR.LeavingTime"></td>
+          <td><input type=time v-model="filtersR.CommingTime"></td>
+          <td><input type=time v-model="filtersR.LeavingTime"></td>
           <td> 
             <select v-model="filtersR.BusinessGuest" :style="{ width: '140px' }">
-              <option value="0">No</option>
-              <option value="1">Yes</option>
+              <option value="false">No</option>
+              <option value="true">Yes</option>
               <option value="">Do Not Index</option>
             </select>
           </td>
           <td> 
             <select v-model="filtersR.Parking" :style="{ width: '140px' }">
-              <option value="0">No</option>
-              <option value="1">Yes</option>
+              <option value="false">No</option>
+              <option value="true">Yes</option>
               <option value="">Do Not Index</option>
             </select>
           </td>
@@ -419,8 +419,11 @@ data() {
     },
     filtersR: {
       // Room: '',
-      Start: null,            
-      End: null,              
+      // Start: this.getFormattedDate(),            
+      // End: this.getFormattedDate(7),  
+      RoomID: '',
+      Start: null,
+      End: null,
       State: '',
       Cost: '',
       CommingTime: null,      
@@ -463,19 +466,27 @@ computed: {
     });
   },
   filteredReservations() {
-    console.log(this.filtersR);
+    if(this.filtersR.Start != null)
+      this.filtersR.Start = this.filterDateFormat(this.filtersR.Start);
+    if(this.filtersR.End != null)
+      this.filtersR.End = this.filterDateFormat(this.filtersR.End);
+
+    ;
+
+
     return this.reservations.filter(reservation => {
-      console.log(reservation);
+      console.log(reservation.BusinessGuest);
+      console.log(this.BPformat(this.filtersR.BusinessGuest));
       return (
-        // reservation.Cost.toString().includes(this.filtersR.Cost) &&
+        reservation.RoomID.toString().includes(this.filtersR.RoomID) &&
         (!this.filtersR.Start || reservation.Start >= this.filtersR.Start) &&
         (!this.filtersR.End || reservation.End <= this.filtersR.End) &&
         reservation.State.toLowerCase().includes(this.filtersR.State.toLowerCase()) &&
         reservation.Cost.toString().includes(this.filtersR.Cost) &&
         (!this.filtersR.CommingTime || reservation.CommingTime >= this.filtersR.CommingTime) &&
         (!this.filtersR.LeavingTime || reservation.LeavingTime <= this.filtersR.LeavingTime) &&
-        (this.filtersR.BusinessGuest === null || reservation.BusinessGuest === this.filtersR.BusinessGuest) &&
-        (this.filtersR.Parking === null || reservation.Parking === this.filtersR.Parking)
+        (this.filtersR.BusinessGuest === null || reservation.BusinessGuest === this.BPformat(this.filtersR.BusinessGuest)) &&
+        (this.filtersR.Parking === null || reservation.Parking === this.BPformat(this.filtersR.Parking))
       );
     });
   },
@@ -548,7 +559,14 @@ methods: {
     this.editTable = !this.editTable;
   },
   // ---------------------------------------- FETCH --------------------------------------------------------
-
+  getFormattedDate(days = 0) {
+      const today = new Date();
+      today.setDate(today.getDate() + days);
+      const day = today.getDate().toString().padStart(2, '0');
+      const month = (today.getMonth() + 1).toString().padStart(2, '0');
+      const year = today.getFullYear();
+      return `${year}-${month}-${day}`;
+    },
   fetchServices() {
     fetch('/Home/Customer/GetServices') 
       .then(response => response.json())
@@ -697,6 +715,26 @@ methods: {
       }
     }
   },
+  BPformat(BP){
+    if (typeof BP === 'string') {
+      if (BP === '')
+        return null;
+      else if (BP === 'true') {
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+    if (typeof BP === 'boolean') {
+      if (BP === true) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+  },
   formatSubscription(Subscription){
     if (typeof Subscription === 'string') {
       if (Subscription === 'true') {
@@ -716,6 +754,15 @@ methods: {
     }
   },
   // ---------------------------------------------- FORMATS -------------------------------------------------
+  filterDateFormat(oldDate) {
+    console.log(oldDate);
+    const parts = oldDate.split('-');
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1; 
+    const day = parseInt(parts[2], 10);
+    const date = new Date(year, month, day).getTime();
+    return date;
+  },
   // ---------------------------------------------- CUSTOMER -------------------------------------------------
   ReturnToAllCustomers() {
     this.$router.push('/Home/Customers');
@@ -897,7 +944,7 @@ methods: {
     this.newReservation = {
       Name: '',
       Cost: '10',
-      Availability: 'Available',
+      Availability: 'Pending',
       Description: '',
       ReservationID: ''
     };
