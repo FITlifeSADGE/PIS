@@ -22,11 +22,7 @@
           <!-- Data rows -->
           <tr v-for="reservation in reservations" :key="reservation.ReservationID">
             <td>
-              <span v-if="!reservation.editable">{{ reservation.CustomerName }}</span>
-              <select id="customer-id" v-model="reservation.CustomerName" v-if="reservation.editable">
-                <option value="" disabled>Select a customer</option>
-                <option v-for="customer in customers" :value="customer.person.email">{{ customer.person.email }}</option>
-              </select>
+              <span>{{ reservation.CustomerName }}</span>
             </td>
             <td>
               <span v-if="!reservation.editable">{{ reservation.RoomID }}</span>
@@ -68,8 +64,7 @@
               </select>
             </td> -->
             <td>
-              <span v-if="!reservation.editable">{{ reservation.Cost }}</span>
-              <input v-if="reservation.editable" type="number" min="0" v-model="reservation.Cost">
+              <span>{{ reservation.Cost }}</span>
             </td>
             <td>
               <span v-if="!reservation.editable">{{ reservation.CommingTime }}</span>

@@ -161,7 +161,7 @@ public class Reservation {
         this.room = room;
     }
 
-    public void updateReservation(Date start, Date end, float cost, String state, boolean businessGuest, boolean parking, Time commingTime, Time leavingTime) {
+    public void updateReservation(Date start, Date end, float cost, String state, boolean businessGuest, boolean parking, Time commingTime, Time leavingTime, int RoomID) {
         this.start = start;
         this.end = end;
         this.cost = cost;
@@ -170,6 +170,7 @@ public class Reservation {
         this.parking = parking;
         this.commingTime = commingTime;
         this.leavingTime = leavingTime;
+        setRoomID(RoomID);
     }
 
     public void removeServices(EntityManager em) {

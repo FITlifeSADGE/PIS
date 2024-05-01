@@ -73,9 +73,10 @@ Time leavingTime;
             String state = root.path("State").asText();
             boolean businessGuest = root.path("BusinessGuest").asInt() == 1;
             boolean parking = root.path("Parking").asInt() == 1;
+            int RoomID = root.path("RoomID").asInt();
 
             // Call updateReservation method
-            reservation.updateReservation(startDate, endDate, cost, state, businessGuest, parking, comingTime, leavingTime );
+            reservation.updateReservation(startDate, endDate, cost, state, businessGuest, parking, comingTime, leavingTime, RoomID);
 
             // Send reservation to db
             em.getTransaction().begin();
