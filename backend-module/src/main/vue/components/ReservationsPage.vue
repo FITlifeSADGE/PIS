@@ -55,7 +55,7 @@
           </td>
         </tr>
 
-          <tr v-for="reservation in filteredReservations" :key="reservation.ReservationID">
+          <tr v-for="reservation in filteredReservations()" :key="reservation.ReservationID">
             <td>
               <span>{{ reservation.CustomerName }}</span>
             </td>
@@ -217,26 +217,6 @@ export default {
     isDateValid() {
       console.log('Invalid start date:', this.invalidStartDate);
       return !this.invalidStartDate && !this.invalidEndDate;
-    },
-    filteredReservations() {
-      if(this.filtersR.Start != null)
-        this.filtersR.Start = this.filterDateFormat(this.filtersR.Start);
-      if(this.filtersR.End != null)
-        this.filtersR.End = this.filterDateFormat(this.filtersR.End);
-      return this.reservations.filter(reservation => {
-        return (
-          reservation.CustomerName.includes(this.filtersR.CustomerName) &&
-          reservation.RoomID.toString().includes(this.filtersR.RoomID) &&
-          (!this.filtersR.Start || reservation.Start >= this.filtersR.Start) &&
-          (!this.filtersR.End || reservation.End <= this.filtersR.End) &&
-          reservation.State.toLowerCase().includes(this.filtersR.State.toLowerCase()) &&
-          reservation.Cost >= this.filtersR.Cost &&
-          (!this.filtersR.CommingTime || reservation.CommingTime >= this.filtersR.CommingTime) &&
-          (!this.filtersR.LeavingTime || reservation.LeavingTime <= this.filtersR.LeavingTime) &&
-          (this.BPformat(this.filtersR.BusinessGuest) === null || reservation.BusinessGuest === this.BPformat(this.filtersR.BusinessGuest)) &&
-          (this.BPformat(this.filtersR.Parking )=== null || reservation.Parking === this.BPformat(this.filtersR.Parking))
-        );
-      });
     },
   },
   methods: {
@@ -593,6 +573,29 @@ export default {
         }
         return (
           ((reservation.Start && reservation.End) ? this.checkRoomAvailable(room.RoomID, this.reservations, reservation.Start, reservation.End) : true )
+        );
+      });
+    },
+    filteredReservations() {
+      if(this.filtersR.Start != null)
+        this.filtersR.Start = this.filterDateFormat(this.filtersR.Start);
+      if(this.filtersR.End != null)
+        this.filtersR.End = this.filterDateFormat(this.filtersR.End);
+      return this.reservations.filter(reservation => {
+        while (reservation.CustomerName === undefined) {
+          return true;
+        }
+        return (
+          reservation.CustomerName.includes(this.filtersR.CustomerName) &&
+          reservation.RoomID.toString().includes(this.filtersR.RoomID) &&
+          (!this.filtersR.Start || reservation.Start >= this.filtersR.Start) &&
+          (!this.filtersR.End || reservation.End <= this.filtersR.End) &&
+          reservation.State.toLowerCase().includes(this.filtersR.State.toLowerCase()) &&
+          reservation.Cost >= this.filtersR.Cost &&
+          (!this.filtersR.CommingTime || reservation.CommingTime >= this.filtersR.CommingTime) &&
+          (!this.filtersR.LeavingTime || reservation.LeavingTime <= this.filtersR.LeavingTime) &&
+          (this.BPformat(this.filtersR.BusinessGuest) === null || reservation.BusinessGuest === this.BPformat(this.filtersR.BusinessGuest)) &&
+          (this.BPformat(this.filtersR.Parking )=== null || reservation.Parking === this.BPformat(this.filtersR.Parking))
         );
       });
     },
