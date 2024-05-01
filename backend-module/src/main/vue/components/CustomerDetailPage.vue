@@ -137,7 +137,7 @@
         <!-- Data rows -->
 
         <tr>
-          <td><input type=number v-model="filtersR.Room"></td>
+          <td><input type=number v-model="filtersR.RoomID"></td>
           <td></td>
           <td><input type=date v-model="filtersR.Start"></td>
           <td><input type=date v-model="filtersR.End"></td>
@@ -185,7 +185,7 @@
             <span>{{ reservation.RoomID }}</span>
           </td>
           <td v-else>
-            <input ype="text" v-model="reservation.RoomID">
+            <input type="text" v-model="reservation.RoomID">
           </td>
 
           <td v-if="!reservation.editable">
@@ -418,18 +418,15 @@ data() {
       Extra: ''
     },
     filtersR: {
-      // Room: '',
-      // Start: this.getFormattedDate(),            
-      // End: this.getFormattedDate(7),  
       RoomID: '',
       Start: null,
       End: null,
       State: '',
-      Cost: '',
+      Cost: 0,
       CommingTime: null,      
       LeavingTime: null,      
-      BusinessGuest: null,
-      Parking: null
+      BusinessGuest: '',
+      Parking: ''
     },
     newService: {
       Name: '',
@@ -470,23 +467,17 @@ computed: {
       this.filtersR.Start = this.filterDateFormat(this.filtersR.Start);
     if(this.filtersR.End != null)
       this.filtersR.End = this.filterDateFormat(this.filtersR.End);
-
-    ;
-
-
     return this.reservations.filter(reservation => {
-      console.log(reservation.BusinessGuest);
-      console.log(this.BPformat(this.filtersR.BusinessGuest));
       return (
         reservation.RoomID.toString().includes(this.filtersR.RoomID) &&
         (!this.filtersR.Start || reservation.Start >= this.filtersR.Start) &&
         (!this.filtersR.End || reservation.End <= this.filtersR.End) &&
         reservation.State.toLowerCase().includes(this.filtersR.State.toLowerCase()) &&
-        reservation.Cost.toString().includes(this.filtersR.Cost) &&
+        reservation.Cost >= this.filtersR.Cost &&
         (!this.filtersR.CommingTime || reservation.CommingTime >= this.filtersR.CommingTime) &&
         (!this.filtersR.LeavingTime || reservation.LeavingTime <= this.filtersR.LeavingTime) &&
-        (this.filtersR.BusinessGuest === null || reservation.BusinessGuest === this.BPformat(this.filtersR.BusinessGuest)) &&
-        (this.filtersR.Parking === null || reservation.Parking === this.BPformat(this.filtersR.Parking))
+        (this.BPformat(this.filtersR.BusinessGuest) === null || reservation.BusinessGuest === this.BPformat(this.filtersR.BusinessGuest)) &&
+        (this.BPformat(this.filtersR.Parking )=== null || reservation.Parking === this.BPformat(this.filtersR.Parking))
       );
     });
   },
