@@ -17,8 +17,8 @@
           <td><input type=text v-model="filters.lastName"></td>
           <td><input type=text v-model="filters.firstName"></td>
           <td><input type=text v-model="filters.email"></td>
-          <td><input type=text v-model="filters.phonePreselection"></td>
-          <td><input type=text v-model="filters.phoneNumber"></td>
+          <td><input type=number v-model="filters.phonePreselection"></td>
+          <td><input type=number v-model="filters.phoneNumber"></td>
           <td></td>
         </tr>
 
