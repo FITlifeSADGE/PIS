@@ -21,6 +21,9 @@ public class Person {
     @Column(name = "Email")
     private String email;
 
+    @Column(name = "PhonePreselection")
+    private String phonePreselection;
+
     @Column(name = "PhoneNumber")
     private String phoneNumber;
 
@@ -63,6 +66,14 @@ public class Person {
         this.email = email;
     }
 
+    public String getPhonePreselection() {
+        return phonePreselection;
+    }
+
+    public void setPhonePreselection(String phonePreselection) {
+        this.phonePreselection = phonePreselection;
+    }
+
     public String getPhoneNumber() {
         return phoneNumber;
     }
@@ -94,6 +105,7 @@ public class Person {
                 ", lastName='" + lastName + '\'' +
                 ", firstName='" + firstName + '\'' +
                 ", email='" + email + '\'' +
+                ", phonePreselection='" + phonePreselection + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", documentNumber='" + documentNumber + '\'' +
                 ", dateOfBirth=" + dateOfBirth +
