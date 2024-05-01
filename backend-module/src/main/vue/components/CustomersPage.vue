@@ -3,11 +3,11 @@
     <table>
       <thead>
         <tr>
-          <th>Last Name</th>
-          <th>First Name</th>
-          <th>Email</th>
+          <th>Last Name*</th>
+          <th>First Name*</th>
+          <th>Email*</th>
           <th>Phone Preselection</th>
-          <th>Phone Number</th>
+          <th>Phone Number*</th>
           <th></th>
         </tr>
       </thead>

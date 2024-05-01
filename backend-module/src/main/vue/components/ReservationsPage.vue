@@ -4,11 +4,11 @@
       <table>
         <thead>
           <tr>
-            <th>Customer</th>
-            <th>Room </th>
+            <th>Customer*</th>
+            <th>Room*</th>
             <th>Services</th>
-            <th>Start Date</th>
-            <th>End Date</th>
+            <th>Start Date*</th>
+            <th>End Date*</th>
             <th>Cost</th>
             <th>Comming Time</th>
             <th>Leaving Time</th>

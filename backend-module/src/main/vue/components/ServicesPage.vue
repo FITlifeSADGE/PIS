@@ -3,9 +3,9 @@
     <table>
       <thead>
         <tr>
-          <th style="width: 150px;">Name</th>
-          <th style="width: 50px;">Cost</th>
-          <th style="width: 130px;">Availability</th>
+          <th style="width: 150px;">Name*</th>
+          <th style="width: 50px;">Cost*</th>
+          <th style="width: 130px;">Availability*</th>
           <th>Description</th>
           <th style="width: 80px;">Edit</th>
         </tr>

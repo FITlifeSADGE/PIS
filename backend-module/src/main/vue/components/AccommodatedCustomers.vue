@@ -3,13 +3,13 @@
         <table>
         <thead>
             <tr>
-            <th>Last Name</th>
-            <th>First Name</th>
-            <th>Email</th>
-            <th>Phone Number</th>
-            <th>Room</th>
-            <th>Start Date</th>
-            <th>End Date</th>
+            <th>Last Name*</th>
+            <th>First Name*</th>
+            <th>Email*</th>
+            <th>Phone Number*</th>
+            <th>Room*</th>
+            <th>Start Date*</th>
+            <th>End Date*</th>
             <th></th>
             </tr>
         </thead>

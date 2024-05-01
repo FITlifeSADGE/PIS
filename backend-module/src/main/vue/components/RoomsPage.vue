@@ -10,12 +10,12 @@
     <table>
       <thead>
         <tr>
-          <th style="width: 50px;">Number</th>
-          <th style="width: 130px;">Type</th>
-          <th style="width: 50px;">Cost</th>
-          <th>Equip</th>
-          <th style="width: 130px;">State</th>
-          <th style="width: 50px;">Beds</th>
+          <th style="width: 50px;">Number*</th>
+          <th style="width: 130px;">Type*</th>
+          <th style="width: 50px;">Cost*</th>
+          <th>Equip*</th>
+          <th style="width: 130px;">State*</th>
+          <th style="width: 50px;">Beds*</th>
           <th style="width: 50px;">Edit</th>
         </tr>
       </thead>

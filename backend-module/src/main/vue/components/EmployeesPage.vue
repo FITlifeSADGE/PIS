@@ -3,15 +3,15 @@
   <table style="width: 100%; border-collapse: collapse;">
   <thead>
   <tr>
-  <th style="width: 100px;">Last Name</th>
-  <th style="width: 100px;">First Name</th>
-  <th style="width: 200px;">Email</th>
-  <th style="width: 200px;">Assignment</th>
+  <th style="width: 100px;">Last Name*</th>
+  <th style="width: 100px;">First Name*</th>
+  <th style="width: 200px;">Email*</th>
+  <th style="width: 200px;">Assignment*</th>
   <th style = "width: 80px;">Phone Preselection</th>
-  <th style="width: 100px;">Phone Number</th>
-  <th style="width: 120px;">Document Number</th>
-  <th style="width: 120px;">Date of Birth</th>
-  <th style="width: 150px;">Password</th>
+  <th style="width: 100px;">Phone Number*</th>
+  <th style="width: 120px;">Document Number*</th>
+  <th style="width: 120px;">Date of Birth*</th>
+  <th style="width: 150px;">Password*</th>
   <th style="width: 50px;">Edit</th>
   </tr>
   </thead>

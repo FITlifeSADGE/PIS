@@ -3,7 +3,7 @@
     <h2>Create a Reservation</h2>
     <form @submit.prevent="submitForm">
       <div>
-        <label for="customer-id">Customer Name</label>
+        <label for="customer-id">Customer Name*</label>
         <select id="customer-id" v-model="reservation.CustomerID" required>
           <option value="" disabled>Select a customer</option>
           <option v-for="customer in customers" :key="customer.customerId" :value="customer.customerId">
@@ -14,18 +14,18 @@
         <button v-else @click.prevent="addNewCustomer">Hide Creation</button>
       </div>
       <div>
-        <label for="room-id">Rooms</label>
+        <label for="room-id">Rooms*</label>
         <select id="room-id" v-model="reservation.RoomID" required>
           <option value="" disabled>Select a room</option>
           <option v-for="room in filteredRooms" :value="room.RoomID">{{ room.RoomID }} (Beds: {{ room.Beds }})</option>
         </select>
       </div>
       <div>
-        <label for="start-date">Start Date</label>
+        <label for="start-date">Start Date*</label>
         <input id="start-date" type="date" v-model="reservation.Start" required>
       </div>
       <div>
-        <label for="end-date">End Date</label>
+        <label for="end-date">End Date*</label>
         <input id="end-date" type="date" v-model="reservation.End" required>
         <span v-if="!isCreateButtonEnabled" class="warning-icon" title="End datum musí být po Start datum">&#9888;</span>
       </div>
@@ -92,29 +92,29 @@
       <h2>Create a New Customer</h2>
       <form @submit.prevent="createCustomer">
         <div>
-            <label for="new-customer-firstname">First Name</label>
+            <label for="new-customer-firstname">First Name*</label>
             <input id="new-customer-firstname" v-model="newCustomer.FirstName" required>
           </div>
           <div>
-            <label for="new-customer-lastname">Last Name</label>
+            <label for="new-customer-lastname">Last Name*</label>
             <input id="new-customer-lastname" v-model="newCustomer.LastName" required>
           </div>
           <div>
-            <label for="new-customer-email">Email</label>
+            <label for="new-customer-email">Email*</label>
             <input id="new-customer-email" v-model="newCustomer.Email" required type="email">
             <span v-if="!isEmailUnique" class="warning-icon" title="Zákazník s daným emailem již existuje">&#9888;</span>
           </div>
           <div>
-            <label for="new-customer-phone">Phone</label>
+            <label for="new-customer-phone">Phone*</label>
             <input id="new-customer-phone" v-model="newCustomer.PhoneNumber" required type="tel">
             <span v-if="!isPhoneNumberUnique" class="warning-icon" title="Zákazník s tímto číslem již existuje">&#9888;</span>
           </div>
           <div>
-            <label for="new-customer-document">Document Number</label>
+            <label for="new-customer-document">Document Number*</label>
             <input id="new-customer-document" v-model="newCustomer.DocumentNumber" required type="number">
           </div>
           <div>
-            <label for="new-customer-dob">Date of Birth</label>
+            <label for="new-customer-dob">Date of Birth*</label>
             <input id="new-customer-dob" type="date" v-model="newCustomer.DateOfBirth" required :max="getFormattedDateYears(18)">
           </div>
           <div>
@@ -122,7 +122,7 @@
             <input id="new-customer-phone-preselection" v-model="newCustomer.PhonePreselection" required pattern="\+\d{2,3}">
           </div>
           <div>
-            <label for="new-customer-allergy">Allergy</label>
+            <label for="new-customer-allergy">Allergy*</label>
             <input id="new-customer-allergy" v-model="newCustomer.Allergy" required>
           </div>
           <div>
@@ -130,7 +130,7 @@
             <input id="new-customer-handicap" type="checkbox" v-model="newCustomer.Handicap">
           </div>
           <div>
-            <label for="new-customer-address">Address</label>
+            <label for="new-customer-address">Address*</label>
             <input id="new-customer-address" v-model="newCustomer.Address" required>
           </div>
           <div>
