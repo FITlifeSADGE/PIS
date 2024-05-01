@@ -11,7 +11,16 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="customer in customers" :key="customer.PersonID">
+
+        <tr>
+          <td><input type=text v-model="filters.firstName"></td>
+          <td><input type=text v-model="filters.lastName"></td>
+          <td><input type=text v-model="filters.email"></td>
+          <td><input type=text v-model="filters.phoneNumber"></td>
+          <td></td>
+        </tr>
+
+        <tr v-for="customer in filteredCustomers" :key="customer.PersonID">
           <td>{{ customer.person.lastName }}</td>
           <td>{{ customer.person.firstName }}</td>
           <td>{{ customer.person.email }}</td>
@@ -30,6 +39,12 @@ export default {
   data() {
     return {
       customers: [], // Array to store customer data
+      filters: {
+        lastName: '',
+        firstName: '',
+        email: '',
+        phoneNumber: ''
+      },
     };
   },
   mounted() {
@@ -63,6 +78,17 @@ export default {
     },
     viewCustomers() {
       console.log('View Customers');
+    },
+    filteredCustomers() {
+      return this.customers.filter(customer => {
+        console.log(customer);
+        return (
+          customer.firstName.toLowerCase().includes(this.filters.firstName.toLowerCase()) &&
+          customer.lastName.toLowerCase().includes(this.filters.lastName.toLowerCase()) &&
+          customer.email.toLowerCase().includes(this.filters.email.toLowerCase()) &&
+          customer.phoneNumber.toLowerCase().includes(this.filters.phoneNumber.toLowerCase())
+        );
+      });
     },
   },
 };
