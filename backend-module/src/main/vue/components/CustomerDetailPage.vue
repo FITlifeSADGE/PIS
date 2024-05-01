@@ -102,7 +102,7 @@
         </tr>
 
 
-        <tr v-for="reservation in filteredReservations" :key="reservation.ReservationID">
+        <tr v-for="reservation in filteredReservations()" :key="reservation.ReservationID">
           <td v-if="!reservation.editable">
             <span>{{ reservation.RoomID }}</span>
           </td>
@@ -117,19 +117,19 @@
           </td>
           <td v-else>
             <select v-model="reservation.ServiceIDs" multiple>
-              <option v-for="service in services_available" :key="service.ID" :value="service.ID">{{ service.Name }}</option>
+              <option v-for="service in services" :key="service.ID" :value="service.ID">{{ service.Name }}</option>
             </select>
           </td>
 
           <td v-if="!reservation.editable">
-            <span>{{ new Date(reservation.Start).toISOString().split('T')[0] }}</span>
+            <span>{{ formatDate(reservation.Start) }}</span>
           </td>
           <td v-else>
             <input type="date" v-model="reservation.Start">
           </td>
 
           <td v-if="!reservation.editable">
-            <span>{{ new Date(reservation.End).toISOString().split('T')[0] }}</span>
+            <span>{{ formatDate(reservation.End) }}</span>
           </td>
           <td v-else>
             <input type="date" v-model="reservation.End">
@@ -189,6 +189,9 @@
           </div>
         <button class="button" @click="closePopupCancel()">Cancel</button> 
       </div>
+    </div>
+
+    <div v-if="isLoading">
     </div>
 
     <div class="tableCustomers">
@@ -260,6 +263,7 @@ data() {
   return {
     editTable: true,
     customers: [],
+    customers_resevations: [],
     buttonLabel: 'Upravit informace',
     ID: null,
     error: false,
@@ -305,16 +309,21 @@ data() {
     },
     reservations: [], 
       services: [], 
-      services_available: [], 
+    services_available: [],
+    isLoading: true,
+    reservationsRdy: false,
+    customersRdy: false,
+    personID: null,
   };
 },
-async mounted() {
-  await this.fetchServices();
-  await this.fetchReservationsAndServices();
-  await this.fetchReservationServices();
-  await this.fetchCustomerNames();
-  this.isLoading = false;
-  this.fetchRooms();
+mounted() {
+  this.personID = this.$route.params.personID;
+  console.log('Person ID:', this.personID);
+  this.fetchCustomers(this.personID); 
+  this.fetchServices(); 
+  this.fetchReservations();
+  this.fetchReservationServices();
+  this.fetchCustomerNames();
 },
 computed: {
   filteredServices() {
@@ -324,25 +333,6 @@ computed: {
         service.Cost.toString().includes(this.filters.Cost) &&
         service.Description.replace(/\s/g, '').toLowerCase().includes(this.filters.Description.replace(/\s/g, '').toLowerCase()) &&
         service.Extra.replace(/\s/g, '').toLowerCase().includes(this.filters.Extra.replace(/\s/g, '').toLowerCase())
-      );
-    });
-  },
-  filteredReservations() {
-    if(this.filtersR.Start != null)
-      this.filtersR.Start = this.filterDateFormat(this.filtersR.Start);
-    if(this.filtersR.End != null)
-      this.filtersR.End = this.filterDateFormat(this.filtersR.End);
-    return this.reservations.filter(reservation => {
-      return (
-        reservation.RoomID.toString().includes(this.filtersR.RoomID) &&
-        (!this.filtersR.Start || reservation.Start >= this.filtersR.Start) &&
-        (!this.filtersR.End || reservation.End <= this.filtersR.End) &&
-        reservation.State.toLowerCase().includes(this.filtersR.State.toLowerCase()) &&
-        reservation.Cost >= this.filtersR.Cost &&
-        (!this.filtersR.CommingTime || reservation.CommingTime >= this.filtersR.CommingTime) &&
-        (!this.filtersR.LeavingTime || reservation.LeavingTime <= this.filtersR.LeavingTime) &&
-        (this.BPformat(this.filtersR.BusinessGuest) === null || reservation.BusinessGuest === this.BPformat(this.filtersR.BusinessGuest)) &&
-        (this.BPformat(this.filtersR.Parking )=== null || reservation.Parking === this.BPformat(this.filtersR.Parking))
       );
     });
   },
@@ -358,86 +348,32 @@ computed: {
     return uniqueServices;
   }
 },
-mounted() {
-  const personID = this.$route.params.personID;
-  console.log('Person ID:', personID);
-  this.fetchCustomers(personID); 
-  this.fetchServices(); 
-  this.fetchReservations(); 
-},
+
 methods: {
-    async fetchServices() {
-      try {
-        const response = await fetch('/Home/Services/GetServices');
-        const data = await response.json();
-        this.services_available = data.map(service => ({ ID: service.ServiceID, Name: service.Name, ...service, editable: false }));
-      } catch (error) {
-        console.error('Error fetching services:', error);
-      }
-    },
-    async fetchReservationsAndServices() {
-      try {
-        const response = await fetch('/Home/Reservations/GetReservations');
-        const data = await response.json();
-        this.reservations = data.map(reservation => ({ ...reservation, editable: false }));
-      } catch (error) {
-        console.error('Error fetching reservations:', error);
-      }
-    },
-    async fetchReservationServices() {
-      try {
-        const response = await fetch('/Home/Reservations/GetReservationServices');
-        const data = await response.json();
-        const serviceMap = {};
-
-        data.forEach(service => {
-          const serviceID = service.ServiceID;
-          if (!serviceMap[serviceID]) {
-            serviceMap[serviceID] = {
-              ServiceID: serviceID,
-              reservations: []
-            };
-          }
-          serviceMap[serviceID].reservations.push(service.ReservationID);
-        });
-
-        this.services = Object.values(serviceMap);
-
-        console.log('Services:', this.services);
-
-        this.reservations.forEach(reservation => {
-          const serviceIDs = data
-            .filter(service => service.ReservationID === reservation.ReservationID)
-            .map(service => service.ServiceID);
-          reservation.ServiceIDs = serviceIDs;
-        });
-        console.log('Reservations with services:', this.reservations);
-      } catch (error) {
-        console.error('Error fetching reservation services:', error);
-      }
-    },
-
-
     async fetchCustomerNames() {
+      console.log('Fetching customer names');
+      while(!this.reservationsRdy || !this.customersRdy) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
       try {
         const customerIDs = [...new Set(this.reservations.map(reservation => reservation.CustomerID))];
 
-        const response = await fetch(`/Home/Customer/GetCustomers`);
-        const data = await response.json();
-        this.customers = data;
         customerIDs.forEach(customerID => {
           const matchingReservations = this.reservations.filter(reservation => reservation.CustomerID === customerID);
           if (matchingReservations.length > 0) {
             matchingReservations.forEach(reservation => {
-              data.forEach(customer => {
-                if (customer.customerId === customerID) {
-                  reservation.CustomerName = customer.person.email; 
-                  reservation.CustomerFirstName = customer.person.firstName; 
-                  reservation.CustomerLastName = customer.person.lastName; 
+              this.customers.forEach(customer => {
+                console.log('Customer:', customer);
+                console.log('Customer ID:', customerID);
+                if (customer.CustomerID === customerID) {
+                  reservation.CustomerName = customer.Email; 
+                  reservation.CustomerFirstName = customer.FirstName; 
+                  reservation.CustomerLastName = customer.LastName; 
                 }
               });
             });
           }
+          this.isLoading = false;
         });
         console.log('Reservations:', this.reservations);
       } catch (error) {
@@ -521,16 +457,19 @@ methods: {
       return `${year}-${month}-${day}`;
     },
   fetchServices() {
+    console.log('Fetching services');
     fetch('/Home/Customer/GetServices') 
       .then(response => response.json())
       .then(data => {
-        this.services = data.map(service => ({ ...service, editable: false }));
+        this.services_available = data.map(service => ({ ID: service.ServiceID, Name: service.Name, ...service, editable: false }));
+        console.log('All Services:', this.services_available);
       })
       .catch(error => {
         console.error('Error fetching services:', error);
       });
   },
   fetchReservations() {
+    console.log('Fetching reservations');
     fetch('/Home/Customer/GetReservations') 
       .then(response => response.json())
       .then(data => {
@@ -542,6 +481,7 @@ methods: {
   },
   
   fetchReservationServices() {
+    console.log('Fetching reservation services');
   fetch('/Home/Reservations/GetReservationServices')
     .then(response => response.json())
     .then(data => {
@@ -567,6 +507,7 @@ methods: {
           .map(service => service.ServiceID);
         reservation.ServiceIDs = serviceIDs;
       });
+      this.reservationsRdy = true;
     })
     .catch(error => {
       console.error('Error fetching services:', error);
@@ -575,6 +516,7 @@ methods: {
 
 
   fetchCustomers(personID) {
+    console.log('Fetching customers');
     fetch('/Home/Customer/GetCustomer', {
       method: 'POST',
       headers: {
@@ -585,6 +527,8 @@ methods: {
     .then(response => response.json())
     .then(data => {
       this.customers = data;
+      console.log('Customers:', this.customers);
+      this.customersRdy = true;
     })
     .catch(error => {
       console.error('Error fetching customers:', error);
@@ -697,6 +641,10 @@ methods: {
   // ---------------------------------------------- FORMATS -------------------------------------------------
   filterDateFormat(oldDate) {
     console.log(oldDate);
+    
+    if (!isNaN(oldDate) && !isNaN(parseFloat(oldDate))) {
+        oldDate = this.formatDate(oldDate);
+    }
     const parts = oldDate.split('-');
     const year = parseInt(parts[0], 10);
     const month = parseInt(parts[1], 10) - 1; 
@@ -971,7 +919,36 @@ methods: {
   getReservationInputWidth(text) {
       return text ? `${text.length * 12}px` : '100px';
     },
-  
+  getServiceName(serviceId) {
+    console.log('Service ID:', serviceId);
+    console.log('Services:', this.services_available);
+    const service_name = this.services_available.find(service => service.ID === serviceId).Name;
+    console.log('Service name:', service_name);
+    return service_name;
+  },
+  filteredReservations() {
+    let filterStart = null;
+    let filterEnd = null;
+    if(this.filtersR.Start != null)
+      filterStart = this.filterDateFormat(this.filtersR.Start);
+    
+    if(this.filtersR.End != null)
+      filterEnd = this.filterDateFormat(this.filtersR.End);
+    return this.reservations.filter(reservation => {
+      return (
+        reservation.CustomerID == this.personID &&
+        reservation.RoomID.toString().includes(this.filtersR.RoomID) &&
+        (!this.filtersR.Start || reservation.Start >= filterStart) &&
+        (!this.filtersR.End || reservation.End <= filterEnd) &&
+        reservation.State.toLowerCase().includes(this.filtersR.State.toLowerCase()) &&
+        reservation.Cost >= this.filtersR.Cost &&
+        (!this.filtersR.CommingTime || reservation.CommingTime >= this.filtersR.CommingTime) &&
+        (!this.filtersR.LeavingTime || reservation.LeavingTime <= this.filtersR.LeavingTime) &&
+        (this.BPformat(this.filtersR.BusinessGuest) === null || reservation.BusinessGuest === this.BPformat(this.filtersR.BusinessGuest)) &&
+        (this.BPformat(this.filtersR.Parking )=== null || reservation.Parking === this.BPformat(this.filtersR.Parking))
+      );
+    });
+  },
 }
 };
 </script>
