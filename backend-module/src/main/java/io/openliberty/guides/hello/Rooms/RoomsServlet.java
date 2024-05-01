@@ -58,11 +58,11 @@ public class RoomsServlet extends HttpServlet {
             rows.add(rowData);
         }
 
-            // Konverzia údajov na JSON reťazec
+            // Conversion data to JSON string
             ObjectMapper mapper = new ObjectMapper();
             String jsonString = mapper.writeValueAsString(rows);
 
-            // Nastavenie typu obsahu a odoslanie JSON reťazca ako odpoveď
+            // send json data
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(jsonString);
