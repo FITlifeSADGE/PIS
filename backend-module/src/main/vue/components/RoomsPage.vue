@@ -10,6 +10,7 @@
     <table>
       <thead>
         <tr>
+          <th style="width: 50px;">Number</th>
           <th style="width: 130px;">Type</th>
           <th style="width: 50px;">Cost</th>
           <th>Equip</th>
@@ -22,6 +23,7 @@
 
         <!-- Add new -->
         <tr v-if="addingNew">
+          <td><input type="number" min="1" style="width: 50px;" v-model="newRoom.RoomID" :class="{ 'required-field-empty': (CheckRoomID(newRoom.RoomID) || newRoom.RoomID === '') }" required></td>
           <td><input type="text" style="width: 130px;" v-model="newRoom.TypeRoom" :class="{ 'required-field-empty': newRoom.TypeRoom === '' }" required></td>
           <td><input type="number" min="0.5" step="0.5" style="width: 50px;" v-model="newRoom.Cost" :class="{ 'required-field-empty': newRoom.Cost === '' }" required></td>
           <td><input type="text" style="width: 95%;" v-model="newRoom.Equip" :class="{ 'required-field-empty': newRoom.Equip === '' }" required></td>
@@ -40,13 +42,14 @@
         </tr>
         <tr v-else>
           <td colspan="6" style="text-align: center;">
-            <button @click="toggleAddNew" class="edit-button">Add New</button>
+            <button @click="() => { toggleAddNew(); newRoom.RoomID=Math.max(...this.rooms.map(room => room.RoomID))+1; }" class="edit-button">Add New</button>
           </td>
         </tr>
 
 
         <!-- Filter row -->
         <tr>
+          <td><input type="text" v-model="filters.RoomID" style="width: 50px;"></td>
           <td><input type="text" v-model="filters.TypeRoom" style="width: 130px;"></td>
           <td><input type=number step="0.5" v-model="filters.Cost" style="width: 50px;"></td>
           <td><input type="text" style="width: 95%;" v-model="filters.Equip"></td>
@@ -64,6 +67,7 @@
 
         <!-- Data rows -->
         <tr v-for="room in filteredRooms" :key="room.RoomID">
+          <td>{{ room.RoomID }}</td>
           <td v-if="!room.editable">{{ room.TypeRoom }}</td>
           <td v-else><input type="text" style="width: 130px;" v-model="room.TypeRoom" :class="{ 'required-field-empty': room.TypeRoom === '' }" required></td>
           <td v-if="!room.editable">{{ room.Cost }}</td>
@@ -99,6 +103,7 @@ export default {
       rooms: [],
       reservations: [],
       filters: {
+        RoomID: '',
         TypeRoom: '',
         Cost: '',
         Equip: '',
@@ -109,6 +114,7 @@ export default {
       },
       addingNew: false,
       newRoom: {    //preloaded data for new room
+        RoomID: '458',
         TypeRoom: 'Double',
         Cost: '15.0',
         Equip: 'Desk, Chair, Wardrobe, Bed',
@@ -127,6 +133,7 @@ export default {
       // filter rooms if some value is not set filter will ignore that value
       return this.rooms.filter(room => {
         return (
+          room.RoomID.toString().includes(this.filters.RoomID) &&
           room.TypeRoom.toLowerCase().includes(this.filters.TypeRoom.toLowerCase()) &&
           room.Cost.toString().includes(this.filters.Cost) &&
           room.Equip.toLowerCase().includes(this.filters.Equip.toLowerCase()) &&
@@ -168,6 +175,7 @@ export default {
       return true;
     },
 
+    //if room have some reservation
     RezeravationForRoom(roomID){
       for (const reservation of this.reservations) 
       {
@@ -177,6 +185,20 @@ export default {
         }
       }
       return true;
+    },
+
+    //if room whit RoomID already exists
+    CheckRoomID(ID){
+      for (const room of this.rooms) 
+      {
+        const numericID = parseInt(ID);
+        const numericRoomID = parseInt(room.RoomID);
+        if (numericID === numericRoomID) 
+        {
+          return true;
+        }
+      }
+      return false;
     },
 
     // requesting for room data
@@ -275,12 +297,12 @@ export default {
 
     addNewRoom() 
     {
+      if (this.CheckRoomID(this.newRoom.RoomID))
+        alert('Room whit this number already exists');
+      else
       //check if some input is missing
       if (this.newRoom.TypeRoom && this.newRoom.Cost && this.newRoom.Equip && this.newRoom.State && this.newRoom.Beds) 
       {
-        //create new id from max RoomID
-        let maxRoomID = Math.max(...this.rooms.map(room => room.RoomID));
-        this.newRoom.RoomID = maxRoomID + 1;
         this.rooms.push({ ...this.newRoom, editable: false });
         
         //send data for new room
@@ -304,12 +326,15 @@ export default {
 
         //preloaded data
         this.newRoom = {
+          RoomID: '',
           TypeRoom: 'Double',
           Cost: '15.0',
           Equip: 'Desk, Chair, Wardrobe, Bed',
           State: 'Available',
           Beds: '2'
         };
+        let maxRoomID = Math.max(...this.rooms.map(room => room.RoomID));
+        this.newRoom.RoomID = maxRoomID + 1;
         this.addingNew = false;
       } 
       else 
@@ -320,12 +345,15 @@ export default {
     //cancel add
     cancelNewRoom() {
       this.newRoom = {
+        RoomID: '',
         TypeRoom: 'Double',
         Cost: '15.0',
         Equip: 'Desk, Chair, Wardrobe, Bed',
         State: 'Available',
         Beds: '2'
       };
+      let maxRoomID = Math.max(...this.rooms.map(room => room.RoomID));
+      this.newRoom.RoomID = maxRoomID + 1;
       this.addingNew = false;
     }
   }
