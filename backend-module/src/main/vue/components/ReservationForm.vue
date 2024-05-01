@@ -17,7 +17,7 @@
         <label for="room-id">Rooms</label>
         <select id="room-id" v-model="reservation.RoomID" required>
           <option value="" disabled>Select a room</option>
-          <option v-for="room in rooms" :value="room.RoomID">{{ room.RoomID }} (Beds: {{ room.Beds }})</option>
+          <option v-for="room in filteredRooms" :value="room.RoomID">{{ room.RoomID }} (Beds: {{ room.Beds }})</option>
         </select>
       </div>
       <div>
@@ -193,12 +193,14 @@ export default {
       isEmailUnique: true,
       isPhoneNumberUnique: true,
       showModal: false,
+      reservations: [],
     };
   },
   mounted() {
     this.fetchCustomers(); 
     this.fetchRooms();
     this.fetchServices();// Volanie funkcie na načítanie údajov po načítaní komponentu
+    this.fetchReservations();
   },
   computed: {
   totalCost() {
@@ -228,8 +230,17 @@ export default {
     const startDate = new Date(this.reservation.Start);
     const endDate = new Date(this.reservation.End);
     return endDate > startDate;
-  }
-},
+  },
+  filteredRooms() {
+      // filter rooms if some value is not set filter will ignore that value
+      return this.rooms.filter(room => {
+        return (
+          // filter by dates, if is not set satrt and end result is true
+          ((this.reservation.Start && this.reservation.End) ? this.checkRoomAvailable(room.RoomID, this.reservations, this.reservation.Start, this.reservation.End) : true )
+        );
+      });
+    },
+  },
   methods: {
     async submitForm() {
       this.reservation.Cost = this.totalCost;
@@ -459,6 +470,43 @@ addNewCustomer() {
 
       return `${year}-${formattedMonth}-${formattedDay}`;
     },
+    async fetchReservations() {
+      try {
+        const response = await fetch('/Home/Reservations/GetReservations');
+        this.reservations = await response.json();
+      } catch (error) {
+        console.error('Error fetching reservations:', error);
+      }
+    },
+    checkRoomAvailable(roomID, reservations, startDate, endDate) {
+      console.log("CHECK DATE FOR ROOM");
+      console.log(startDate);
+      console.log(endDate);
+      const parts = startDate.split('-');
+      const year = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1; // Months are in JavaScript zero-indexed
+      const day = parseInt(parts[2], 10);
+      const Startdate = new Date(year, month, day).getTime();
+
+      const parts1 = endDate.split('-');
+      const year1 = parseInt(parts1[0], 10);
+      const month1 = parseInt(parts1[1], 10) - 1;
+      const day1 = parseInt(parts1[2], 10);
+      const EndDate = new Date(year1, month1, day1).getTime();
+
+      for (const reservation of reservations) 
+      {
+        if (
+          roomID === reservation.RoomID &&
+          EndDate >= reservation.Start && 
+          Startdate <= reservation.End) 
+        {
+          return false;
+        }
+      }
+      return true;
+    },
+
   },
   watch: {
     'reservation.End'(newVal, oldVal) {

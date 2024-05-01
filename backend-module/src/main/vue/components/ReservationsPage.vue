@@ -23,11 +23,18 @@
           <tr v-for="reservation in reservations" :key="reservation.ReservationID">
             <td>
               <span v-if="!reservation.editable">{{ reservation.CustomerName }}</span>
-              <input v-if="reservation.editable" type="text" v-model="reservation.CustomerName">
+              <select id="customer-id" v-model="reservation.CustomerName" v-if="reservation.editable">
+                <option value="" disabled>Select a customer</option>
+                <option v-for="customer in customers" :value="customer.person.email">{{ customer.person.email }}</option>
+              </select>
             </td>
             <td>
               <span v-if="!reservation.editable">{{ reservation.RoomID }}</span>
-              <input v-if="reservation.editable" type="text" v-model="reservation.RoomID">
+              <select id="room-id" v-model="reservation.RoomID" v-if="reservation.editable">
+                <option value="" disabled>Select a room</option>
+                <option v-for="room in filteredRooms(reservation)" :value="room.RoomID">{{ room.RoomID }} (Beds: {{ room.Beds }})</option>
+              </select>
+              <!-- <input v-if="reservation.editable" type="text" v-model="reservation.RoomID"> -->
             </td>
             <td>
               <span v-if="!reservation.editable">
@@ -163,6 +170,7 @@ export default {
       invalidEndDate: false,
       invalidStartDate: false,
       rooms: [],
+      customers: [],
     };
   },
   async mounted() {
@@ -245,8 +253,7 @@ export default {
         // Fetch customer data from server
         const response = await fetch(`/Home/Customer/GetCustomers`);
         const data = await response.json();
-        console.log('Customer data:', data);
-
+        this.customers = data;
         // Loop through each customer ID to find and update reservations
         customerIDs.forEach(customerID => {
           const matchingReservations = this.reservations.filter(reservation => reservation.CustomerID === customerID);
@@ -480,6 +487,43 @@ export default {
     }
     reservation.End = new Date(year, month, day).getTime(); // Aktualizace s novým časovým razítkem v ms
   },
+  checkRoomAvailable(roomID, reservations, startDate, endDate) {
+      // const parts = startDate.split('-');
+      // const year = parseInt(parts[0], 10);
+      // const month = parseInt(parts[1], 10) - 1; // Months are in JavaScript zero-indexed
+      // const day = parseInt(parts[2], 10);
+      // const Startdate = new Date(year, month, day).getTime();
+
+      // const parts1 = endDate.split('-');
+      // const year1 = parseInt(parts1[0], 10);
+      // const month1 = parseInt(parts1[1], 10) - 1;
+      // const day1 = parseInt(parts1[2], 10);
+      // const EndDate = new Date(year1, month1, day1).getTime();
+
+      for (const reservation of reservations) 
+      {
+        if (
+          roomID === reservation.RoomID &&
+          endDate >= reservation.Start && 
+          startDate <= reservation.End) 
+        {
+          return false;
+        }
+      }
+      return true;
+    },
+    filteredRooms(reservation) {
+      // filter rooms if some value is not set filter will ignore that value
+      return this.rooms.filter(room => {
+        if (room.RoomID === reservation.RoomID) {
+            return true;
+        }
+        return (
+          // filter by dates, if is not set satrt and end result is true
+          ((reservation.Start && reservation.End) ? this.checkRoomAvailable(room.RoomID, this.reservations, reservation.Start, reservation.End) : true )
+        );
+      });
+    },
   }
 };
 
