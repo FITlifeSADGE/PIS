@@ -163,7 +163,8 @@ export default {
         LeavingTime: '10:00',
         BusinessGuest: false,
         Parking: false,
-        reservationId: 0
+        reservationId: 0,
+        ReservationID: 0,
       },
       newCustomer: {
         LastName: '',
@@ -272,6 +273,9 @@ export default {
     updateReservation(reservation) {
   // Implementation of reservation update
   reservation.reservationId = this.ReservationID;
+  reservation.ReservationID = this.ReservationID;
+  reservation.State = 'Pending';
+  reservation.CommingTime = reservation.ComingTime;
   console.log('Updating reservation:', reservation);
   reservation.editable = false; // Close the editing mode
 
