@@ -33,28 +33,30 @@ export default {
   },
   methods: {
     fetchUserInformation() {
-      fetch('/Home/UserInformation') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
-        .then(response => response.json())
-        .then(data => {
-          this.username = data.username; // Nastavenie údajov do premennej rooms
-        })
-        .catch(error => {
+      fetch('/Home/UserInformation', {
+          headers: {
+            'Authorization': localStorage.getItem('token'),
+          }
+      })
+      // Login when token is not valid
+      .then(response => {
+        if (!response.ok) {
           this.$router.push('/Home/login');
-        });
+        }
+        return response.json();
+      }) 
+      .then(response => response.json())
+      .then(data => {
+        this.username = data.username; // Nastavenie údajov do premennej rooms
+      })
+      .catch(error => {
+        this.$router.push('/Home/login');
+      });
     },
     logout() {
       console.log('Logout');
-      fetch('/Home/logout', { method: 'POST' })
-      .then(response => {
-        if (response.ok) {
-          this.$router.push('/Home/login');
-        } else {
-          console.error('Logout failed:', response.statusText);
-        }
-      })
-      .catch(error => {
-        console.error('Error during logout:', error);
-      });
+      localStorage.removeItem('token');
+      this.$router.push('/Home/login');
     },
     viewRooms() {
         this.$router.push('/Home/Rooms');

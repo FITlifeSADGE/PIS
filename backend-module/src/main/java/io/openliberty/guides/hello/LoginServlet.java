@@ -4,8 +4,10 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Date;
 import java.sql.ResultSet;
 
+import javax.json.Json;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.NoResultException;
@@ -16,17 +18,21 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.openliberty.guides.hello.model.LoginRequest;
 
 import io.openliberty.guides.hello.model.Person;
 
+// Hash
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.nio.charset.StandardCharsets;
 import java.math.BigInteger;
+
+// JWT
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 
 
 @WebServlet("/loginVerify")
@@ -34,8 +40,8 @@ public class LoginServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {  
-
+            throws ServletException, IOException { 
+           
         // JPA
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-hibernate-mysql");
         EntityManager em = emf.createEntityManager();
@@ -63,8 +69,6 @@ public class LoginServlet extends HttpServlet {
         String username = loginRequest.getUsername();
         String password = hashPassword(loginRequest.getPassword());
 
-        System.out.println("Password: " + password);
-
         if (username != null && password != null) {
             try {
                 Connection connection = DatabaseUtil.getConnection();
@@ -79,12 +83,24 @@ public class LoginServlet extends HttpServlet {
                     if (password.equals(dbPassword)) {
                         // User found and password matched, login successful
 
-                        HttpSession session = request.getSession(); // Create a session
-                        session.setAttribute("username", username);
-                        session.setAttribute("role", dbRole);
+                        // Generate JWT token
+                        Algorithm algorithm = Algorithm.HMAC256("abcdefg");
+                        String token = JWT.create()
+                        .withIssuer("PIS")
+                        .withClaim("username", username)
+                        .withClaim("role", dbRole)
+                        .withIssuedAt(new Date())
+                        .withExpiresAt(new Date(System.currentTimeMillis() + 8 * 60 * 60 * 1000)) // expire in 8 hours
+                        .sign(algorithm);
+
+                        // Send token to client
+                        String jsonString = Json.createObjectBuilder()
+                            .add("token", token)
+                            .build()
+                            .toString();
 
                         response.setStatus(HttpServletResponse.SC_OK);
-                        response.getWriter().write("Login successful");
+                        response.getWriter().write(jsonString);
                     } else {
                         // Password incorrect
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

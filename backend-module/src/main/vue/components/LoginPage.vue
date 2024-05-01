@@ -60,15 +60,15 @@ methods: {
     })
     .then(response => {
       if (response.ok) {
-        console.log('Login successful');
-        this.$router.push('/Home/Rooms');
+        return response.json();
       } else {
         throw new Error('Login failed');
       }
     })
     .then(data => {
-      // Zpracovat úspěšnou odpověď
-      this.loginMessage = data;
+      localStorage.setItem('token', data.token);
+      console.log('Login successful');
+      this.$router.push('/Home/Rooms');
     })
     .catch(error => {
       console.error('Error during login:', error);
