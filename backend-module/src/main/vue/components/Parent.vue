@@ -1,7 +1,7 @@
 <template>
 <div class="Services">
     <div class="header">
-        <h1>Hotel Services</h1>
+        <h1>Hotel Management System</h1>
         <p>{{ username }}</p>
         <div class="logout">
             <button class="button" @click="logout">Log out</button>
@@ -14,6 +14,7 @@
             <button class="button" @click="createReservation">Create Reservation</button>
             <button class="button" @click="viewReservations">View Reservations</button>
             <button class="button" @click="viewCustomers">View Customers</button>
+            <button v-if="isAdmin()" class="button" @click="viewEmployees">View Employees</button>
         </div>
         <router-view />
     </div>
@@ -24,7 +25,8 @@
 export default {
   data() {
     return {
-      username: ''
+      username: '',
+      role: ''
     };
   },
   mounted() {
@@ -48,11 +50,15 @@ export default {
       }) 
       .then(data => {
         this.username = data.username; // Nastavenie údajov do premennej rooms
+        this.role = data.role;
       })
       .catch(error => {
         console.error('Error:', error);
         this.$router.push('/Home/login');
       });
+    },
+    isAdmin() {
+      return this.role === 'Admin';
     },
     logout() {
       console.log('Logout');
@@ -73,6 +79,10 @@ export default {
     },
     viewCustomers() {
       this.$router.push('/Home/Customers');
+    },
+    viewEmployees() {
+      console.log('View Employees');
+      this.$router.push('/Home/Employees');
     }
   },
 };

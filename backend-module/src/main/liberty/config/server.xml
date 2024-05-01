@@ -37,5 +37,6 @@
     <applicationLocation id="LoginSuccess" location="Home.war" contextRoot="${app.context.root}/success" />
     <applicationLocation id="RoomsPage" location="Home.war" contextRoot="${app.context.root}/Rooms" />
     <applicationLocation id="ServicesPage" location="Home.war" contextRoot="${app.context.root}/Services" />
+    <applicationLocation id="EmployeesPage" location="Home.war" contextRoot="${app.context.root}/Employees" />
 </server>
 

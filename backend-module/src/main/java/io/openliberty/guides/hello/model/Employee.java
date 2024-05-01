@@ -5,6 +5,9 @@ import java.util.Date;
 
 @NamedQuery(name = "Employee.findByEmail",
             query = "SELECT e FROM Employee e JOIN e.person p WHERE p.email = :email")
+@NamedQuery(name = "Employee.allRows", query = "SELECT e FROM Employee e")
+@NamedQuery(name = "Employee.findById", query = "SELECT e FROM Employee e WHERE e.employeeId = :id")
+@NamedQuery(name = "Employee.findMaxId", query = "SELECT MAX(e.employeeId) FROM Employee e")
 @Entity
 @Table(name = "Employee")
 public class Employee {
@@ -19,6 +22,7 @@ public class Employee {
     @Column(name = "Password")
     private String password;
 
+    @Temporal(TemporalType.DATE)
     @Column(name = "WorkShift")
     private Date workShift;
 
@@ -65,6 +69,19 @@ public class Employee {
 
     public void setPerson(Person person) {
         this.person = person;
+    }
+
+    public void updateEmployee(String lastName, String firstName, String email, String assignment, String phonePreselection,String phoneNumber, String documentNumber, Date dateOfBirth, Date workShift, String password) {
+        this.person.setLastName(lastName);
+        this.person.setFirstName(firstName);
+        this.person.setEmail(email);
+        this.assignment = assignment;
+        this.person.setPhonePreselection(phonePreselection);
+        this.person.setPhoneNumber(phoneNumber);
+        this.person.setDocumentNumber(documentNumber);
+        this.person.setDateOfBirth(dateOfBirth);
+        this.workShift = workShift;
+        this.password = password;
     }
 
     @Override
