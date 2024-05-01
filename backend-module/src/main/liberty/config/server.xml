@@ -29,13 +29,13 @@
     <applicationLocation id="Login" location="Home.war" contextRoot="${app.context.root}/login" />
     <applicationLocation id="Customers" location="Home.war" contextRoot="${app.context.root}/Customers" />
     <applicationLocation id="CustomerDetails" location="Home.war" contextRoot="${app.context.root}/Customers/detail" />
-    <applicationLocation id="RoomsPage" location="RoomsPage.war" contextRoot="${app.context.root}/Rooms" />
-    <applicationLocation id="ServicesPage" location="ServicesPage.war" contextRoot="${app.context.root}/Services" />
-    <applicationLocation id="ReservationsPage" location="ReservationsPage.war" contextRoot="${app.context.root}/Reservations" />
-    <applicationLocation id="ReservationForm"  location="ReservationForm.war" contextRoot="${app.context.root}/CreateReservation" />
-    <applicationLocation id="Login" location="Login.war" contextRoot="${app.context.root}/login" />
-    <applicationLocation id="LoginSuccess" location="LoginSuccess.war" contextRoot="${app.context.root}/success" />
-    <applicationLocation id="RoomsPage" location="RoomsPage.war" contextRoot="${app.context.root}/Rooms" />
-    <applicationLocation id="ServicesPage" location="ServicesPage.war" contextRoot="${app.context.root}/Services" />
+    <applicationLocation id="RoomsPage" location="Home.war" contextRoot="${app.context.root}/Rooms" />
+    <applicationLocation id="ServicesPage" location="Home.war" contextRoot="${app.context.root}/Services" />
+    <applicationLocation id="ReservationsPage" location="Home.war" contextRoot="${app.context.root}/Reservations" />
+    <applicationLocation id="ReservationForm"  location="Home.war" contextRoot="${app.context.root}/CreateReservation" />
+    <applicationLocation id="Login" location="Home.war" contextRoot="${app.context.root}/login" />
+    <applicationLocation id="LoginSuccess" location="Home.war" contextRoot="${app.context.root}/success" />
+    <applicationLocation id="RoomsPage" location="Home.war" contextRoot="${app.context.root}/Rooms" />
+    <applicationLocation id="ServicesPage" location="Home.war" contextRoot="${app.context.root}/Services" />
 </server>
 

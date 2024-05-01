@@ -292,8 +292,16 @@
           <tr v-for="(customer, index) in customers" :key="'document_number_' + index">
             <th>Document Number:</th><td><input type="text" v-model="customer.DocumentNumber"/></td>
           </tr>
-          <tr v-for="(customer, index) in customers" :key="'date_of_birth_' + index">
+          <!-- <tr v-for="(customer, index) in customers" :key="'date_of_birth_' + index">
             <th>Date of Birth:</th><td><input type="date" v-model="customer.dateOfBirth"/></td>
+          </tr> -->
+          <tr v-for="(customer, index) in customers" :key="'date_of_birth_' + index">
+            <th>Date of Birth:</th>
+            <td>
+              <input type="date" 
+                    :value="formatDate(customer.dateOfBirth)" 
+                    @input="updateDateOfBirth($event.target.value, customer)" />
+            </td>
           </tr>
           <tr v-for="(customer, index) in customers" :key="'allergy_' + index">
             <th>Allergy:</th><td><input type="text" v-model="customer.Allergy"/></td>
@@ -626,6 +634,19 @@ methods: {
     const formattedDay = day < 10 ? `0${day}` : `${day}`;
 
     return `${year}-${formattedMonth}-${formattedDay}`;
+  },
+  updateDateOfBirth(newValue, customer) {
+    if (!newValue) {
+      customer.dateOfBirth = null;
+      return;
+    }
+
+    const parts = newValue.split('-');
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1; // Měsíce jsou v JavaScriptu 0-indexované
+    const day = parseInt(parts[2], 10);
+
+    customer.dateOfBirth = new Date(year, month, day).getTime(); // Aktualizace s novým časovým razítkem v ms
   },
   formatHandicap(Handicap){
     if (typeof Handicap === 'string') {

@@ -1,91 +1,146 @@
 <template>
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Reservation ID</th>
-          <th>Customer</th>
-          <th>Room </th>
-          <th>Services</th>
-          <th>Start Date</th>
-          <th>End Date</th>
-          <th>State</th>
-          <th>Cost</th>
-          <th>Comming Time</th>
-          <th>Leaving Time</th>
-          <th>Business Guest</th>
-          <th>Parking</th>
-          <th>Edit</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Data rows -->
-        <tr v-for="reservation in reservations" :key="reservation.ReservationID">
-          <!-- Display reservation details -->
-          <td>{{ reservation.ReservationID }}</td>
-          <td>
-            <span v-if="!reservation.editable">{{ reservation.CustomerID }}</span>
-            <input v-if="reservation.editable" type="text" v-model="reservation.CustomerID">
-          </td>
-          <td>
-            <span v-if="!reservation.editable">{{ reservation.RoomID }}</span>
-            <input v-if="reservation.editable" type="text" v-model="reservation.RoomID">
-          </td>
-          <td>
-  <span v-if="!reservation.editable">
-    {{ reservation.ServiceIDs ? reservation.ServiceIDs.map(id => services_available.find(service => service.ID === id).Name).join(', ') : '' }}
-  </span>
-  <select v-if="reservation.editable" v-model="reservation.ServiceIDs" multiple>
-    <option v-for="service in services_available" :key="service.ID" :value="service.ID">{{ service.Name }}</option>
-  </select>
-</td>
+  <div>
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Room </th>
+            <th>Services</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Cost</th>
+            <th>Comming Time</th>
+            <th>Leaving Time</th>
+            <th>Business Guest</th>
+            <th>Parking</th>
+            <th>Edit</th>
+            <th>Check-In/-Out</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Data rows -->
+          <tr v-for="reservation in reservations" :key="reservation.ReservationID">
+            <td>
+              <span v-if="!reservation.editable">{{ reservation.CustomerName }}</span>
+              <input v-if="reservation.editable" type="text" v-model="reservation.CustomerName">
+            </td>
+            <td>
+              <span v-if="!reservation.editable">{{ reservation.RoomID }}</span>
+              <input v-if="reservation.editable" type="text" v-model="reservation.RoomID">
+            </td>
+            <td>
+              <span v-if="!reservation.editable">
+                {{ reservation.ServiceIDs ? reservation.ServiceIDs.map(id => services_available.find(service => service.ID === id).Name).join(', ') : '' }}
+              </span>
+              <button v-else @click="showModalFunc(reservation)">Edit Services</button>
+            </td>
 
 
 
 
-          <td>
-  <span v-if="!reservation.editable">{{ new Date(reservation.Start).toISOString().split('T')[0] }}</span>
-  <input v-if="reservation.editable" type="date" v-model="reservation.Start">
-</td>
-<td>
-  <span v-if="!reservation.editable">{{ new Date(reservation.End).toISOString().split('T')[0] }}</span>
-  <input v-if="reservation.editable" type="date" v-model="reservation.End">
-</td>
-          <td>
-            <span v-if="!reservation.editable">{{ reservation.State }}</span>
-            <select v-if="reservation.editable" v-model="reservation.State" :style="{ width: '130px' }">
-              <option value="Confirmed">Confirmed</option>
-              <option value="Pending">Pending</option>
-            </select>
-          </td>
-          <td>
-            <span v-if="!reservation.editable">{{ reservation.Cost }}</span>
-            <input v-if="reservation.editable" type="number" min="0" v-model="reservation.Cost">
-          </td>
-          <td>
-            <span v-if="!reservation.editable">{{ reservation.CommingTime }}</span>
-            <input v-if="reservation.editable" type="time" v-model="reservation.CommingTime">
-          </td>
-          <td>
-            <span v-if="!reservation.editable">{{ reservation.LeavingTime }}</span>
-            <input v-if="reservation.editable" type="time" v-model="reservation.LeavingTime">
-          </td>
-          <td>
-            <span v-if="!reservation.editable">{{ reservation.BusinessGuest ? 'Yes' : 'No' }}</span>
-            <input v-if="reservation.editable" type="checkbox" v-model="reservation.BusinessGuest">
-          </td>
-          <td>
-            <span v-if="!reservation.editable">{{ reservation.Parking ? 'Yes' : 'No' }}</span>
-            <input v-if="reservation.editable" type="checkbox" v-model="reservation.Parking">
-          </td>
-          <td>
-            <button v-if="!reservation.editable" class="edit-button" @click="toggleEdit(reservation)">Edit</button>
-            <button v-if="reservation.editable" class="ok-button" @click="updateReservation(reservation)">OK</button>
-            <button v-if="reservation.editable" class="delete-button" @click="deleteReservation(reservation)">Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+            <td>
+              <span v-if="!reservation.editable">{{ formatDate(reservation.Start) }}</span>
+              <input v-if="reservation.editable" type="date" 
+                    :style="{ 'border': invalidStartDate ? '2px solid red' : '' }"
+                    :value="formatDate(reservation.Start)" 
+                    @input="updateStartDate($event.target.value, reservation)" />
+            </td>
+            <td>
+              <span v-if="!reservation.editable">{{ formatDate(reservation.End) }}</span>
+              <input v-if="reservation.editable" type="date" 
+                    :style="{ 'border': invalidEndDate ? '2px solid red' : '' }"
+                    :value="formatDate(reservation.End)" 
+                    @input="updateEndDate($event.target.value, reservation)" />
+            </td>
+            <!-- <td>
+              <span v-if="!reservation.editable">{{ reservation.State }}</span>
+              <select v-if="reservation.editable" v-model="reservation.State" :style="{ width: '130px' }">
+                <option value="Confirmed">Confirmed</option>
+                <option value="Pending">Pending</option>
+              </select>
+            </td> -->
+            <td>
+              <span v-if="!reservation.editable">{{ reservation.Cost }}</span>
+              <input v-if="reservation.editable" type="number" min="0" v-model="reservation.Cost">
+            </td>
+            <td>
+              <span v-if="!reservation.editable">{{ reservation.CommingTime }}</span>
+              <input v-if="reservation.editable" type="time" v-model="reservation.CommingTime">
+            </td>
+            <td>
+              <span v-if="!reservation.editable">{{ reservation.LeavingTime }}</span>
+              <input v-if="reservation.editable" type="time" v-model="reservation.LeavingTime">
+            </td>
+            <td>
+              <span v-if="!reservation.editable">{{ reservation.BusinessGuest ? 'Yes' : 'No' }}</span>
+              <input v-if="reservation.editable" type="checkbox" v-model="reservation.BusinessGuest">
+            </td>
+            <td>
+              <span v-if="!reservation.editable">{{ reservation.Parking ? 'Yes' : 'No' }}</span>
+              <input v-if="reservation.editable" type="checkbox" v-model="reservation.Parking">
+            </td>
+            <td>
+              <button v-if="!reservation.editable" :disabled="!isDateValid" @click="toggleEdit(reservation)">Edit</button>
+              <button v-else @click="updateReservation(reservation)" :disabled="!isDateValid">OK</button>
+              <button v-if="reservation.editable" class="delete-button" @click="deleteReservation(reservation)">Delete</button>
+            </td>
+            <td>
+              <button v-if="reservation.State==='Pending'" class="edit-button" @click="toggleCheckIn(reservation)">Check-In</button>
+              <button v-else-if="reservation.State==='Confirmed'" class="edit-button" @click="toggleCheckIn(reservation)">Check-Out</button>
+              <p v-else-if="reservation.State==='Paid'">Paid</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div v-if="isLoading">
+    </div>
+  
+    <div v-if="popup" class="modal">
+      <div class="modal-content">
+          <div>
+            <div v-for="reservation in reservations" :key="reservationCheckIn.ReservationID" v-if="reservation.ReservationID === reservationCheckIn.ReservationID">
+              <p>First Name: {{ reservation.CustomerFirstName }}</p>
+              <p>Last Name: {{ reservation.CustomerLastName}}</p>
+              <p>Email: {{ reservation.CustomerName}}</p>
+              <p>Start Date: {{ formatDate(reservation.Start) }}</p>
+              <p> End Date: {{ formatDate(reservation.End) }}</p>
+              <p> Room: {{ reservation.RoomID }}</p>
+              <p> Cost: {{ reservation.Cost }}</p>
+              <p> Bussines Guest: {{ reservation.BusinessGuest }}</p>
+              <p> Parking: {{ reservation.Parking }}</p>
+              <p> Services: </p>
+              <div v-for="service in reservation.ServiceIDs" :key="reservation.ID">
+                <ul>
+                  <li>{{ getServiceName(service) }}</li> 
+                </ul>
+              </div>
+
+              <button v-if="reservation.State==='Pending'" class="button" @click="closePopupCheckIn(reservation)">Check-In</button> 
+              <button v-else-if="reservation.State==='Confirmed'" class="button" @click="closePopupCheckIn(reservation)">Check-Out</button> 
+              </div>
+          </div>
+        <button class="button" @click="closePopupCancel()">Cancel</button> 
+      </div>
+    </div>
+
+    <div v-if="showModal" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="showModal = false">&times;</span>
+        <h4>Select Services</h4>
+          <div v-for="reservation in reservations" :key="selectedServices.ReservationID" v-if="reservation.ReservationID === selectedServices.ReservationID">
+            <div v-for="service in services_available" :key="service.ID">
+              <input type="checkbox" :id="service.ID" :value="service.ID" v-model="reservation.ServiceIDs">
+              <label :for="service.ID">{{ getServiceName(service.ID) }}</label>
+            </div>
+          </div>
+        <button @click="showModal = false">Confirm</button>
+      </div>
+    </div>
+
+    
   </div>
 </template>
 
@@ -100,97 +155,166 @@ export default {
       reservations: [], // array to store reservation data
       services: [], // array to store service data
       services_available: [], // array to store available services
+      popup: false,
+      reservationCheckIn: [],
+      showModal: false,
+      selectedServices: [],
+      isLoading: true,
+      invalidEndDate: false,
+      invalidStartDate: false,
+      rooms: [],
     };
   },
-  mounted() {
-    this.fetchReservationsAndServices();
+  async mounted() {
+    await this.fetchServices();
+    await this.fetchReservationsAndServices();
+    await this.fetchReservationServices();
+    await this.fetchCustomerNames();
+    this.isLoading = false;
+    this.fetchRooms();
+  },
+  computed: {
+    isDateValid() {
+      console.log('Invalid start date:', this.invalidStartDate);
+      return !this.invalidStartDate && !this.invalidEndDate;
+    },
   },
   methods: {
-    fetchReservationsAndServices() {
-      fetch('/Home/Reservations/GetReservations')
-        .then(response => response.json())
-        .then(data => {
-          this.reservations = data.map(reservation => ({ ...reservation, editable: false }));
-          // After fetching reservations data, call the method to fetch reservation services
-          this.fetchReservationServices(); 
-        })
-        .catch(error => {
-          console.error('Error fetching reservations:', error);
-        });
+    async fetchServices() {
+      try {
+        const response = await fetch('/Home/Services/GetServices');
+        const data = await response.json();
+        this.services_available = data.map(service => ({ ID: service.ServiceID, Name: service.Name, ...service, editable: false }));
+      } catch (error) {
+        console.error('Error fetching services:', error);
+      }
     },
-    fetchReservationServices() {
-  fetch('/Home/Reservations/GetReservationServices')
-    .then(response => response.json())
-    .then(data => {
-      // Create an object to store services indexed by their service ID
-      const serviceMap = {};
+    async fetchReservationsAndServices() {
+      try {
+        const response = await fetch('/Home/Reservations/GetReservations');
+        const data = await response.json();
+        this.reservations = data.map(reservation => ({ ...reservation, editable: false }));
+      } catch (error) {
+        console.error('Error fetching reservations:', error);
+      }
+    },
+    async fetchReservationServices() {
+      try {
+        const response = await fetch('/Home/Reservations/GetReservationServices');
+        const data = await response.json();
+        // Create an object to store services indexed by their service ID
+        const serviceMap = {};
 
-      this.fetchServices(); // Fetch available services
-      // Populate the serviceMap with service objects
-      data.forEach(service => {
-        const serviceID = service.ServiceID;
-        if (!serviceMap[serviceID]) {
-          serviceMap[serviceID] = {
-            ServiceID: serviceID,
-            reservations: []
-          };
-        }
-        serviceMap[serviceID].reservations.push(service.ReservationID);
-      });
-
-      // Convert the serviceMap values back to an array of service objects
-      this.services = Object.values(serviceMap);
-
-      // Log or inspect the services array to ensure correct associations
-      console.log('Services:', this.services);
-
-      // Populate the ServiceIDs array for each reservation
-      this.reservations.forEach(reservation => {
-        const serviceIDs = data
-          .filter(service => service.ReservationID === reservation.ReservationID)
-          .map(service => service.ServiceID);
-        reservation.ServiceIDs = serviceIDs;
-      });
-    })
-    .catch(error => {
-      console.error('Error fetching services:', error);
-    });
-},
-
-fetchServices() {
-  fetch('/Home/Services/GetServices')
-    .then(response => response.json())
-    .then(data => {
-      // Create an array of service objects with an 'ID' property
-      this.services_available = data.map(service => ({ ID: service.ServiceID, Name: service.Name, ...service, editable: false }));
-    })
-    .catch(error => {
-      console.error('Error fetching services:', error);
-    });
-},
-
-fetchCustomerNames() {
-    // Extract unique customer IDs from reservations
-    const customerIDs = [...new Set(this.reservations.map(reservation => reservation.CustomerID))];
-    // Fetch customer names for each customer ID
-    customerIDs.forEach(customerID => {
-      fetch(`/Home/Customer/GetCustomerName?id=${customerID}`)
-        .then(response => response.json())
-        .then(data => {
-          // Find the reservation with the corresponding customer ID and update its customer name
-          const reservation = this.reservations.find(reservation => reservation.CustomerID === customerID);
-          if (reservation) {
-            reservation.CustomerName = data.name; // Assuming the API returns the customer's name as 'name'
+        // Populate the serviceMap with service objects
+        data.forEach(service => {
+          const serviceID = service.ServiceID;
+          if (!serviceMap[serviceID]) {
+            serviceMap[serviceID] = {
+              ServiceID: serviceID,
+              reservations: []
+            };
           }
-        })
-        .catch(error => {
-          console.error(`Error fetching customer name for ID ${customerID}:`, error);
+          serviceMap[serviceID].reservations.push(service.ReservationID);
         });
-    });
-  },
+
+        // Convert the serviceMap values back to an array of service objects
+        this.services = Object.values(serviceMap);
+
+        // Log or inspect the services array to ensure correct associations
+        console.log('Services:', this.services);
+
+        // Populate the ServiceIDs array for each reservation
+        this.reservations.forEach(reservation => {
+          const serviceIDs = data
+            .filter(service => service.ReservationID === reservation.ReservationID)
+            .map(service => service.ServiceID);
+          reservation.ServiceIDs = serviceIDs;
+        });
+        console.log('Reservations with services:', this.reservations);
+      } catch (error) {
+        console.error('Error fetching reservation services:', error);
+      }
+    },
+
+
+    async fetchCustomerNames() {
+      try {
+        // Extract unique customer IDs from reservations
+        const customerIDs = [...new Set(this.reservations.map(reservation => reservation.CustomerID))];
+
+        // Fetch customer data from server
+        const response = await fetch(`/Home/Customer/GetCustomers`);
+        const data = await response.json();
+        console.log('Customer data:', data);
+
+        // Loop through each customer ID to find and update reservations
+        customerIDs.forEach(customerID => {
+          const matchingReservations = this.reservations.filter(reservation => reservation.CustomerID === customerID);
+          if (matchingReservations.length > 0) {
+            matchingReservations.forEach(reservation => {
+              data.forEach(customer => {
+                if (customer.customerId === customerID) {
+                  reservation.CustomerName = customer.person.email; // Assuming the API returns the customer's email as 'email'
+                  reservation.CustomerFirstName = customer.person.firstName; // Assuming the API returns the customer's email as 'email'
+                  reservation.CustomerLastName = customer.person.lastName; // Assuming the API returns the customer's email as 'email'
+                }
+              });
+            });
+          }
+        });
+        console.log('Reservations:', this.reservations);
+      } catch (error) {
+        console.error('Error fetching customer names:', error);
+      }
+    },
+
+
 
     toggleEdit(reservation) {
       reservation.editable = !reservation.editable; // Toggle the editable property
+    },
+    fetchRooms() {
+      fetch('/Home/Rooms/GetRooms') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
+        .then(response => response.json())
+        .then(data => {
+          this.rooms = data.map(room => ({ ...room, editable: false })); // Nastavenie údajov do premennej rooms
+        })
+        .catch(error => {
+          console.error('Error fetching rooms:', error);
+        });
+    },
+    totalCost(reservation) {
+      console.log('Calculating total cost:', reservation)
+      if (reservation.Start && reservation.End && reservation.RoomID) {
+        const startDate = new Date(reservation.Start);
+        const endDate = new Date(reservation.End);
+        const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+        const room = this.rooms.find(room => room.RoomID === reservation.RoomID);
+        let cost = days * room.Cost;
+
+        if (reservation.BusinessGuest) {
+          // Add additional cost for business guest
+          cost += 50;
+        }
+
+        if (reservation.Parking) {
+          // Add additional cost for parking
+          cost += 10;
+        }
+
+        if (reservation.ServiceIDs) {
+          // Add additional cost for services
+          reservation.ServiceIDs.forEach(serviceID => {
+            const service = this.services_available.find(service => service.ID === serviceID);
+            cost += service.Cost;
+          });
+        }
+
+        return cost.toFixed(2);
+
+      }
+
+      return 0;
     },
     updateReservation(reservation) {
   // Implementation of reservation update
@@ -198,13 +322,15 @@ fetchCustomerNames() {
   reservation.editable = false; // Close the editing mode
 
   // Format the date to 'YYYY-MM-DD' format
-  reservation.Start = new Date(reservation.Start).toISOString().split('T')[0];
-  reservation.End = new Date(reservation.End).toISOString().split('T')[0];
+  reservation.Start = this.formatDate(reservation.Start);
+  reservation.End = this.formatDate(reservation.End);
   
   //format the parking and business guest to integer
   reservation.Parking = reservation.Parking ? 1 : 0;
   reservation.BusinessGuest = reservation.BusinessGuest ? 1 : 0;
 
+  reservation.Cost = this.totalCost(reservation);
+  console.log('Updated reservation:', reservation);
   // Send the data to the server
   fetch('/Home/Reservations/UpdateReservation', {
     method: 'POST',
@@ -251,7 +377,109 @@ fetchCustomerNames() {
         console.error('Error deleting reservation:', error);
       });
     },
+    closePopupCheckIn(reservation){
+      if(reservation.State === "Pending")
+        reservation.State = "Confirmed";
+      else if(reservation.State === "Confirmed")
+        reservation.State = "Paid";
+      this.editTable = !this.editTable;
+      this.popup = !this.popup;
+    },
+    closePopupCancel(){
+      this.popup = !this.popup;
+    },
+    toggleCheckIn(Reservation){
+      // if(Reservation.state === "Pending")
 
+      // if(Reservation.state === "Confirmed")
+      this.popup = !this.popup;
+      this.reservationCheckIn = Reservation;
+      console.log(this.reservations);
+      console.log('Check-In:', this.reservationCheckIn);
+    },
+    showModalFunc(reservation) {
+      this.showModal = true;
+      this.selectedServices = reservation;
+      console.log('Selected services:', this.selectedServices);
+    },
+    getServiceName(serviceId) {
+      console.log('Service ID:', serviceId);
+      console.log('Services:', this.services_available);
+      const service_name = this.services_available.find(service => service.ID === serviceId).Name;
+      console.log('Service name:', service_name);
+      return service_name;
+    },
+    formatDate(ReservDate) {
+      if (!ReservDate) return ''; 
+
+      const dateObj = new Date(ReservDate);
+      const month = dateObj.getMonth() + 1;
+      const day = dateObj.getDate();
+      const year = dateObj.getFullYear();
+
+      const formattedMonth = month < 10 ? `0${month}` : `${month}`;
+      const formattedDay = day < 10 ? `0${day}` : `${day}`;
+
+      return `${year}-${formattedMonth}-${formattedDay}`;
+    },
+    updateStartDate(newValue, reservation) {
+    if (!newValue) {
+      reservation.Start = null;
+      return;
+    }
+
+    const parts = newValue.split('-');
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1; // Měsíce jsou v JavaScriptu 0-indexované
+    const day = parseInt(parts[2], 10);
+    const date = new Date(year, month, day).getTime();
+    console.log('Date:', date);
+    if (typeof reservation.End === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(reservation.End)) {
+      const endParts = reservation.End.split('-');
+      const endYear = parseInt(endParts[0], 10);
+      const endMonth = parseInt(endParts[1], 10) - 1;
+      const endDay = parseInt(endParts[2], 10);
+      reservation.End = new Date(endYear, endMonth, endDay).getTime();
+    }
+    console.log('Reservation end:', reservation.End);
+    if (date >= reservation.End) {
+      this.invalidStartDate = true;
+    }
+    else {
+      this.invalidStartDate = false;
+      this.invalidEndDate = false;
+    }
+    reservation.Start = new Date(year, month, day).getTime(); // Aktualizace s novým časovým razítkem v ms
+  },
+  updateEndDate(newValue, reservation) {
+    if (!newValue) {
+      reservation.End = null;
+      return;
+    }
+
+    const parts = newValue.split('-');
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1; // Měsíce jsou v JavaScriptu 0-indexované
+    const day = parseInt(parts[2], 10);
+    const date = new Date(year, month, day).getTime();
+    console.log('Date:', date);
+    if (typeof reservation.Start === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(reservation.End)) {
+      const endParts = reservation.End.split('-');
+      const endYear = parseInt(endParts[0], 10);
+      const endMonth = parseInt(endParts[1], 10) - 1;
+      const endDay = parseInt(endParts[2], 10);
+      reservation.Start = new Date(endYear, endMonth, endDay).getTime();
+    }
+    console.log('Reservation start:', reservation.Start);
+    if (date <= reservation.Start) {
+      this.invalidEndDate = true;
+    }
+    else {
+      this.invalidEndDate = false;
+      this.invalidStartDate = false;
+    }
+    reservation.End = new Date(year, month, day).getTime(); // Aktualizace s novým časovým razítkem v ms
+  },
   }
 };
 
@@ -326,5 +554,51 @@ select{
   border-radius: 4px; /* zaoblené rohy */
   font-size: 16px; /* velikost písma */
   border: 1px solid #2196F3;
+}
+/* .modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.modal-content {
+  background-color: white;
+  margin: 15% auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+} */
+.modal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  width: 300px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.close {
+  float: right;
+  font-size: 28px;
+  cursor: pointer;
 }
 </style>

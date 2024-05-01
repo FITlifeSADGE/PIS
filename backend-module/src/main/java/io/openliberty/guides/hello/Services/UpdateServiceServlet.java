@@ -47,7 +47,7 @@ public class UpdateServiceServlet extends HttpServlet {
             //udate service parameters
             service.updateService(
                 root.path("Name").asText(), 
-                root.path("Cost").floatValue(),   
+                Float.parseFloat((root.path("Cost").asText())),   
                 root.path("Availability").asText(),  
                 root.path("Description").asText()
                 );

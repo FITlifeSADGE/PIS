@@ -5,20 +5,21 @@
       <div>
         <label for="customer-id">Customer Name</label>
         <select id="customer-id" v-model="reservation.CustomerID" required>
-  <option value="" disabled>Select a customer</option>
-  <option v-for="customer in customers" :key="customer.customerId" :value="customer.customerId">
-    {{ customer.person.firstName }} {{ customer.person.lastName }}
-  </option>
-</select>
-        <button @click.prevent="addNewCustomer">New Customer</button>
+          <option value="" disabled>Select a customer</option>
+          <option v-for="customer in customers" :key="customer.customerId" :value="customer.customerId">
+            {{ customer.person.email }}
+          </option>
+        </select>
+        <button v-if="!showNewCustomerForm" @click.prevent="addNewCustomer" :disabled="!isCreateButtonEnabled">New Customer</button>
+        <button v-else @click.prevent="addNewCustomer">Hide Creation</button>
       </div>
       <div>
-  <label for="room-id">Rooms</label>
-  <select id="room-id" v-model="reservation.RoomID" required>
-    <option value="" disabled>Select a room</option>
-    <option v-for="room in rooms" :value="room.RoomID">{{ room.RoomID }} (Beds: {{ room.Beds }})</option>
-  </select>
-</div>
+        <label for="room-id">Rooms</label>
+        <select id="room-id" v-model="reservation.RoomID" required>
+          <option value="" disabled>Select a room</option>
+          <option v-for="room in rooms" :value="room.RoomID">{{ room.RoomID }} (Beds: {{ room.Beds }})</option>
+        </select>
+      </div>
       <div>
         <label for="start-date">Start Date</label>
         <input id="start-date" type="date" v-model="reservation.Start" required>
@@ -26,13 +27,14 @@
       <div>
         <label for="end-date">End Date</label>
         <input id="end-date" type="date" v-model="reservation.End" required>
+        <span v-if="!isCreateButtonEnabled" class="warning-icon" title="End datum musí být po Start datum">&#9888;</span>
       </div>
       <div>
-        <label for="coming-time">Coming Time</label>
+        <label for="coming-time">Check-in</label>
         <input id="coming-time" type="time" v-model="reservation.ComingTime" required>
       </div>
       <div>
-        <label for="leaving-time">Leaving Time</label>
+        <label for="leaving-time">Check-out</label>
         <input id="leaving-time" type="time" v-model="reservation.LeavingTime" required>
       </div>
       <div>
@@ -47,7 +49,7 @@
   <label for="cost">Cost</label>
   <input id="cost" type="number" min="0" step="0.01" v-model="totalCost" readonly>
 </div>
-      <button type="submit">Create Reservation</button>
+      <button type="submit" :disabled="!isCreateButtonEnabled">Create Reservation</button>
     </form>
 
      <!-- Display reservation details if successfully created -->
@@ -65,18 +67,30 @@
 
  <!-- Option to add services -->
  <h3>Add Services</h3>
-<label for="service-name">Service Name:</label>
-<select id="service-name" v-model="selectedServices" multiple>
-  <option v-for="service in services" :key="service.ServiceID" :value="service.ServiceID">{{ service.Name }}</option>
-</select>
-<button v-if="showAddServicesButton" @click.prevent="addReservationServices">Add Services</button>
-<ul>
-  <li v-for="serviceId in reservation.Services" :key="serviceId">{{ getServiceName(serviceId) }}</li>
-</ul>
+ <button @click="showModal = true">Select Services</button>
+ <router-link to="/Home/Reservations">
+    <button>Continue without services</button>
+  </router-link>
+
+ <div v-if="showModal" class="modal">
+    <div class="modal-content">
+      <span class="close" @click="showModal = false">&times;</span>
+      <h4>Select Services</h4>
+      <div v-for="service in services" :key="service.ServiceID">
+        <input type="checkbox" :id="service.ServiceID" :value="service.ServiceID" v-model="selectedServices">
+        <label :for="service.ServiceID">{{ service.Name }}</label>
+      </div>
+      <button @click="addReservationServices">Add Services</button>
+    </div>
+  </div>
+
+  <ul>
+    <li v-for="serviceId in reservation.Services" :key="serviceId">{{ getServiceName(serviceId) }}</li>
+  </ul>
 </div>
 
 
-  <div v-if="showNewCustomerForm">
+  <div v-if="showNewCustomerForm && !reservationCreated">
       <h2>Create a New Customer</h2>
       <form @submit.prevent="createCustomer">
         <div>
@@ -89,15 +103,17 @@
           </div>
           <div>
             <label for="new-customer-email">Email</label>
-            <input id="new-customer-email" v-model="newCustomer.Email" required>
+            <input id="new-customer-email" v-model="newCustomer.Email" required type="email">
+            <span v-if="!isEmailUnique" class="warning-icon" title="Zákazník s daným emailem již existuje">&#9888;</span>
           </div>
           <div>
             <label for="new-customer-phone">Phone</label>
-            <input id="new-customer-phone" v-model="newCustomer.PhoneNumber" required>
+            <input id="new-customer-phone" v-model="newCustomer.PhoneNumber" required type="tel">
+            <span v-if="!isPhoneNumberUnique" class="warning-icon" title="Zákazník s tímto číslem již existuje">&#9888;</span>
           </div>
           <div>
             <label for="new-customer-document">Document Number</label>
-            <input id="new-customer-document" v-model="newCustomer.DocumentNumber" required>
+            <input id="new-customer-document" v-model="newCustomer.DocumentNumber" required type="number">
           </div>
           <div>
             <label for="new-customer-dob">Date of Birth</label>
@@ -105,7 +121,7 @@
           </div>
           <div>
             <label for="new-customer-phone-preselection">Phone Preselection</label>
-            <input id="new-customer-phone-preselection" v-model="newCustomer.PhonePreselection" required>
+            <input id="new-customer-phone-preselection" v-model="newCustomer.PhonePreselection" required pattern="\+\d{2,3}">
           </div>
           <div>
             <label for="new-customer-allergy">Allergy</label>
@@ -124,7 +140,7 @@
             <input id="new-customer-subscription" type="checkbox" v-model="newCustomer.Subscription">
           </div>
         
-          <button type="submit">Create Customer</button>
+          <button type="submit" :disabled="!isCustomerUnique">Create Customer</button>
         </form>
       </div>
     </div>
@@ -140,26 +156,27 @@ export default {
       reservation: {
         CustomerID: '',
         RoomID: '',
-        Start: '',
-        End: '',
+        Start: this.getFormattedDate(),
+        End: this.getFormattedDate(7),
         Cost: 0,
-        ComingTime: '',
-        LeavingTime: '',
+        ComingTime: '14:00',
+        LeavingTime: '10:00',
         BusinessGuest: false,
         Parking: false,
-        reservationId: 0
+        reservationId: 0,
+        ReservationID: 0,
       },
       newCustomer: {
         LastName: '',
         FirstName: '',
-        Email: '',
-        PhonePreselection: '',
-        PhoneNumber: '',
-        DocumentNumber: '',
-        DateOfBirth: '',
-        Allergy: '',
+        Email: 'konza.hulich@example.com',
+        PhonePreselection: '+420',
+        PhoneNumber: '777777777',
+        DocumentNumber: '123456789',
+        DateOfBirth: '1998-01-01',
+        Allergy: 'None',
         Handicap: false,
-        Address: '',
+        Address: 'Bozetechova 1/2, 612 00 Brno',
         Subscription: false
     
       },
@@ -172,7 +189,10 @@ export default {
       newServiceName: '',
       services: [],
       selectedServices: [],
-
+      isCustomerUnique: true,
+      isEmailUnique: true,
+      isPhoneNumberUnique: true,
+      showModal: false,
     };
   },
   mounted() {
@@ -203,6 +223,11 @@ export default {
     }
 
     return 0;
+  },
+  isCreateButtonEnabled() {
+    const startDate = new Date(this.reservation.Start);
+    const endDate = new Date(this.reservation.End);
+    return endDate > startDate;
   }
 },
   methods: {
@@ -225,7 +250,7 @@ export default {
             console.log('Reservation ID:', data.reservationId);
 
           this.ReservationID = data.reservationId;
-          
+          console.log('Reservation ID:', this.ReservationID);
 
           // Clear the form or redirect to another page
           this.reservationCreated = true;
@@ -247,12 +272,16 @@ export default {
 
     updateReservation(reservation) {
   // Implementation of reservation update
+  reservation.reservationId = this.ReservationID;
+  reservation.ReservationID = this.ReservationID;
+  reservation.State = 'Pending';
+  reservation.CommingTime = reservation.ComingTime;
   console.log('Updating reservation:', reservation);
   reservation.editable = false; // Close the editing mode
 
   // Format the date to 'YYYY-MM-DD' format
-  reservation.Start = new Date(reservation.Start).toISOString().split('T')[0];
-  reservation.End = new Date(reservation.End).toISOString().split('T')[0];
+  reservation.Start = this.formatDate(reservation.Start);
+  reservation.End = this.formatDate(reservation.End);
   
   //format the parking and business guest to integer
   reservation.Parking = reservation.Parking ? 1 : 0;
@@ -284,6 +313,8 @@ export default {
     .then(data => {
       // Set the retrieved customer data to the "customers" variable
       this.customers = data.map(customer => ({ ...customer, editable: false }));
+      this.isUniqueEmail(this.newCustomer.Email);
+      this.isUniquePhoneNumber(this.newCustomer.PhoneNumber);
     })
     .catch(error => {
       console.error('Error fetching customers:', error);
@@ -313,7 +344,7 @@ fetchRooms() {
     },
 
 addNewCustomer() {
-      this.showNewCustomerForm = true;
+      this.showNewCustomerForm = !this.showNewCustomerForm;
     },
 
     createCustomer() {
@@ -335,7 +366,8 @@ addNewCustomer() {
 
           // Set the newly created customer as the selected value in the select element
           this.reservation.CustomerID = data.customerId;
-
+          this.isUniqueEmail(this.newCustomer.Email);
+          this.isUniquePhoneNumber(this.newCustomer.PhoneNumber);
         })
         .catch((error) => {
           console.error('Error creating customer:', error);
@@ -345,6 +377,17 @@ addNewCustomer() {
 
     addReservationServices(){
       // Send a POST request to the servlet to add a new service to the reservation
+      console.log('Selected services:', this.selectedServices);
+      console.log('Reservation:', this.reservation);
+      if (this.selectedServices.length > 0) {
+        this.selectedServices.forEach(service => { 
+          let serviceCost = parseFloat(this.services.find(s => s.ServiceID === service).Cost);
+          this.reservation.Cost = parseFloat(this.reservation.Cost) + serviceCost;
+        });
+      }
+      console.log('New reservation: ', this.reservation);
+      console.log('Total cost:', this.reservation.Cost);
+      this.updateReservation(this.reservation);
       fetch('/Home/Reservations/AddReservationServices', {
         method: 'POST',
         headers: {
@@ -352,7 +395,14 @@ addNewCustomer() {
         },
         body: JSON.stringify({ reservationId: this.ReservationID, serviceIds: this.selectedServices }),
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (response.ok) {
+            this.showModal = false;
+            this.$router.push('/Home/Reservations');
+          } else {
+            throw new Error('Adding new reservation failed');
+          }
+        })
         .then((data) => {
           this.newServiceName = '';
 
@@ -364,6 +414,78 @@ addNewCustomer() {
           // Handle error case
         });
 
+    },
+    getFormattedDate(days = 0) {
+      const today = new Date();
+      today.setDate(today.getDate() + days);
+      const day = today.getDate().toString().padStart(2, '0');
+      const month = (today.getMonth() + 1).toString().padStart(2, '0');
+      const year = today.getFullYear();
+      return `${year}-${month}-${day}`;
+    },
+    isUniqueEmail(email) {
+      const existingCustomer = this.customers.find(customer =>
+        customer.person.email === email);
+      if (existingCustomer) {
+        this.isCustomerUnique = false;
+        this.isEmailUnique = false;
+        return false; // Není unikátní, protože zákazník již existuje
+      } else {
+        return true; // Je unikátní, protože takový zákazník neexistuje
+      }
+    },
+    isUniquePhoneNumber(phoneNumber) {
+      const existingCustomer = this.customers.find(customer =>
+        customer.person.phoneNumber === phoneNumber
+      );
+      if (existingCustomer) {
+        this.isCustomerUnique = false;
+        this.isPhoneNumberUnique = false;
+        return false; // Není unikátní, protože zákazník již existuje
+      } else {
+        return true; // Je unikátní, protože takový zákazník neexistuje
+      }
+    },
+    formatDate(ReservDate) {
+      if (!ReservDate) return ''; 
+
+      const dateObj = new Date(ReservDate);
+      const month = dateObj.getMonth() + 1;
+      const day = dateObj.getDate();
+      const year = dateObj.getFullYear();
+
+      const formattedMonth = month < 10 ? `0${month}` : `${month}`;
+      const formattedDay = day < 10 ? `0${day}` : `${day}`;
+
+      return `${year}-${formattedMonth}-${formattedDay}`;
+    },
+  },
+  watch: {
+    'reservation.End'(newVal, oldVal) {
+    if (new Date(this.reservation.End) <= new Date(this.reservation.Start)) {
+      this.showNewCustomerForm = false;
+    }
+  },
+  'reservation.Start'(newVal, oldVal) {
+    if (new Date(this.reservation.End) <= new Date(this.reservation.Start)) {
+      this.showNewCustomerForm = false;
+    }
+  },
+   'newCustomer.Email'(newVal, oldVal) {
+      this.isEmailUnique = this.isUniqueEmail(this.newCustomer.Email);
+      if (this.isEmailUnique && this.isPhoneNumberUnique) {
+        this.isCustomerUnique = true;
+      } else {
+        this.isCustomerUnique = false;
+      }
+    },
+    'newCustomer.PhoneNumber'(newVal, oldVal) {
+      this.isPhoneNumberUnique = this.isUniquePhoneNumber(this.newCustomer.PhoneNumber);
+      if (this.isEmailUnique && this.isPhoneNumberUnique) {
+        this.isCustomerUnique = true;
+      } else {
+        this.isCustomerUnique = false;
+      }
     }
   }
 };
@@ -371,7 +493,7 @@ addNewCustomer() {
 
 <style>
 .reservation-form {
-  max-width: 400px;
+  max-width: 500px;
   margin: 0 auto;
 }
 
@@ -391,5 +513,36 @@ addNewCustomer() {
 .reservation-form input,
 .reservation-form select {
   margin-bottom: 1rem;
+}
+.warning-icon {
+  color: red; /* Nastaví barvu ikony na červenou */
+  margin-left: 5px; /* Přidá malý odstup od inputu */
+  font-size: 18px; /* Zvětší velikost ikony */
+}
+
+.modal {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  width: 300px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.close {
+  float: right;
+  font-size: 28px;
+  cursor: pointer;
 }
 </style>
