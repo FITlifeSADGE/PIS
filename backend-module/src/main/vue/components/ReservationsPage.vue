@@ -111,8 +111,8 @@
               <p> End Date: {{ formatDate(reservation.End) }}</p>
               <p> Room: {{ reservation.RoomID }}</p>
               <p> Cost: {{ reservation.Cost }}</p>
-              <p> Bussines Guest: {{ reservation.BusinessGuest }}</p>
-              <p> Parking: {{ reservation.Parking }}</p>
+              <p> Bussines Guest: {{ trueFalseFormat(reservation.BusinessGuest) }}</p>
+              <p> Parking: {{ trueFalseFormat(reservation.Parking) }}</p>
               <p> Services: </p>
               <div v-for="service in reservation.ServiceIDs" :key="reservation.ID">
                 <ul>
@@ -379,12 +379,22 @@ export default {
         console.error('Error deleting reservation:', error);
       });
     },
+    trueFalseFormat(value) {
+      if(value === "true")
+      {
+        return "Yes";
+      }
+      else
+      {
+        return "No";
+      }
+    },
     closePopupCheckIn(reservation){
       if(reservation.State === "Pending")
         reservation.State = "Confirmed";
       else if(reservation.State === "Confirmed")
         reservation.State = "Paid";
-      updateReservation(reservation);
+      this.updateReservation(reservation);
       this.editTable = !this.editTable;
       this.popup = !this.popup;
     },
@@ -392,9 +402,6 @@ export default {
       this.popup = !this.popup;
     },
     toggleCheckIn(Reservation){
-      // if(Reservation.state === "Pending")
-
-      // if(Reservation.state === "Confirmed")
       this.popup = !this.popup;
       this.reservationCheckIn = Reservation;
       console.log(this.reservations);
