@@ -115,7 +115,7 @@
           </div>
           <div>
             <label for="new-customer-dob">Date of Birth</label>
-            <input id="new-customer-dob" type="date" v-model="newCustomer.DateOfBirth" required>
+            <input id="new-customer-dob" type="date" v-model="newCustomer.DateOfBirth" required :max="getFormattedDateYears(18)">
           </div>
           <div>
             <label for="new-customer-phone-preselection">Phone Preselection</label>
@@ -225,7 +225,7 @@ export default {
   isCreateButtonEnabled() {
     const startDate = new Date(this.reservation.Start);
     const endDate = new Date(this.reservation.End);
-    return endDate > startDate;
+    return (endDate > startDate);
   },
   filteredRooms() {
       return this.rooms.filter(room => {
@@ -411,6 +411,14 @@ addNewCustomer() {
       const year = today.getFullYear();
       return `${year}-${month}-${day}`;
     },
+    getFormattedDateYears(years = 0) {
+      const today = new Date();
+      today.setDate(today.getDate());
+      const day = today.getDate().toString().padStart(2, '0');
+      const month = (today.getMonth() + 1).toString().padStart(2, '0');
+      const year = (today.getFullYear()-years);
+      return `${year}-${month}-${day}`;
+    },
     isUniqueEmail(email) {
       const existingCustomer = this.customers.find(customer =>
         customer.person.email === email);
@@ -511,7 +519,7 @@ addNewCustomer() {
       } else {
         this.isCustomerUnique = false;
       }
-    }
+    },
   }
 };
 </script>
