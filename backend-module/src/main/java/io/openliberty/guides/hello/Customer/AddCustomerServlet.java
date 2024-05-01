@@ -47,8 +47,8 @@ public class AddCustomerServlet extends HttpServlet {
             // Create and update new customer
             Customer customer = new Customer();
 
-            // Get the biggest Customer ID
-            TypedQuery<Integer> query = em.createNamedQuery("Customer.findMaxId", Integer.class);
+            // Get the biggest Person ID
+            TypedQuery<Integer> query = em.createNamedQuery("Person.findMaxId", Integer.class);
             int newId = query.getSingleResult();
 
             // Change DateOfBirth to Date
@@ -67,6 +67,7 @@ public class AddCustomerServlet extends HttpServlet {
             person.setLastName(root.get("LastName").asText());
             person.setFirstName(root.get("FirstName").asText());
             person.setEmail(root.get("Email").asText());
+            person.setPhonePreselection(root.get("PhonePreselection").asText());
             person.setPhoneNumber(root.get("PhoneNumber").asText());
             person.setDocumentNumber(root.get("DocumentNumber").asText());
             person.setDateOfBirth(dateOfBirth);

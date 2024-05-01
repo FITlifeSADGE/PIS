@@ -24,7 +24,6 @@
           <td><input type="text" style="width: 150px;" v-model="newEmployee.FirstName" placeholder="First Name" :class="{ 'required-field-empty': newEmployee.FirstName === '' }" required></td>
           <td><input type="email" style="width: 150px;" v-model="newEmployee.Email" placeholder="Email" :class="{ 'required-field-empty': newEmployee.Email === '' }" required></td>
           <select v-model="newEmployee.Assignment" style="width: 150px;" :class="{ 'required-field-empty': newEmployee.Assignment === '' }" required>
-              <option value="">Select Assignment</option>
               <option value="Manager">Manager</option>
               <option value="Supervisor">Supervisor</option>
               <option value="Staff">Staff</option>
@@ -69,7 +68,6 @@
           <td v-if="!employee.editable">{{ employee.Assignment }}</td>
           <td v-else>
             <select v-model="employee.Assignment" style="width: 150px;" :class="{ 'required-field-empty': employee.Assignment === '' }" required>
-              <option value="">Select Assignment</option>
               <option value="Manager">Manager</option>
               <option value="Supervisor">Supervisor</option>
               <option value="Staff">Staff</option>
@@ -111,7 +109,7 @@ export default {
         LastName: '',
         FirstName: '',
         Email: '',
-        Assignment: '',
+        Assignment: 'Salesperson',
         PhoneNumber: '777777777',
         DocumentNumber: '123456789',
         DateOfBirth: '1998-01-01',
