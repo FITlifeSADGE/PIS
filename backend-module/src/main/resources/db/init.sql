@@ -26,8 +26,6 @@ CREATE TABLE IF NOT EXISTS Customer (
     FOREIGN KEY (CustomerID) REFERENCES Person(PersonID)
 );
 
-
-
 CREATE TABLE IF NOT EXISTS Room(
     RoomID int not null primary key,
     TypeRoom varchar(255),
@@ -45,7 +43,6 @@ CREATE TABLE IF NOT EXISTS Service(
     Description varchar(255),
     State varchar(255)
 );
-
 
 CREATE TABLE IF NOT EXISTS Reservation(
     ReservationID int not null primary key,

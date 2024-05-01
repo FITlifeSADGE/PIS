@@ -7,7 +7,7 @@
           <th style="width: 50px;">Cost</th>
           <th style="width: 130px;">Availability</th>
           <th>Description</th>
-          <th>Edit</th>
+          <th style="width: 80px;">Edit</th>
         </tr>
       </thead>
       <tbody>
@@ -69,7 +69,7 @@
           <td>
             <button v-if="!service.editable" class="edit-button" @click="toggleEdit(service)">Edit</button>
             <button v-else class="ok-button" @click="updateService(service)">OK</button>
-            <button v-if="service.editable" class="delete-button" @click="deleteService(service)">Delete</button>
+            <button v-if="service.editable && RezeravationForService(service.ServiceID)" class="delete-button" @click="deleteService(service)">Delete</button>
           </td>
         </tr>
       </tbody>
@@ -83,6 +83,7 @@ import Parent from './Parent.vue';
 export default {
   data() {
     return {
+      reservations: [],
       services: [],
       filters: {
         Name: '',
@@ -126,21 +127,48 @@ export default {
   },
   mounted() {
     this.fetchServices(); // load services
+    this.fetchReservationServices(); // load ResevationServices
   },
   methods: {
     // requesting for service data
-    fetchServices() {
+    async fetchServices() {
       fetch('/Home/Services/GetServices') 
         .then(response => response.json())
         .then(data => {
           this.services = data.map(service => ({ ...service, editable: false }));
+          console.log(this.services);
         })
         .catch(error => {
           console.error('Error fetching services:', error);
         });
     },
+
+    async fetchReservationServices() 
+    {
+    try {
+      const response = await fetch('/Home/Reservations/GetReservationServices');
+      this.reservations = await response.json();
+      } catch (error) {
+        console.error('Error fetching reservations:', error);
+      }
+    },
+
     toggleEdit(service) {
       service.editable = !service.editable; // change edit value
+    },
+
+    RezeravationForService(serviceID){
+
+      for (const reservation of this.reservations) 
+      {
+        console.log(serviceID);
+        console.log(reservation.ServiceID);
+        if (serviceID === reservation.ServiceID) 
+        {
+          return false;
+        }
+      }
+      return true;
     },
 
     updateService(service) {

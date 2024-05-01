@@ -15,7 +15,7 @@
           <th>Equip</th>
           <th style="width: 130px;">State</th>
           <th style="width: 50px;">Beds</th>
-          <th>Edit</th>
+          <th style="width: 50px;">Edit</th>
         </tr>
       </thead>
       <tbody>
@@ -82,7 +82,7 @@
           <td>
             <button v-if="!room.editable" class="edit-button" @click="toggleEdit(room)">Edit</button>
             <button v-else class="ok-button" @click="updateRoom(room)">OK</button>
-            <button v-if="room.editable" class="delete-button" @click="deleteRoom(room)">Delete</button>  
+            <button v-if="room.editable && RezeravationForRoom(room.RoomID)" class="delete-button" @click="deleteRoom(room)">Delete</button>  
           </td>
         </tr>
       </tbody>
@@ -155,18 +155,29 @@ export default {
       const day1 = parseInt(parts1[2], 10);
       const EndDate = new Date(year1, month1, day1).getTime();
 
-      for (const reservation of reservations) {
+      for (const reservation of reservations) 
+      {
         if (
           roomID === reservation.RoomID &&
           EndDate >= reservation.Start && 
-          Startdate <= reservation.End
-        ) {
+          Startdate <= reservation.End) 
+        {
           return false;
         }
       }
       return true;
     },
 
+    RezeravationForRoom(roomID){
+      for (const reservation of this.reservations) 
+      {
+        if (roomID === reservation.RoomID) 
+        {
+          return false;
+        }
+      }
+      return true;
+    },
 
     // requesting for room data
     async fetchRooms() {
@@ -187,13 +198,11 @@ export default {
     async fetchReservations() {
       try {
         const response = await fetch('/Home/Reservations/GetReservations');
-        const data = await response.json();
-        this.reservations = data.map(reservation => ({ ...reservation, editable: false }));
+        this.reservations = await response.json();
       } catch (error) {
         console.error('Error fetching reservations:', error);
       }
     },
-
 
     updateRoom(room) {
       if (room.TypeRoom && room.Cost && room.Equip && room.State && room.Beds) 
