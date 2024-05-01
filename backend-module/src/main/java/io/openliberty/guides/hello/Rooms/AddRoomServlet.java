@@ -42,11 +42,7 @@ public class AddRoomServlet extends HttpServlet {
             //create and update new room 
             Room room = new Room();
 
-            //get the biggest Roomid
-            TypedQuery<Integer> query = em.createNamedQuery("Room.findMaxId", Integer.class);
-            int newid = query.getSingleResult();
-
-            room.setRoomId(newid+1);
+            room.setRoomId(root.path("RoomID").asInt());
             room.updateRoom(
                 root.path("TypeRoom").asText(), 
                 Float.parseFloat(root.path("Cost").asText()),  
@@ -68,18 +64,5 @@ public class AddRoomServlet extends HttpServlet {
             em.close();
             emf.close();
         }
-
-
-
-
-
-        
-        // try 
-        // {
-        //     DatabaseUtil.Add(root, "Room", "RoomID");
-        // } 
-        // catch (SQLException e) {
-        //     e.printStackTrace();
-        // }
     }
 }
