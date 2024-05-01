@@ -384,6 +384,7 @@ export default {
         reservation.State = "Confirmed";
       else if(reservation.State === "Confirmed")
         reservation.State = "Paid";
+      updateReservation(reservation);
       this.editTable = !this.editTable;
       this.popup = !this.popup;
     },
