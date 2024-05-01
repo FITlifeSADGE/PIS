@@ -1,6 +1,7 @@
 <template>
   <div class="table-container">
 
+    <!-- Date filter -->
     <label for="start">Start reservation date:</label>
     <input type="date" id="start" v-model="filters.startDate">
     <label for="end">End reservation date:</label>
@@ -20,6 +21,7 @@
       </thead>
       <tbody>
 
+        <!-- Add new -->
         <tr v-if="addingNew">
           <td><input type="number" min="1" style="width: 50px;" v-model="newRoom.RoomID" :class="{ 'required-field-empty': (CheckRoomID(newRoom.RoomID) || newRoom.RoomID === '') }" required></td>
           <td><input type="text" style="width: 130px;" v-model="newRoom.TypeRoom" :class="{ 'required-field-empty': newRoom.TypeRoom === '' }" required></td>
@@ -45,6 +47,7 @@
         </tr>
 
 
+        <!-- Filter row -->
         <tr>
           <td><input type="text" v-model="filters.RoomID" style="width: 50px;"></td>
           <td><input type="text" v-model="filters.TypeRoom" style="width: 130px;"></td>
@@ -58,10 +61,11 @@
             </select>
           </td>
           <td><input type=number style="width: 50px;" v-model="filters.Beds"></td>
-          <td></td> 
+          <td></td> <!-- Empty cell for buttons -->
         </tr>
 
 
+        <!-- Data rows -->
         <tr v-for="room in filteredRooms" :key="room.RoomID">
           <td>{{ room.RoomID }}</td>
           <td v-if="!room.editable">{{ room.TypeRoom }}</td>
@@ -109,7 +113,7 @@ export default {
         endDate: '',   
       },
       addingNew: false,
-      newRoom: {   
+      newRoom: {    //preloaded data for new room
         RoomID: '458',
         TypeRoom: 'Double',
         Cost: '15.0',
@@ -120,12 +124,13 @@ export default {
     };
   },
   mounted() {
-    this.fetchRooms();
-    this.fetchReservations();  
+    this.fetchRooms(); // load rooms
+    this.fetchReservations();  //load rezervations
   },
   computed: {
     
     filteredRooms() {
+      // filter rooms if some value is not set filter will ignore that value
       return this.rooms.filter(room => {
         return (
           room.RoomID.toString().includes(this.filters.RoomID) &&
@@ -133,6 +138,7 @@ export default {
           room.Cost.toString().includes(this.filters.Cost) &&
           room.Equip.toLowerCase().includes(this.filters.Equip.toLowerCase()) &&
           room.Beds.toString().includes(this.filters.Beds) &&
+          // filter by dates, if is not set satrt and end result is true
           ((this.filters.startDate && this.filters.endDate) ? this.checkRoomAvailable(room.RoomID, this.reservations, this.filters.startDate, this.filters.endDate) : true ) &&
           room.State.toLowerCase().includes(this.filters.State.toLowerCase())
         );
@@ -140,12 +146,13 @@ export default {
     }
   },
   methods: {
+    // if room is reservet between startDate and endDate = false otherwise true
     checkRoomAvailable(roomID, reservations, startDate, endDate) {
       console.log("CHECK DATE FOR ROOM");
       
       const parts = startDate.split('-');
       const year = parseInt(parts[0], 10);
-      const month = parseInt(parts[1], 10) - 1;
+      const month = parseInt(parts[1], 10) - 1; // Months are in JavaScript zero-indexed
       const day = parseInt(parts[2], 10);
       const Startdate = new Date(year, month, day).getTime();
 
@@ -168,6 +175,7 @@ export default {
       return true;
     },
 
+    //if room have some reservation
     RezeravationForRoom(roomID){
       for (const reservation of this.reservations) 
       {
@@ -179,6 +187,7 @@ export default {
       return true;
     },
 
+    //if room whit RoomID already exists
     CheckRoomID(ID){
       for (const room of this.rooms) 
       {
@@ -192,20 +201,22 @@ export default {
       return false;
     },
 
+    // requesting for room data
     async fetchRooms() {
       fetch('/Home/Rooms/GetRooms') 
         .then(response => response.json())
         .then(data => {
-          this.rooms = data.map(room => ({ ...room, editable: false }));
+          this.rooms = data.map(room => ({ ...room, editable: false })); // Nastavenie údajov do premennej rooms
         })
         .catch(error => {
           console.error('Error fetching rooms:', error);
         });
     },
     toggleEdit(room) {
-      room.editable = !room.editable;
+      room.editable = !room.editable; // Prepnutie hodnoty editable
     },
 
+    // requesting for reservation data
     async fetchReservations() {
       try {
         const response = await fetch('/Home/Reservations/GetReservations');
@@ -219,8 +230,9 @@ export default {
       if (room.TypeRoom && room.Cost && room.Equip && room.State && room.Beds) 
       {
         console.log('Updating room:', room);
-        room.editable = false;
+        room.editable = false; //close edit window
 
+        //send data to server
         fetch('/Home/Rooms/UpdateRoom', {
           method: 'POST',
           headers: {
@@ -247,13 +259,14 @@ export default {
     
     deleteRoom(room) {
       console.log('Deleting room:', room);
-      room.editable = false;
+      room.editable = false; //close edit window
 
       const index = this.rooms.indexOf(room);
       if (index !== -1) 
       {
         this.rooms.splice(index, 1);
       }
+      //send data to remove room
       fetch('/Home/Rooms/DeleteRoom', {
         method: 'POST',
         headers: {
@@ -273,23 +286,21 @@ export default {
       });
     },
 
-    getRoomInputWidth(text) {
-      return text ? `${text.length * 12}px` : '100px'; 
-    },
     toggleAddNew() {
       this.addingNew = true;
     },
-
 
     addNewRoom() 
     {
       if (this.CheckRoomID(this.newRoom.RoomID))
         alert('Room whit this number already exists');
       else
+      //check if some input is missing
       if (this.newRoom.TypeRoom && this.newRoom.Cost && this.newRoom.Equip && this.newRoom.State && this.newRoom.Beds) 
       {
         this.rooms.push({ ...this.newRoom, editable: false });
         
+        //send data for new room
         fetch('/Home/Rooms/AddRoom', {
           method: 'POST',
           headers: {
@@ -308,6 +319,7 @@ export default {
           console.error('Error adding room:', error);
         });
 
+        //preloaded data
         this.newRoom = {
           RoomID: '',
           TypeRoom: 'Double',
@@ -316,6 +328,7 @@ export default {
           State: 'Available',
           Beds: '2'
         };
+        //set new room non-existent id
         let maxRoomID = Math.max(...this.rooms.map(room => room.RoomID));
         this.newRoom.RoomID = maxRoomID + 1;
         this.addingNew = false;
@@ -325,6 +338,7 @@ export default {
         alert('Fill in all red fields for new Room.');
       }
     },
+    //cancel add
     cancelNewRoom() {
       this.newRoom = {
         RoomID: '',
@@ -334,6 +348,7 @@ export default {
         State: 'Available',
         Beds: '2'
       };
+      //set new room non-existent id
       let maxRoomID = Math.max(...this.rooms.map(room => room.RoomID));
       this.newRoom.RoomID = maxRoomID + 1;
       this.addingNew = false;

@@ -3,36 +3,36 @@
   <table style="width: 100%; border-collapse: collapse;">
   <thead>
   <tr>
-  <th style="width: 150px;">Last Name</th>
-  <th style="width: 150px;">First Name</th>
-  <th style="width: 150px;">Email</th>
-  <th style="width: 150px;">Assignment</th>
-  <th style = "width: 150px;">Phone Preselection</th>
-  <th style="width: 150px;">Phone Number</th>
-  <th style="width: 150px;">Document Number</th>
-  <th style="width: 150px;">Date of Birth</th>
-  <th style="width: 150px;">Work Shift</th>
+  <th style="width: 100px;">Last Name</th>
+  <th style="width: 100px;">First Name</th>
+  <th style="width: 200px;">Email</th>
+  <th style="width: 200px;">Assignment</th>
+  <th style = "width: 80px;">Phone Preselection</th>
+  <th style="width: 100px;">Phone Number</th>
+  <th style="width: 120px;">Document Number</th>
+  <th style="width: 120px;">Date of Birth</th>
+  <th style="width: 100px;">Work Shift</th>
   <th style="width: 150px;">Password</th>
-  <th style="width: 80px;">Edit</th>
+  <th style="width: 50px;">Edit</th>
   </tr>
   </thead>
   <tbody>
 
         <tr v-if="addingNew">
-          <td><input type="text" style="width: 150px;" v-model="newEmployee.LastName" placeholder="Last Name" :class="{ 'required-field-empty': newEmployee.LastName === '' }" required></td>
-          <td><input type="text" style="width: 150px;" v-model="newEmployee.FirstName" placeholder="First Name" :class="{ 'required-field-empty': newEmployee.FirstName === '' }" required></td>
-          <td><input type="email" style="width: 150px;" v-model="newEmployee.Email" placeholder="Email" :class="{ 'required-field-empty': newEmployee.Email === '' }" required></td>
-          <select v-model="newEmployee.Assignment" style="width: 150px;" :class="{ 'required-field-empty': newEmployee.Assignment === '' }" required>
+          <td><input type="text" style="width: 100px;" v-model="newEmployee.LastName" placeholder="Last Name" :class="{ 'required-field-empty': newEmployee.LastName === '' }" required></td>
+          <td><input type="text" style="width: 100px;" v-model="newEmployee.FirstName" placeholder="First Name" :class="{ 'required-field-empty': newEmployee.FirstName === '' }" required></td>
+          <td><input type="email" style="width: 200px;" v-model="newEmployee.Email" placeholder="Email" :class="{ 'required-field-empty': newEmployee.Email === '' }" required></td>
+          <select v-model="newEmployee.Assignment" style="width: 200px;" :class="{ 'required-field-empty': newEmployee.Assignment === '' }" required>
               <option value="Manager">Manager</option>
               <option value="Supervisor">Supervisor</option>
               <option value="Staff">Staff</option>
               <option value="Salesperson">Salesperson</option>
           </select>
-          <td><input type="text" style="width: 150px;" v-model="newEmployee.PhonePreselection" placeholder="Phone Preselection"></td>
-          <td><input type="number" style="width: 150px;" v-model="newEmployee.PhoneNumber" placeholder="Phone Number" :class="{ 'required-field-empty': newEmployee.PhoneNumber === '' }" required></td>
-          <td><input type="text" style="width: 150px;" v-model="newEmployee.DocumentNumber" placeholder="Document Number" :class="{ 'required-field-empty': newEmployee.DocumentNumber === '' }" required></td>
-          <td><input type="date" style="width: 150px;" v-model="newEmployee.DateOfBirth" placeholder="Date of Birth" :class="{ 'required-field-empty': newEmployee.DateOfBirth === '' }" required></td>
-          <td><input type="date" style="width: 150px;" v-model="newEmployee.WorkShift" placeholder="Work Shift"></td>
+          <td><input type="text" style="width: 80px;" v-model="newEmployee.PhonePreselection" placeholder="Phone Preselection"></td>
+          <td><input type="number" style="width: 100px;" v-model="newEmployee.PhoneNumber" placeholder="Phone Number" :class="{ 'required-field-empty': newEmployee.PhoneNumber === '' }" required></td>
+          <td><input type="text" style="width: 120px;" v-model="newEmployee.DocumentNumber" placeholder="Document Number" :class="{ 'required-field-empty': newEmployee.DocumentNumber === '' }" required></td>
+          <td><input type="date" style="width: 120px;" v-model="newEmployee.DateOfBirth" placeholder="Date of Birth" :class="{ 'required-field-empty': newEmployee.DateOfBirth === '' }" required></td>
+          <td><input type="date" style="width: 100px;" v-model="newEmployee.WorkShift" placeholder="Work Shift"></td>
           <td><input type="password" style="width: 150px;" v-model="newEmployee.Password" placeholder="Password" :class="{ 'required-field-empty': newEmployee.Password === '' }" required></td>
           <td>
             <button @click="addNewEmployee" class="edit-button">OK</button>
@@ -46,25 +46,26 @@
         </tr>
   
         <tr>
-          <td><input type="text" style="width: 150px;" v-model="filters.LastName"></td>
-          <td><input type="text" style="width: 150px;" v-model="filters.FirstName"></td>
-          <td><input type="email" style="width: 150px;" v-model="filters.Email"></td>
-          <td><input type="text" style="width: 150px;" v-model="filters.Assignment"></td>
-          <td><input type="number" style="width: 150px;" v-model="filters.PhoneNumber"></td>
-          <td><input type="text" style="width: 150px;" v-model="filters.DocumentNumber"></td>
+          <td><input type="text" style="width: 100px;" v-model="filters.LastName"></td>
+          <td><input type="text" style="width: 100px;" v-model="filters.FirstName"></td>
+          <td><input type="email" style="width: 200px;" v-model="filters.Email"></td>
+          <td><input type="text" style="width: 200px;" v-model="filters.Assignment"></td>
+          <td><input type="text" style="width: 80px;" v-model="filters.PhonePreselection"></td>
+          <td><input type="number" style="width: 100px;" v-model="filters.PhoneNumber"></td>
+          <td><input type="text" style="width: 120px;" v-model="filters.DocumentNumber"></td>
           <td></td>
         </tr>
   
         <tr v-for="employee in filteredEmployees" :key="employee.EmployeeID">
           <td v-if="!employee.editable">{{ employee.LastName }}</td>
-          <td v-else><input type="text" style="width: 150px;" v-model="employee.LastName" :style="{ width: '150px' }" :class="{ 'required-field-empty': employee.LastName === '' }" required></td>
+          <td v-else><input type="text" style="width: 100px;" v-model="employee.LastName" :style="{ width: '150px' }" :class="{ 'required-field-empty': employee.LastName === '' }" required></td>
           <td v-if="!employee.editable">{{ employee.FirstName }}</td>
-          <td v-else><input type="text" style="width: 150px;" v-model="employee.FirstName" :style="{ width: '150px'}" :class="{ 'required-field-empty': employee.FirstName === '' }" required></td>
+          <td v-else><input type="text" style="width: 100px;" v-model="employee.FirstName" :style="{ width: '150px'}" :class="{ 'required-field-empty': employee.FirstName === '' }" required></td>
           <td v-if="!employee.editable">{{ employee.Email }}</td>
-          <td v-else><input type="email" style="width: 150px;" v-model="employee.Email" :style="{ width: '150px' }" :class="{ 'required-field-empty': employee.Email === '' }" required></td>
+          <td v-else><input type="email" style="width: 200px;" v-model="employee.Email" :style="{ width: '150px' }" :class="{ 'required-field-empty': employee.Email === '' }" required></td>
           <td v-if="!employee.editable">{{ employee.Assignment }}</td>
           <td v-else>
-            <select v-model="employee.Assignment" style="width: 150px;" :class="{ 'required-field-empty': employee.Assignment === '' }" required>
+            <select v-model="employee.Assignment" style="width: 200px;" :class="{ 'required-field-empty': employee.Assignment === '' }" required>
               <option value="Manager">Manager</option>
               <option value="Supervisor">Supervisor</option>
               <option value="Staff">Staff</option>
@@ -72,15 +73,15 @@
             </select>
           </td>
           <td v-if="!employee.editable">{{ employee.PhonePreselection }}</td>
-          <td v-else><input type="text" style="width: 150px;" v-model="employee.PhonePreselection" :style="{ width: '150px' }"></td>
+          <td v-else><input type="text" style="width: 80px;" v-model="employee.PhonePreselection" :style="{ width: '150px' }"></td>
           <td v-if="!employee.editable">{{ employee.PhoneNumber }}</td>
-          <td v-else><input type="number" style="width: 150px;" v-model="employee.PhoneNumber" :style="{ width: '150px' }" :class="{ 'required-field-empty': employee.PhoneNumber === '' }" required></td>
+          <td v-else><input type="number" style="width: 100px;" v-model="employee.PhoneNumber" :style="{ width: '150px' }" :class="{ 'required-field-empty': employee.PhoneNumber === '' }" required></td>
           <td v-if="!employee.editable">{{ employee.DocumentNumber }}</td>
-          <td v-else><input type="text" style="width: 150px;" v-model="employee.DocumentNumber" :style="{ width: '150px' }" :class="{ 'required-field-empty': employee.DocumentNumber === '' }" required></td>
+          <td v-else><input type="text" style="width: 120px;" v-model="employee.DocumentNumber" :style="{ width: '150px' }" :class="{ 'required-field-empty': employee.DocumentNumber === '' }" required></td>
           <td v-if="!employee.editable">{{ formatDate(employee.DateOfBirth) }}</td>
-          <td v-else><input type="date" style="width: 150px;" v-model="employee.DateOfBirth" :style="{ width: '150px' }" :class="{ 'required-field-empty': employee.DateOfBirth === '' }" required></td>
+          <td v-else><input type="date" style="width: 120px;" v-model="employee.DateOfBirth" :style="{ width: '150px' }" :class="{ 'required-field-empty': employee.DateOfBirth === '' }" required></td>
           <td v-if="!employee.editable">{{ formatDate(employee.WorkShift) }}</td>
-          <td v-else><input type="date" style="width: 150px;" v-model="employee.WorkShift" :style="{ width: '150px' }"></td>
+          <td v-else><input type="date" style="width: 100px;" v-model="employee.WorkShift" :style="{ width: '150px' }"></td>
           <td v-if="!employee.editable">{{ employee.Password }}</td>
           <td v-else><input type="password" style="width: 150px;" v-model="employee.Password" :style="{ width: '150px' }" :class="{ 'required-field-empty': employee.Password === '' }" required></td>
           <td>
@@ -120,6 +121,7 @@ export default {
         Assignment: '',
         PhoneNumber: '',
         DocumentNumber: '',
+        PhonePreselection: '',
       },
       employees: [],
     };
@@ -135,6 +137,7 @@ export default {
         employee.FirstName.toLowerCase().includes(this.filters.FirstName.toLowerCase()) &&
         employee.Email.toLowerCase().includes(this.filters.Email.toLowerCase()) &&
         employee.Assignment.toLowerCase().includes(this.filters.Assignment.toLowerCase()) &&
+        employee.PhonePreselection.toString().includes(this.filters.PhonePreselection.toString()) &&
         employee.PhoneNumber.toString().includes(this.filters.PhoneNumber.toString()) &&
         employee.DocumentNumber.toLowerCase().includes(this.filters.DocumentNumber.toLowerCase()) 
         );
@@ -338,6 +341,53 @@ export default {
 .ok-button:hover {
   background-color: #13568e;
 }
+input[type="date"],
+input[type="time"],
+input[type="email"],
+input[type=number],
+input[type="text"] {
+  padding: 8px; 
+  border: none; 
+  border-radius: 4px; 
+  font-size: 16px; 
+  border: 1px solid #2196F3;
+  }
+input[type="date"],
+input[type="time"],
+input[type="email"],
+input[type="text"],
+input[type=number] {
+  padding: 8px; 
+  border: none; 
+  border-radius: 4px; 
+  font-size: 16px; 
+  border: 1px solid #2196F3;
+  }
+input[type=number]
+input[type="time"],
+input[type="email"],
+input[type="text"],
+  input[type=date]{
+    padding: 8px; 
+  border: none; 
+  border-radius: 4px; 
+  font-size: 16px; 
+  border: 1px solid #2196F3;
+  }
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: inner-spin-button; 
+  appearance: inner-spin-button;
+  color: #2196F3;
+  font-size: 16px; 
+}
+select{
+  padding: 8px; 
+  border: none; 
+  border-radius: 4px; 
+  font-size: 16px; 
+  border: 1px solid #2196F3;
+}
 .delete-button{
   padding: 10px 10px;
   margin-bottom: 10px;
@@ -351,37 +401,10 @@ export default {
 .delete-button:hover {
   background-color: #951e16;
 }
-input[type="text"] {
-  padding: 8px; 
-  border: none; 
-  border-radius: 4px; 
-  font-size: 16px; 
-  border: 1px solid #2196F3;
-}
-input[type=number] {
-  padding: 8px; 
-  border: none; 
-  border-radius: 4px; 
-  font-size: 16px; 
-  border: 1px solid #2196F3;
-}
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: inner-spin-button; 
-  appearance: inner-spin-button;
-  color: #2196F3; 
-  font-size: 16px; 
-}
-select{
-  padding: 8px; 
-  border: none; 
-  border-radius: 4px; 
-  font-size: 16px; 
-  border: 1px solid #2196F3;
-}
 
 .required-field-empty {
     border-color: #ff0000 !important;
 }
+
 </style>
   
