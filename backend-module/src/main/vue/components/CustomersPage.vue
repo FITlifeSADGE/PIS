@@ -6,15 +6,27 @@
           <th>Last Name</th>
           <th>First Name</th>
           <th>Email</th>
+          <th>Phone Preselection</th>
           <th>Phone Number</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="customer in customers" :key="customer.PersonID">
+
+        <tr>
+          <td><input type=text v-model="filters.lastName"></td>
+          <td><input type=text v-model="filters.firstName"></td>
+          <td><input type=text v-model="filters.email"></td>
+          <td><input type=number v-model="filters.phonePreselection"></td>
+          <td><input type=number v-model="filters.phoneNumber"></td>
+          <td></td>
+        </tr>
+
+        <tr v-for="customer in filteredCustomers()" :key="customer.PersonID">
           <td>{{ customer.person.lastName }}</td>
           <td>{{ customer.person.firstName }}</td>
           <td>{{ customer.person.email }}</td>
+          <td>{{ customer.person.phonePreselection }}</td>
           <td>{{ customer.person.phoneNumber }}</td>
           <td>
             <button class="button" @click="getDetail(customer.person.personID)">View details</button>
@@ -29,18 +41,25 @@
 export default {
   data() {
     return {
-      customers: [], // Array to store customer data
+      customers: [],
+      filters: {
+        lastName: '',
+        firstName: '',
+        email: '',
+        phonePreselection: '',
+        phoneNumber: ''
+      },
     };
   },
   mounted() {
-    this.fetchCustomers(); // Call the function to fetch data upon component load
+    this.fetchCustomers();
   },
   methods: {
     fetchCustomers() {
-      fetch('/Home/Customer/GetCustomers') // Call your servlet to retrieve data from the database
+      fetch('/Home/Customer/GetCustomers') 
         .then(response => response.json())
         .then(data => {
-          this.customers = data; // Set the fetched data to the customers variable
+          this.customers = data;
         })
         .catch(error => {
           console.error('Error fetching customers:', error);
@@ -63,6 +82,18 @@ export default {
     },
     viewCustomers() {
       console.log('View Customers');
+    },
+    filteredCustomers() {
+      return this.customers.filter(customer => {
+        console.log(customer);
+        return (
+          customer.person.firstName.toLowerCase().includes(this.filters.firstName.toLowerCase()) &&
+          customer.person.lastName.toLowerCase().includes(this.filters.lastName.toLowerCase()) &&
+          customer.person.email.toLowerCase().includes(this.filters.email.toLowerCase()) &&
+          customer.person.phonePreselection.toLowerCase().includes(this.filters.phonePreselection.toLowerCase()) &&
+          customer.person.phoneNumber.toLowerCase().includes(this.filters.phoneNumber.toLowerCase())
+        );
+      });
     },
   },
 };

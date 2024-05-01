@@ -1,11 +1,7 @@
 package io.openliberty.guides.hello;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.Date;
-import java.sql.ResultSet;
 
 import javax.json.Json;
 import jakarta.persistence.EntityManager;

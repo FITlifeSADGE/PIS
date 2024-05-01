@@ -136,7 +136,6 @@ export default {
         .then(response => response.json())
         .then(data => {
           this.services = data.map(service => ({ ...service, editable: false }));
-          console.log(this.services);
         })
         .catch(error => {
           console.error('Error fetching services:', error);
@@ -161,8 +160,6 @@ export default {
 
       for (const reservation of this.reservations) 
       {
-        console.log(serviceID);
-        console.log(reservation.ServiceID);
         if (serviceID === reservation.ServiceID) 
         {
           return false;

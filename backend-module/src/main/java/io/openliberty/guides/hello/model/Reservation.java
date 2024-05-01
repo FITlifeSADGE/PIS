@@ -14,6 +14,8 @@ import java.util.Date;
 @NamedQuery(name = "Reservation.findByBusinessGuest", query = "SELECT r FROM Reservation r WHERE r.businessGuest = :businessGuest")
 @NamedQuery(name = "Reservation.findByParking", query = "SELECT r FROM Reservation r WHERE r.parking = :parking")
 @NamedQuery(name = "Reservation.findByCost", query = "SELECT r FROM Reservation r WHERE r.cost = :cost")
+@NamedQuery(name = "Reservation.findCurrentReservations",
+            query = "SELECT r, c, p, ro FROM Reservation r JOIN r.customer c JOIN c.person p JOIN r.room ro WHERE :currentDate BETWEEN r.start AND r.end")
 @Table(name = "Reservation")
 public class Reservation {
 

@@ -15,6 +15,7 @@
             <button class="button" @click="viewReservations">View Reservations</button>
             <button class="button" @click="viewCustomers">View Customers</button>
             <button v-if="isAdmin()" class="button" @click="viewEmployees">View Employees</button>
+            <button class="button" @click="accommodatedCustomers">Accommodated customers</button>
         </div>
         <router-view />
     </div>
@@ -42,7 +43,6 @@ export default {
       })
       // Login when token is not valid
       .then(response => {
-        console.log(!response.ok);
         if (!response.ok) {
           this.$router.push('/Home/login');
         }
@@ -84,6 +84,10 @@ export default {
       console.log('View Employees');
       this.$router.push('/Home/Employees');
     }
+    }, 
+    accommodatedCustomers() {
+      this.$router.push('/Home/AccommodatedCustomers');
+    },
   },
 };
 </script>

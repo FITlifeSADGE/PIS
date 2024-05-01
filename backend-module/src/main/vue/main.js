@@ -14,6 +14,7 @@ import { faEye,faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import ReservationsPage from './components/ReservationsPage.vue';
 import ReservationForm from './components/ReservationForm.vue';
+import AccommodatedCustomers from './components/AccommodatedCustomers.vue';
 
 library.add(faEye, faEyeSlash);
 Vue.component('font-awesome-icon', FontAwesomeIcon);
@@ -109,6 +110,17 @@ const router = new VueRouter({
         {
           path: '',
           component: EmployeesPage
+        }
+      ]
+    },
+
+    {
+      path: '/Home/AccommodatedCustomers',
+      component: Parent,
+      children: [
+        {
+          path: '',
+          component: AccommodatedCustomers
         }
       ]
     }
