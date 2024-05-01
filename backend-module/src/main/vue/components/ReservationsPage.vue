@@ -19,7 +19,6 @@
           </tr>
         </thead>
         <tbody>
-          <!-- Data rows -->
           <tr v-for="reservation in reservations" :key="reservation.ReservationID">
             <td>
               <span>{{ reservation.CustomerName }}</span>
@@ -154,9 +153,9 @@
 export default {
   data() {
     return {
-      reservations: [], // array to store reservation data
-      services: [], // array to store service data
-      services_available: [], // array to store available services
+      reservations: [], 
+      services: [], 
+      services_available: [], 
       popup: false,
       reservationCheckIn: [],
       showModal: false,
@@ -205,10 +204,8 @@ export default {
       try {
         const response = await fetch('/Home/Reservations/GetReservationServices');
         const data = await response.json();
-        // Create an object to store services indexed by their service ID
         const serviceMap = {};
 
-        // Populate the serviceMap with service objects
         data.forEach(service => {
           const serviceID = service.ServiceID;
           if (!serviceMap[serviceID]) {
@@ -220,13 +217,10 @@ export default {
           serviceMap[serviceID].reservations.push(service.ReservationID);
         });
 
-        // Convert the serviceMap values back to an array of service objects
         this.services = Object.values(serviceMap);
 
-        // Log or inspect the services array to ensure correct associations
         console.log('Services:', this.services);
 
-        // Populate the ServiceIDs array for each reservation
         this.reservations.forEach(reservation => {
           const serviceIDs = data
             .filter(service => service.ReservationID === reservation.ReservationID)
@@ -242,23 +236,20 @@ export default {
 
     async fetchCustomerNames() {
       try {
-        // Extract unique customer IDs from reservations
         const customerIDs = [...new Set(this.reservations.map(reservation => reservation.CustomerID))];
 
-        // Fetch customer data from server
         const response = await fetch(`/Home/Customer/GetCustomers`);
         const data = await response.json();
         this.customers = data;
-        // Loop through each customer ID to find and update reservations
         customerIDs.forEach(customerID => {
           const matchingReservations = this.reservations.filter(reservation => reservation.CustomerID === customerID);
           if (matchingReservations.length > 0) {
             matchingReservations.forEach(reservation => {
               data.forEach(customer => {
                 if (customer.customerId === customerID) {
-                  reservation.CustomerName = customer.person.email; // Assuming the API returns the customer's email as 'email'
-                  reservation.CustomerFirstName = customer.person.firstName; // Assuming the API returns the customer's email as 'email'
-                  reservation.CustomerLastName = customer.person.lastName; // Assuming the API returns the customer's email as 'email'
+                  reservation.CustomerName = customer.person.email; 
+                  reservation.CustomerFirstName = customer.person.firstName; 
+                  reservation.CustomerLastName = customer.person.lastName; 
                 }
               });
             });
@@ -273,13 +264,13 @@ export default {
 
 
     toggleEdit(reservation) {
-      reservation.editable = !reservation.editable; // Toggle the editable property
+      reservation.editable = !reservation.editable; 
     },
     fetchRooms() {
-      fetch('/Home/Rooms/GetRooms') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
+      fetch('/Home/Rooms/GetRooms')
         .then(response => response.json())
         .then(data => {
-          this.rooms = data.map(room => ({ ...room, editable: false })); // Nastavenie údajov do premennej rooms
+          this.rooms = data.map(room => ({ ...room, editable: false }));
         })
         .catch(error => {
           console.error('Error fetching rooms:', error);
@@ -295,17 +286,14 @@ export default {
         let cost = days * room.Cost;
 
         if (reservation.BusinessGuest) {
-          // Add additional cost for business guest
           cost += 50;
         }
 
         if (reservation.Parking) {
-          // Add additional cost for parking
           cost += 10;
         }
 
         if (reservation.ServiceIDs) {
-          // Add additional cost for services
           reservation.ServiceIDs.forEach(serviceID => {
             const service = this.services_available.find(service => service.ID === serviceID);
             cost += service.Cost;
@@ -319,21 +307,17 @@ export default {
       return 0;
     },
     updateReservation(reservation) {
-  // Implementation of reservation update
   console.log('Updating reservation:', reservation);
   reservation.editable = false; // Close the editing mode
 
-  // Format the date to 'YYYY-MM-DD' format
   reservation.Start = this.formatDate(reservation.Start);
   reservation.End = this.formatDate(reservation.End);
   
-  //format the parking and business guest to integer
   reservation.Parking = reservation.Parking ? 1 : 0;
   reservation.BusinessGuest = reservation.BusinessGuest ? 1 : 0;
 
   reservation.Cost = this.totalCost(reservation);
   console.log('Updated reservation:', reservation);
-  // Send the data to the server
   fetch('/Home/Reservations/UpdateReservation', {
     method: 'POST',
     headers: {
@@ -355,7 +339,7 @@ export default {
 
     deleteReservation(reservation) {
       console.log('Deleting reservation:', reservation);
-      reservation.editable = false; // Close the editing mode
+      reservation.editable = false; 
 
       const index = this.reservations.indexOf(reservation);
       if (index !== -1) {
@@ -440,7 +424,7 @@ export default {
 
     const parts = newValue.split('-');
     const year = parseInt(parts[0], 10);
-    const month = parseInt(parts[1], 10) - 1; // Měsíce jsou v JavaScriptu 0-indexované
+    const month = parseInt(parts[1], 10) - 1; 
     const day = parseInt(parts[2], 10);
     const date = new Date(year, month, day).getTime();
     console.log('Date:', date);
@@ -459,7 +443,7 @@ export default {
       this.invalidStartDate = false;
       this.invalidEndDate = false;
     }
-    reservation.Start = new Date(year, month, day).getTime(); // Aktualizace s novým časovým razítkem v ms
+    reservation.Start = new Date(year, month, day).getTime();
   },
   updateEndDate(newValue, reservation) {
     if (!newValue) {
@@ -469,7 +453,7 @@ export default {
 
     const parts = newValue.split('-');
     const year = parseInt(parts[0], 10);
-    const month = parseInt(parts[1], 10) - 1; // Měsíce jsou v JavaScriptu 0-indexované
+    const month = parseInt(parts[1], 10) - 1; 
     const day = parseInt(parts[2], 10);
     const date = new Date(year, month, day).getTime();
     console.log('Date:', date);
@@ -488,7 +472,7 @@ export default {
       this.invalidEndDate = false;
       this.invalidStartDate = false;
     }
-    reservation.End = new Date(year, month, day).getTime(); // Aktualizace s novým časovým razítkem v ms
+    reservation.End = new Date(year, month, day).getTime(); 
   },
   checkRoomAvailable(roomID, reservations, startDate, endDate) {
       // const parts = startDate.split('-');
@@ -516,13 +500,11 @@ export default {
       return true;
     },
     filteredRooms(reservation) {
-      // filter rooms if some value is not set filter will ignore that value
       return this.rooms.filter(room => {
         if (room.RoomID === reservation.RoomID) {
             return true;
         }
         return (
-          // filter by dates, if is not set satrt and end result is true
           ((reservation.Start && reservation.End) ? this.checkRoomAvailable(room.RoomID, this.reservations, reservation.Start, reservation.End) : true )
         );
       });
@@ -575,31 +557,31 @@ export default {
 input[type="text"],
 input[type="date"],
 input[type="time"] {
-  padding: 8px; /* upravte podle potřeby */
-  border: none; /* odstranění ohraničení */
-  border-radius: 4px; /* zaoblené rohy */
-  font-size: 16px; /* velikost písma */
+  padding: 8px;
+  border: none; 
+  border-radius: 4px;
+  font-size: 16px; 
   border: 1px solid #2196F3;
 }
 input[type="number"] {
-  padding: 8px; /* upravte podle potřeby */
-  border: none; /* odstranění ohraničení */
-  border-radius: 4px; /* zaoblené rohy */
-  font-size: 16px; /* velikost písma */
+  padding: 8px; 
+  border: none; 
+  border-radius: 4px; 
+  font-size: 16px; 
   border: 1px solid #2196F3;
 }
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: inner-spin-button; /* Nastavení výchozího vzhledu */
+  -webkit-appearance: inner-spin-button; 
   appearance: inner-spin-button;
-  color: #2196F3; /* Barva šipek */
-  font-size: 16px; /* Velikost písma šipek */
+  color: #2196F3; 
+  font-size: 16px; 
 }
 select{
-  padding: 8px; /* upravte podle potřeby */
-  border: none; /* odstranění ohraničení */
-  border-radius: 4px; /* zaoblené rohy */
-  font-size: 16px; /* velikost písma */
+  padding: 8px; 
+  border: none; 
+  border-radius: 4px;
+  font-size: 16px; 
   border: 1px solid #2196F3;
 }
 /* .modal {

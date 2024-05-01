@@ -118,13 +118,13 @@
     <table v-if="editTable">
       <thead>
         <tr>
-          <th>Reservation ID</th>
-          <th>Customer</th>
+          <!-- <th>Reservation ID</th> -->
+          <!-- <th>Customer</th> -->
           <th>Room </th>
           <th>Services</th>
           <th>Start Date</th>
           <th>End Date</th>
-          <th>State</th>
+          <!-- <th>State</th> -->
           <th>Cost</th>
           <th>Comming Time</th>
           <th>Leaving Time</th>
@@ -135,15 +135,51 @@
       </thead>
       <tbody>
         <!-- Data rows -->
-        <tr v-for="reservation in reservations" :key="reservation.ReservationID">
+
+        <tr>
+          <td></td>
+          <td></td>
+          <td><input type=date v-model="filtersR.Start"></td>
+          <td><input type=date v-model="filtersR.End"></td>
+
+          <td><input type=number min="0" v-model="filtersR.Cost"></td>
+          <td><input type=date v-model="filtersR.CommingTime"></td>
+          <td><input type=date v-model="filtersR.LeavingTime"></td>
+          <td> 
+            <select v-model="filtersR.BusinessGuest" :style="{ width: '140px' }">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+              <option value="">Do Not Index</option>
+            </select>
+          </td>
+          <td> 
+            <select v-model="filtersR.Parking" :style="{ width: '140px' }">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+              <option value="">Do Not Index</option>
+            </select>
+          </td>
+          <td> 
+            <select v-model="filtersR.State" :style="{ width: '140px' }">
+              <option value="Pending">Check-In</option>
+              <option value="Confirmed">Check-Out</option>
+              <option value="Paid">Paid</option>
+              <option value="">Do Not Index</option>
+            </select>
+          </td>
+        </tr>
+
+
+        <tr v-for="reservation in filteredReservations" :key="reservation.ReservationID">
+        <!-- <tr v-for="reservation in reservations" :key="reservation.ReservationID"> -->
           <!-- Display reservation details -->
-          <td>{{ reservation.ReservationID }}</td>
-          <td v-if="!reservation.editable">
+          <!-- <td>{{ reservation.ReservationID }}</td> -->
+          <!-- <td v-if="!reservation.editable">
             <span>{{ reservation.CustomerID }}</span>
-          </td>
-          <td v-else>
+          </td> -->
+          <!-- <td v-else>
             <input type="text" v-model="reservation.CustomerID">
-          </td>
+          </td> -->
 
           <td v-if="!reservation.editable">
             <span>{{ reservation.RoomID }}</span>
@@ -177,13 +213,13 @@
             <input type="date" v-model="reservation.End">
           </td>
           
-          <td>
+          <!-- <td>
             <span v-if="!reservation.editable">{{ reservation.State }}</span>
             <select v-else v-model="reservation.State" :style="{ width: '130px' }">
               <option value="Confirmed">Confirmed</option>
               <option value="Pending">Pending</option>
             </select>
-          </td>
+          </td> -->
           <td>
             <span v-if="!reservation.editable">{{ reservation.Cost }}</span>
             <input v-else type="number" min="0" v-model="reservation.Cost">
@@ -368,7 +404,7 @@ export default {
 data() {
   return {
     editTable: true,
-    customers: [], // pole na uchovávanie údajov
+    customers: [],
     buttonLabel: 'Upravit informace',
     ID: null,
     error: false,
@@ -382,12 +418,13 @@ data() {
       Extra: ''
     },
     filtersR: {
-      Start: null,            // Initialize as null or new Date()
-      End: null,              // Initialize as null or new Date()
+      // Room: '',
+      Start: null,            
+      End: null,              
       State: '',
       Cost: '',
-      CommingTime: null,      // Initialize as null or new Date()
-      LeavingTime: null,      // Initialize as null or new Date()
+      CommingTime: null,      
+      LeavingTime: null,      
       BusinessGuest: null,
       Parking: null
     },
@@ -409,14 +446,13 @@ data() {
       Parking: 'No',
       ReservationID: ''
     },
-    reservations: [], // array to store reservation data
-      services: [], // array to store service data
-      services_available: [], // array to store available services
+    reservations: [], 
+      services: [], 
+      services_available: [], 
   };
 },
 computed: {
   filteredServices() {
-    // Filter services based on filter criteria
     return this.services.filter(service => {
       return (
         service.Name.toLowerCase().includes(this.filters.Name.toLowerCase()) &&
@@ -427,8 +463,11 @@ computed: {
     });
   },
   filteredReservations() {
+    console.log(this.filtersR);
     return this.reservations.filter(reservation => {
+      console.log(reservation);
       return (
+        // reservation.Cost.toString().includes(this.filtersR.Cost) &&
         (!this.filtersR.Start || reservation.Start >= this.filtersR.Start) &&
         (!this.filtersR.End || reservation.End <= this.filtersR.End) &&
         reservation.State.toLowerCase().includes(this.filtersR.State.toLowerCase()) &&
@@ -455,9 +494,9 @@ computed: {
 mounted() {
   const personID = this.$route.params.personID;
   console.log('Person ID:', personID);
-  this.fetchCustomers(personID); // Volanie funkcie na načítanie údajov po načítaní komponentu
-  this.fetchServices(); // Volanie funkcie na načítanie údajov po načítaní komponentu
-  this.fetchReservations(); // Volanie funkcie na načítanie údajov po načítaní komponentu
+  this.fetchCustomers(personID); 
+  this.fetchServices(); 
+  this.fetchReservations(); 
 },
 methods: {
   // ------------------------------------------------------------------------------------------------
@@ -511,10 +550,9 @@ methods: {
   // ---------------------------------------- FETCH --------------------------------------------------------
 
   fetchServices() {
-    fetch('/Home/Customer/GetServices') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
+    fetch('/Home/Customer/GetServices') 
       .then(response => response.json())
       .then(data => {
-        // Nastavenie údajov do premennej services a pridanie atribútu editable pre úpravu
         this.services = data.map(service => ({ ...service, editable: false }));
       })
       .catch(error => {
@@ -522,10 +560,9 @@ methods: {
       });
   },
   fetchReservations() {
-    fetch('/Home/Customer/GetReservations') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
+    fetch('/Home/Customer/GetReservations') 
       .then(response => response.json())
       .then(data => {
-        // Nastavenie údajov do premennej services a pridanie atribútu editableR pre úpravu
         this.reservations = data.map(reservation => ({ ...reservation, editable: false }));
       })
       .catch(error => {
@@ -551,8 +588,7 @@ methods: {
       // Create an object to store services indexed by their service ID
       const serviceMap = {};
 
-      this.fetchServices(); // Fetch available services
-      // Populate the serviceMap with service objects
+      this.fetchServices(); 
       data.forEach(service => {
         const serviceID = service.ServiceID;
         if (!serviceMap[serviceID]) {
@@ -564,13 +600,8 @@ methods: {
         serviceMap[serviceID].reservations.push(service.ReservationID);
       });
 
-      // Convert the serviceMap values back to an array of service objects
       this.services = Object.values(serviceMap);
-
-      // Log or inspect the services array to ensure correct associations
       console.log('Services:', this.services);
-
-      // Populate the ServiceIDs array for each reservation
       this.reservations.forEach(reservation => {
         const serviceIDs = data
           .filter(service => service.ReservationID === reservation.ReservationID)
@@ -643,10 +674,10 @@ methods: {
 
     const parts = newValue.split('-');
     const year = parseInt(parts[0], 10);
-    const month = parseInt(parts[1], 10) - 1; // Měsíce jsou v JavaScriptu 0-indexované
+    const month = parseInt(parts[1], 10) - 1;
     const day = parseInt(parts[2], 10);
 
-    customer.dateOfBirth = new Date(year, month, day).getTime(); // Aktualizace s novým časovým razítkem v ms
+    customer.dateOfBirth = new Date(year, month, day).getTime();
   },
   formatHandicap(Handicap){
     if (typeof Handicap === 'string') {
@@ -699,7 +730,7 @@ methods: {
   validateEmail(email) {
     if (!email) {
       console.log('Email is required');
-      return; // Exit early if email is not provided
+      return; 
     }
 
     if (!/\S+@\S+\.\S+/.test(email)) {
@@ -777,15 +808,12 @@ methods: {
   },
   toggleEdit(service) {
     console.log('Toggling edit mode for service: ', service);
-    service.editable = !service.editable; // Prepnutie hodnoty editable
+    service.editable = !service.editable;
     console.log('Service in edit mode: ', service.editable);
   },
   updateService(service) {
-    // Implementácia aktualizácie služby
     console.log('Updating service:', service);
-    service.editable = false; // Zatvorenie editovacieho režimu
-
-    // Odoslanie údajov na server
+    service.editable = false;
     fetch('/Home/Customer/UpdateService', {
       method: 'POST',
       headers: {
@@ -807,7 +835,7 @@ methods: {
 
   deleteService(service) {
     console.log('Deleting service:', service);
-    service.editable = false; // Zatvorenie editovacieho režimu
+    service.editable = false; 
 
     const index = this.services.indexOf(service);
     if (index !== -1) 
@@ -833,8 +861,7 @@ methods: {
     });
   },
   getServiceInputWidth(text) {
-      // Funkcia na získanie šírky textového poľa na základe dĺžky textu
-      return text ? `${text.length * 12}px` : '100px'; // 8px na jeden znak, predvolená šírka je 100px
+      return text ? `${text.length * 12}px` : '100px'; 
   },
   // --------------------- RESERVATION ------------------------
   toggleAddNewReservation() {
@@ -892,14 +919,12 @@ methods: {
   this.addingNewReservation = false;
   },
   toggleEditReservation(reservation) {
-    reservation.editable = !reservation.editabl; // Prepnutie hodnoty editableR
+    reservation.editable = !reservation.editable; 
   },
   updateReservation(reservation) {
-    // Implementácia aktualizácie služby
     console.log('Updating reservation:', reservation);
-    reservation.editable = false; // Zatvorenie editovacieho režimu
+    reservation.editable = false; 
 
-    // Odoslanie údajov na server
     fetch('/Home/Customer/UpdateReservation', {
       method: 'POST',
       headers: {
@@ -921,7 +946,7 @@ methods: {
 
   deleteReservation(reservation) {
     console.log('Deleting reservation:', reservation);
-    reservation.editable = false; // Zatvorenie editovacieho režimu
+    reservation.editable = false; 
 
     const index = this.reservations.indexOf(reservation);
     if (index !== -1) 
@@ -947,8 +972,7 @@ methods: {
     });
   },
   getReservationInputWidth(text) {
-      // Funkcia na získanie šírky textového poľa na základe dĺžky textu
-      return text ? `${text.length * 12}px` : '100px'; // 8px na jeden znak, predvolená šírka je 100px
+      return text ? `${text.length * 12}px` : '100px';
     },
   
 }
@@ -1014,7 +1038,7 @@ background-color: #d32f2f;
 display: flex;
 flex-direction: column;
 width: calc(100vw / 6);
-margin-right: 20px; /* Add margin to align table with first button */
+margin-right: 20px;
 }
 .button {
 padding: 10px 20px;
@@ -1051,8 +1075,6 @@ border-collapse: collapse;
 margin-bottom: 15px;
 }
 th, td {
-/* border: 1px solid #ddd; */
-/* padding: 8px; */
 text-align: left;
 }
 th {
@@ -1135,8 +1157,6 @@ select{
   top: 0;
   width: 100%;
   height: 100%;
-  /* width: 150px;
-  height: 100px; */
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.4);
 }
