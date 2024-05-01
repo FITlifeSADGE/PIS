@@ -14,6 +14,7 @@
             <button class="button" @click="createReservation">Create Reservation</button>
             <button class="button" @click="viewReservations">View Reservations</button>
             <button class="button" @click="viewCustomers">View Customers</button>
+            <button class="button" @click="accommodatedCustomers">Accommodated customers</button>
         </div>
         <router-view />
     </div>
@@ -40,7 +41,6 @@ export default {
       })
       // Login when token is not valid
       .then(response => {
-        console.log(!response.ok);
         if (!response.ok) {
           this.$router.push('/Home/login');
         }
@@ -73,7 +73,10 @@ export default {
     },
     viewCustomers() {
       this.$router.push('/Home/Customers');
-    }
+    }, 
+    accommodatedCustomers() {
+      this.$router.push('/Home/AccommodatedCustomers');
+    },
   },
 };
 </script>
