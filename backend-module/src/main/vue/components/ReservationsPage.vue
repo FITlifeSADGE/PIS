@@ -19,7 +19,43 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="reservation in reservations" :key="reservation.ReservationID">
+
+        <tr>
+          <td><input type=text v-model="filtersR.CustomerName"></td>
+          <td><input type=number v-model="filtersR.RoomID"></td>
+          <td></td>
+          <td><input type=date v-model="filtersR.Start"></td>
+          <td><input type=date v-model="filtersR.End"></td>
+
+          <td><input type=number min="0" v-model="filtersR.Cost"></td>
+          <td><input type=time v-model="filtersR.CommingTime"></td>
+          <td><input type=time v-model="filtersR.LeavingTime"></td>
+          <td> 
+            <select v-model="filtersR.BusinessGuest" :style="{ width: '140px' }">
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+              <option value="">Do Not Index</option>
+            </select>
+          </td>
+          <td> 
+            <select v-model="filtersR.Parking" :style="{ width: '140px' }">
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+              <option value="">Do Not Index</option>
+            </select>
+          </td>
+          <td></td>
+          <td> 
+            <select v-model="filtersR.State" :style="{ width: '140px' }">
+              <option value="Pending">Check-In</option>
+              <option value="Confirmed">Check-Out</option>
+              <option value="Paid">Paid</option>
+              <option value="">Do Not Index</option>
+            </select>
+          </td>
+        </tr>
+
+          <tr v-for="reservation in filteredReservations" :key="reservation.ReservationID">
             <td>
               <span>{{ reservation.CustomerName }}</span>
             </td>
@@ -37,10 +73,6 @@
               </span>
               <button v-else @click="showModalFunc(reservation)">Edit Services</button>
             </td>
-
-
-
-
             <td>
               <span v-if="!reservation.editable">{{ formatDate(reservation.Start) }}</span>
               <input v-if="reservation.editable" type="date" 
@@ -55,13 +87,7 @@
                     :value="formatDate(reservation.End)" 
                     @input="updateEndDate($event.target.value, reservation)" />
             </td>
-            <!-- <td>
-              <span v-if="!reservation.editable">{{ reservation.State }}</span>
-              <select v-if="reservation.editable" v-model="reservation.State" :style="{ width: '130px' }">
-                <option value="Confirmed">Confirmed</option>
-                <option value="Pending">Pending</option>
-              </select>
-            </td> -->
+
             <td>
               <span>{{ reservation.Cost }}</span>
             </td>
@@ -165,6 +191,18 @@ export default {
       invalidStartDate: false,
       rooms: [],
       customers: [],
+      filtersR: {
+        CustomerName: '',
+        RoomID: '',
+        Start: null,
+        End: null,
+        State: '',
+        Cost: 0,
+        CommingTime: null,      
+        LeavingTime: null,      
+        BusinessGuest: '',
+        Parking: ''
+      },
     };
   },
   async mounted() {
@@ -179,6 +217,26 @@ export default {
     isDateValid() {
       console.log('Invalid start date:', this.invalidStartDate);
       return !this.invalidStartDate && !this.invalidEndDate;
+    },
+    filteredReservations() {
+      if(this.filtersR.Start != null)
+        this.filtersR.Start = this.filterDateFormat(this.filtersR.Start);
+      if(this.filtersR.End != null)
+        this.filtersR.End = this.filterDateFormat(this.filtersR.End);
+      return this.reservations.filter(reservation => {
+        return (
+          reservation.CustomerName.includes(this.filtersR.CustomerName) &&
+          reservation.RoomID.toString().includes(this.filtersR.RoomID) &&
+          (!this.filtersR.Start || reservation.Start >= this.filtersR.Start) &&
+          (!this.filtersR.End || reservation.End <= this.filtersR.End) &&
+          reservation.State.toLowerCase().includes(this.filtersR.State.toLowerCase()) &&
+          reservation.Cost >= this.filtersR.Cost &&
+          (!this.filtersR.CommingTime || reservation.CommingTime >= this.filtersR.CommingTime) &&
+          (!this.filtersR.LeavingTime || reservation.LeavingTime <= this.filtersR.LeavingTime) &&
+          (this.BPformat(this.filtersR.BusinessGuest) === null || reservation.BusinessGuest === this.BPformat(this.filtersR.BusinessGuest)) &&
+          (this.BPformat(this.filtersR.Parking )=== null || reservation.Parking === this.BPformat(this.filtersR.Parking))
+        );
+      });
     },
   },
   methods: {
@@ -474,6 +532,35 @@ export default {
     }
     reservation.End = new Date(year, month, day).getTime(); 
   },
+  filterDateFormat(oldDate) {
+    console.log(oldDate);
+    const parts = oldDate.split('-');
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1; 
+    const day = parseInt(parts[2], 10);
+    const date = new Date(year, month, day).getTime();
+    return date;
+  },
+  BPformat(BP){
+    if (typeof BP === 'string') {
+      if (BP === '')
+        return null;
+      else if (BP === 'true') {
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+    if (typeof BP === 'boolean') {
+      if (BP === true) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    }
+  },
   checkRoomAvailable(roomID, reservations, startDate, endDate) {
       // const parts = startDate.split('-');
       // const year = parseInt(parts[0], 10);
@@ -555,6 +642,8 @@ export default {
   background-color: #951e16;
 }
 input[type="text"],
+input[type="email"],
+input[type="number"],
 input[type="date"],
 input[type="time"] {
   padding: 8px;

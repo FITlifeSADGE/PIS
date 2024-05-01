@@ -51,90 +51,22 @@
       </div>
     </div>
 
-    <!-- CUSTOMER -->
-    <!-- SERVICES -->
-
-    <!--<table v-if="editTable">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Cost</th>
-          <th>Description</th>
-          <th>Extra</th>
-          <th>Edit</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- v-if="services && services.length > 0" -->
-       <!-- <tr v-if="addingNew">
-          <td>
-            <select v-model="newService"  placeholder="Select a service">
-              <option v-for="service in uniqueServices" :value="service">{{ service.Name }}</option>
-            </select>
-          </td>
-          <td>{{ newService.Cost }}</td>
-          
-          <td>{{ newService.Description }}</td>
-          <td><input type="text" v-model="newService.Extra" placeholder="description request"></td>
-          <td>
-            <button @click="addNewService" class="edit-button" >OK</button>
-            <button @click="cancelNewService" class="delete-button" >Cancel</button>
-          </td>
-        </tr>
-        <tr v-else>
-          <td colspan="5" style="text-align: center;">
-            <button @click="toggleAddNew" class="edit-button">Add New</button>
-          </td>
-        </tr>
-
-        <tr>
-        <td><input type="text" v-model="filters.Name"></td>
-        <td><input type=number min="0" v-model="filters.Cost"></td>
-        <td><input type="text" v-model="filters.Description"></td>
-        <td><input type="text" v-model="filters.Extra"></td>
-        <td></td>
-        </tr>
-
-        <tr v-for="service in filteredServices" :key="service.ServiceID">
-          <td>{{ service.Name }}</td>
-          <td>{{ service.Cost }}</td>
-          <td>{{ service.Description }}</td>
-          <td v-else><input type="text" v-model="service.Description" :style="{ width: getServiceInputWidth(service.Description) }"></td> -->
-          <!--<td v-if="!service.editable">{{ service.Extra }}</td>
-          <td v-else><input type="text" v-model="service.Extra" :style="{ width: getServiceInputWidth(service.Extra) }"></td>
-         
-          <td>
-            <button v-if="!service.editable" class="edit-button" @click="toggleEdit(service)">Edit</button>
-            <button v-else class="ok-button" @click="updateService(service)">OK</button>
-            <button v-if="service.editable" class="delete-button" @click="deleteService(service)">Delete</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-    <!-- SERVICES -->
-    <!-- RESERVATION -->
-
     <table v-if="editTable">
       <thead>
         <tr>
-          <!-- <th>Reservation ID</th> -->
-          <!-- <th>Customer</th> -->
           <th>Room </th>
           <th>Services</th>
           <th>Start Date</th>
           <th>End Date</th>
-          <!-- <th>State</th> -->
           <th>Cost</th>
           <th>Comming Time</th>
           <th>Leaving Time</th>
           <th>Business Guest</th>
           <th>Parking</th>
-          <th>Edit</th>
+          <th>Check-In/-Out</th>
         </tr>
       </thead>
       <tbody>
-        <!-- Data rows -->
 
         <tr>
           <td><input type=number v-model="filtersR.RoomID"></td>
@@ -171,16 +103,6 @@
 
 
         <tr v-for="reservation in filteredReservations" :key="reservation.ReservationID">
-        <!-- <tr v-for="reservation in reservations" :key="reservation.ReservationID"> -->
-          <!-- Display reservation details -->
-          <!-- <td>{{ reservation.ReservationID }}</td> -->
-          <!-- <td v-if="!reservation.editable">
-            <span>{{ reservation.CustomerID }}</span>
-          </td> -->
-          <!-- <td v-else>
-            <input type="text" v-model="reservation.CustomerID">
-          </td> -->
-
           <td v-if="!reservation.editable">
             <span>{{ reservation.RoomID }}</span>
           </td>
@@ -212,14 +134,6 @@
           <td v-else>
             <input type="date" v-model="reservation.End">
           </td>
-          
-          <!-- <td>
-            <span v-if="!reservation.editable">{{ reservation.State }}</span>
-            <select v-else v-model="reservation.State" :style="{ width: '130px' }">
-              <option value="Confirmed">Confirmed</option>
-              <option value="Pending">Pending</option>
-            </select>
-          </td> -->
           <td>
             <span v-if="!reservation.editable">{{ reservation.Cost }}</span>
             <input v-else type="number" min="0" v-model="reservation.Cost">
@@ -241,69 +155,41 @@
             <input v-else type="checkbox" v-model="reservation.Parking">
           </td>
           <td>
-            <button v-if="!reservation.editable" class="edit-button" @click="toggleEdit(reservation)">Edit</button>
-            <button v-else class="ok-button" @click="updateReservation(reservation)">OK</button>
-            <button v-if="reservation.editable" class="delete-button" @click="deleteReservation(reservation)">Delete</button>
+            <button v-if="reservation.State==='Pending'" class="edit-button" @click="toggleCheckIn(reservation)">Check-In</button>
+            <button v-else-if="reservation.State==='Confirmed'" class="edit-button" @click="toggleCheckIn(reservation)">Check-Out</button>
+            <p v-else-if="reservation.State==='Paid'">Paid</p>
           </td>
         </tr>
       </tbody>
     </table>
 
-    <!-- RESERVATION -->
-    <!-- CUSTOMER -->
-    <!-- <div class="tableCustomers">
-      <table v-if="!editTable" class="threadTable">
-        <tbody v-if="customers && customers.length > 0">
-          <tr v-for="customer in customers" :key="customer.PersonID">
-            <th>Last Name:</th><td><input type="text" v-model="customer.LastName"/></td>
-          </tr>
-          <tr v-for="customer in customers" :key="customer.PersonID">
-            <th>First Name:</th><td><input type="text" v-model="customer.FirstName"/></td>
-          </tr>
-          <tr v-for="customer in customers" :key="customer.PersonID">
-            <th>Email:</th><td><input type="email" v-model="customer.Email"/></td>
-          </tr>
-          <tr v-for="customer in customers" :key="customer.PersonID">
-            <th>Phone Number:</th><td><select v-model="customer.PhonePreselection">
-              <option value='+420'>+420</option>
-              <option value='+421'>+421</option>
-              <option value='+69'>+49</option>
-            </select>
-            <input type="text" v-model="customer.PhoneNumber"/></td>
-          </tr>
-          <tr v-for="customer in customers" :key="customer.PersonID">
-            <th>Document Number:</th><td><input type="text" v-model="customer.DocumentNumber"/></td>
-          </tr>
-          <tr v-for="customer in customers" :key="customer.PersonID">
-            <th>Date of Birth:</th><td><input type="date" v-model="customer.dateOfBirth"/></td>
-          </tr>
-          <tr v-for="customer in customers" :key="customer.PersonID">
-            <th>Allergy:</th><td><input type="text" v-model="customer.Allergy"/></td>
-          </tr>
-          <tr v-for="customer in customers" :key="customer.PersonID">
-            <th>Handicap:</th><td><select v-model="customer.Handicap">
-              <option value=true>Ano</option>
-              <option value=false>Ne</option>
-            </select></td>
-          </tr>
-          <tr v-for="customer in customers" :key="customer.PersonID">
-            <th>Address:</th><td><input type="text" v-model="customer.Address" /></td>
-          </tr>
-          <tr v-for="customer in customers" :key="customer.PersonID">
-            <th>Subscription:</th><td><select v-model="customer.Subscription">
-              <option value=true>Přihlášen</option>
-              <option value=false>Odhlášen</option>
-            </select></td>
-          </tr>
-          <tr v-for="customer in customers" :key="customer.PersonID">
-            <td>
-              <button class="ok-button" @click="updateToggleTable(customer)">Uložit</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div> -->
+    <div v-if="popupCheck" class="modal">
+      <div class="modal-content">
+          <div>
+            <div v-for="reservation in reservations" :key="reservationCheckIn.ReservationID" v-if="reservation.ReservationID === reservationCheckIn.ReservationID">
+              <p>First Name: {{ reservation.CustomerFirstName }}</p>
+              <p>Last Name: {{ reservation.CustomerLastName}}</p>
+              <p>Email: {{ reservation.CustomerName}}</p>
+              <p>Start Date: {{ formatDate(reservation.Start) }}</p>
+              <p> End Date: {{ formatDate(reservation.End) }}</p>
+              <p> Room: {{ reservation.RoomID }}</p>
+              <p> Cost: {{ reservation.Cost }}</p>
+              <p> Bussines Guest: {{ trueFalseFormat(reservation.BusinessGuest) }}</p>
+              <p> Parking: {{ trueFalseFormat(reservation.Parking) }}</p>
+              <p> Services: </p>
+              <div v-for="service in reservation.ServiceIDs" :key="reservation.ID">
+                <ul>
+                  <li>{{ getServiceName(service) }}</li> 
+                </ul>
+              </div>
 
+              <button v-if="reservation.State==='Pending'" class="button" @click="closePopupCheckIn(reservation)">Check-In</button> 
+              <button v-else-if="reservation.State==='Confirmed'" class="button" @click="closePopupCheckIn(reservation)">Check-Out</button> 
+              </div>
+          </div>
+        <button class="button" @click="closePopupCancel()">Cancel</button> 
+      </div>
+    </div>
 
     <div class="tableCustomers">
       <table v-if="!editTable" class="threadTable">
@@ -328,9 +214,7 @@
           <tr v-for="(customer, index) in customers" :key="'document_number_' + index">
             <th>Document Number:</th><td><input type="text" v-model="customer.DocumentNumber"/></td>
           </tr>
-          <!-- <tr v-for="(customer, index) in customers" :key="'date_of_birth_' + index">
-            <th>Date of Birth:</th><td><input type="date" v-model="customer.dateOfBirth"/></td>
-          </tr> -->
+          
           <tr v-for="(customer, index) in customers" :key="'date_of_birth_' + index">
             <th>Date of Birth:</th>
             <td>
@@ -366,35 +250,6 @@
       </table>
     </div>
 
-    <!-- <table v-if="!editTable" class="tableData">
-      <tbody v-if="customers && customers.length > 0">
-        <td v-for="customer in customers" :key="customer.PersonID">
-          <tr><input type="text" v-model="customer.LastName"/></tr>
-          <tr><input type="text" v-model="customer.FirstName"/></tr>
-          <tr><input type="email" v-model="customer.Email" :style="{ width: '200px' }"/></tr>
-          <tr><select v-model="customer.PhonePreselection" :style="{ width: '100px' }">
-              <option value='+420'>+420</option>
-              <option value='+421'>+421</option>
-              <option value='+69'>+49</option>
-            </select>
-            <input type="text" v-model="customer.PhoneNumber"/></tr>
-          <tr><input type="text" v-model="customer.DocumentNumber"/></tr>
-          
-          <tr><input type="date" :value="formatDate(customer.dateOfBirth)"/> </tr>
-          <tr><input type="text" v-model="customer.Allergy" @change="saveField(customer)" /></tr>
-          <tr><select v-model="customer.Handicap" :style="{ width: '100px' }">
-              <option value=true>Ano</option>
-              <option value=false>Ne</option>
-            </select></tr>
-          <tr><input type="text" v-model="customer.Address" /></tr>
-          <tr><select v-model="customer.Subscription" :style="{ width: '100px' }">
-              <option value=true>Přihlášen</option>
-              <option value=false>Odhlášen</option>
-            </select></tr>
-          <tr><button class="ok-button" @click="updateToggleTable(customer)">Uložit</button></tr>
-        </td>
-      </tbody>
-    </table> -->
 </div>
 
 </template>
@@ -409,7 +264,9 @@ data() {
     ID: null,
     error: false,
     addingNew: false,
+    reservationCheckIn: [],
     addingNewReservation: false,
+    popupCheck: false,
     popup: false,
     filters: {
       Name: '',
@@ -450,6 +307,14 @@ data() {
       services: [], 
       services_available: [], 
   };
+},
+async mounted() {
+  await this.fetchServices();
+  await this.fetchReservationsAndServices();
+  await this.fetchReservationServices();
+  await this.fetchCustomerNames();
+  this.isLoading = false;
+  this.fetchRooms();
 },
 computed: {
   filteredServices() {
@@ -501,6 +366,85 @@ mounted() {
   this.fetchReservations(); 
 },
 methods: {
+    async fetchServices() {
+      try {
+        const response = await fetch('/Home/Services/GetServices');
+        const data = await response.json();
+        this.services_available = data.map(service => ({ ID: service.ServiceID, Name: service.Name, ...service, editable: false }));
+      } catch (error) {
+        console.error('Error fetching services:', error);
+      }
+    },
+    async fetchReservationsAndServices() {
+      try {
+        const response = await fetch('/Home/Reservations/GetReservations');
+        const data = await response.json();
+        this.reservations = data.map(reservation => ({ ...reservation, editable: false }));
+      } catch (error) {
+        console.error('Error fetching reservations:', error);
+      }
+    },
+    async fetchReservationServices() {
+      try {
+        const response = await fetch('/Home/Reservations/GetReservationServices');
+        const data = await response.json();
+        const serviceMap = {};
+
+        data.forEach(service => {
+          const serviceID = service.ServiceID;
+          if (!serviceMap[serviceID]) {
+            serviceMap[serviceID] = {
+              ServiceID: serviceID,
+              reservations: []
+            };
+          }
+          serviceMap[serviceID].reservations.push(service.ReservationID);
+        });
+
+        this.services = Object.values(serviceMap);
+
+        console.log('Services:', this.services);
+
+        this.reservations.forEach(reservation => {
+          const serviceIDs = data
+            .filter(service => service.ReservationID === reservation.ReservationID)
+            .map(service => service.ServiceID);
+          reservation.ServiceIDs = serviceIDs;
+        });
+        console.log('Reservations with services:', this.reservations);
+      } catch (error) {
+        console.error('Error fetching reservation services:', error);
+      }
+    },
+
+
+    async fetchCustomerNames() {
+      try {
+        const customerIDs = [...new Set(this.reservations.map(reservation => reservation.CustomerID))];
+
+        const response = await fetch(`/Home/Customer/GetCustomers`);
+        const data = await response.json();
+        this.customers = data;
+        customerIDs.forEach(customerID => {
+          const matchingReservations = this.reservations.filter(reservation => reservation.CustomerID === customerID);
+          if (matchingReservations.length > 0) {
+            matchingReservations.forEach(reservation => {
+              data.forEach(customer => {
+                if (customer.customerId === customerID) {
+                  reservation.CustomerName = customer.person.email; 
+                  reservation.CustomerFirstName = customer.person.firstName; 
+                  reservation.CustomerLastName = customer.person.lastName; 
+                }
+              });
+            });
+          }
+        });
+        console.log('Reservations:', this.reservations);
+      } catch (error) {
+        console.error('Error fetching customer names:', error);
+      }
+    },
+
   // ------------------------------------------------------------------------------------------------
   ToggleTable() {
     if(this.editTable == false)
@@ -549,6 +493,24 @@ methods: {
     this.buttonLabel = 'Upravit informace';
     this.editTable = !this.editTable;
   },
+  closePopupCheckIn(reservation){
+      if(reservation.State === "Pending")
+        reservation.State = "Confirmed";
+      else if(reservation.State === "Confirmed")
+        reservation.State = "Paid";
+      this.updateReservation(reservation);
+      this.editTable = !this.editTable;
+      this.popupCheck = !this.popupCheck;
+    },
+    closePopupCancel(){
+      this.popupCheck = !this.popupCheck;
+    },
+    toggleCheckIn(Reservation){
+      this.popupCheck = !this.popupCheck;
+      this.reservationCheckIn = Reservation;
+      console.log(this.reservations);
+      console.log('Check-In:', this.reservationCheckIn);
+    },
   // ---------------------------------------- FETCH --------------------------------------------------------
   getFormattedDate(days = 0) {
       const today = new Date();
@@ -578,23 +540,11 @@ methods: {
         console.error('Error fetching reservations:', error);
       });
   },
-  // fetchReservationsAndServices() {
-  //     fetch('/Home/Reservations/GetReservations')
-  //       .then(response => response.json())
-  //       .then(data => {
-  //         this.reservations = data.map(reservation => ({ ...reservation, editable: false }));
-  //         // After fetching reservations data, call the method to fetch reservation services
-  //         this.fetchReservationServices(); 
-  //       })
-  //       .catch(error => {
-  //         console.error('Error fetching reservations:', error);
-  //       });
-  //   },
-    fetchReservationServices() {
+  
+  fetchReservationServices() {
   fetch('/Home/Reservations/GetReservationServices')
     .then(response => response.json())
     .then(data => {
-      // Create an object to store services indexed by their service ID
       const serviceMap = {};
 
       this.fetchServices(); 
@@ -981,7 +931,16 @@ methods: {
       console.error('Error updating reservation:', error);
     });
   },
-
+  trueFalseFormat(value) {
+    if(value === "true")
+    {
+      return "Yes";
+    }
+    else
+    {
+      return "No";
+    }
+  },
   deleteReservation(reservation) {
     console.log('Deleting reservation:', reservation);
     reservation.editable = false; 
@@ -1160,6 +1119,7 @@ background-color: #13568e;
 }
 
 input[type="date"],
+input[type="time"],
 input[type="email"],
 input[type="text"],
 input[type=number] {
