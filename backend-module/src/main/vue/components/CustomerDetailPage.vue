@@ -435,7 +435,6 @@ methods: {
       else if(reservation.State === "Confirmed")
         reservation.State = "Paid";
       this.updateReservation(reservation);
-      this.editTable = !this.editTable;
       this.popupCheck = !this.popupCheck;
     },
     closePopupCancel(){
@@ -859,9 +858,9 @@ methods: {
   },
   updateReservation(reservation) {
     console.log('Updating reservation:', reservation);
-    reservation.editable = false; 
-
-    fetch('/Home/Customer/UpdateReservation', {
+    reservation.Start = this.formatDate(reservation.Start);
+    reservation.End = this.formatDate(reservation.End);
+    fetch('/Home/Customer/UpdateReservations', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
