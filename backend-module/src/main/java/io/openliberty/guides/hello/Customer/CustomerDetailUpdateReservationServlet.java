@@ -31,6 +31,9 @@ public class CustomerDetailUpdateReservationServlet extends HttpServlet {
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(line);
 
+        System.out.println("Update for Reservation Data");
+        System.out.println(root);
+
         try 
         {
             DatabaseUtil.Update(root, "Reservation", "ReservationID");
