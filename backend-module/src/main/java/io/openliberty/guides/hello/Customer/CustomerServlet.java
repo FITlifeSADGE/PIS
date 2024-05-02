@@ -39,12 +39,10 @@ public class CustomerServlet extends HttpServlet {
             TypedQuery<Customer> query = em.createNamedQuery("Customer.allRows", Customer.class);
             List<Customer> customers = query.getResultList();
 
-            //print out the data
             for (Customer customer : customers) {
                 System.out.println(customer);
             }
 
-            // Transform data
             
 
             List<Map<String, Object>> rows = new ArrayList<>();
@@ -61,10 +59,8 @@ public class CustomerServlet extends HttpServlet {
 
 
 
-            // Send data
             ObjectMapper mapper = new ObjectMapper();
             response.setContentType("application/json");
-            //print out the data
             for (Map<String, Object> row : rows) {
                 System.out.println(row);
             }

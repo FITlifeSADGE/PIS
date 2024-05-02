@@ -39,7 +39,6 @@ public class AddRoomServlet extends HttpServlet {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-hibernate-mysql");
         EntityManager em = emf.createEntityManager();
         try {
-            //create and update new room 
             Room room = new Room();
 
             room.setRoomId(root.path("RoomID").asInt());
@@ -51,9 +50,9 @@ public class AddRoomServlet extends HttpServlet {
                 root.path("Beds").asInt()
                 );
 
-            em.getTransaction().begin();    //start transakcion
-            em.persist(room);               //send data to db
-            em.getTransaction().commit();   //end transakcion
+            em.getTransaction().begin();    
+            em.persist(room);               
+            em.getTransaction().commit();   
         
             System.out.println("Room was created");
             

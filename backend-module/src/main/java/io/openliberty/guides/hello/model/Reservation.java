@@ -53,7 +53,6 @@ public class Reservation {
     @Column(name = "Parking")
     private boolean parking;
 
-    // CustomerID and RoomID
     @ManyToOne
     @JoinColumn(name = "CustomerID")
     private Customer customer;
@@ -62,7 +61,6 @@ public class Reservation {
     @JoinColumn(name = "RoomID")
     private Room room;
 
-    // Getters and Setters
 
     public int getReservationId() {
         return reservationId;

@@ -36,7 +36,7 @@ data() {
   return {
     email: '',
     password: '',
-    loginMessage: '', // Přidána data pro zprávu o přihlášení
+    loginMessage: '',
     passwordFieldType: 'password'
   };
 },
@@ -72,7 +72,7 @@ methods: {
     })
     .catch(error => {
       console.error('Error during login:', error);
-      this.loginMessage = 'Špatný email nebo heslo'; // Pokud se nepodaří spojit nebo obdržet odpověď
+      this.loginMessage = 'Špatný email nebo heslo'; 
     });
   },
   togglePasswordVisibility() {

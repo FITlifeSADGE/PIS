@@ -13,7 +13,6 @@
   </script>
   
   <style scoped>
-  /* Styly můžete přidat podle vašich preferencí */
   @import '/src/main/vue/styles/style.css';
   </style>
   

@@ -48,11 +48,9 @@ public class RoomsServlet extends HttpServlet {
             rows.add(rowData);
         }
 
-            // Conversion data to JSON string
             ObjectMapper mapper = new ObjectMapper();
             String jsonString = mapper.writeValueAsString(rows);
 
-            // send json data
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(jsonString);

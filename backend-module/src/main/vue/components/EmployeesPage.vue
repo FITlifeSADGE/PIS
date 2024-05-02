@@ -18,7 +18,6 @@
   </thead>
   <tbody>
 
-        <!-- Add new -->
         <tr v-if="addingNew">
           <td><input type="text" style="width: 150px;" v-model="newEmployee.LastName" placeholder="Last Name" :class="{ 'required-field-empty': newEmployee.LastName === '' }" required></td>
           <td><input type="text" style="width: 150px;" v-model="newEmployee.FirstName" placeholder="First Name" :class="{ 'required-field-empty': newEmployee.FirstName === '' }" required></td>
@@ -46,7 +45,6 @@
           </td>
         </tr>
   
-        <!-- Filter row -->
         <tr>
           <td><input type="text" style="width: 150px;" v-model="filters.LastName"></td>
           <td><input type="text" style="width: 150px;" v-model="filters.FirstName"></td>
@@ -54,10 +52,9 @@
           <td><input type="text" style="width: 150px;" v-model="filters.Assignment"></td>
           <td><input type="number" style="width: 150px;" v-model="filters.PhoneNumber"></td>
           <td><input type="text" style="width: 150px;" v-model="filters.DocumentNumber"></td>
-          <td></td> <!-- Empty cell for buttons -->
+          <td></td>
         </tr>
   
-        <!-- Data rows -->
         <tr v-for="employee in filteredEmployees" :key="employee.EmployeeID">
           <td v-if="!employee.editable">{{ employee.LastName }}</td>
           <td v-else><input type="text" style="width: 150px;" v-model="employee.LastName" :style="{ width: '150px' }" :class="{ 'required-field-empty': employee.LastName === '' }" required></td>
@@ -104,7 +101,6 @@ export default {
   data() {
     return {
       addingNew: false,
-      // prefill new employee with values
       newEmployee: {
         LastName: '',
         FirstName: '',
@@ -125,7 +121,7 @@ export default {
         PhoneNumber: '',
         DocumentNumber: '',
       },
-      employees: [], // Your array of employee objects goes here
+      employees: [],
     };
   },
     mounted() {
@@ -160,14 +156,11 @@ export default {
       this.addingNew = true;
     },
     addNewEmployee() {
-      // Validate newEmployee data and add it to the employees array
       if (this.validateNewEmployee()) {
-        //create new id from max id + 1
         let maxId = Math.max(...this.employees.map(employee => employee.EmployeeID));
         this.newEmployee.EmployeeID = maxId + 1;
         this.employees.push({ ...this.newEmployee, editable: false});
 
-        //send data for new employee to the server
         fetch('/Home/Employees/AddEmployee', {
           method: 'POST',
           headers: {
@@ -221,7 +214,6 @@ export default {
         employee.DateOfBirth = this.formatDate(employee.DateOfBirth);
         employee.WorkShift = this.formatDate(employee.WorkShift);
 
-        //send updated data to the server
         fetch('/Home/Employees/UpdateEmployee', {
           method: 'POST',
           headers: {
@@ -245,13 +237,11 @@ export default {
         }
     },
     deleteEmployee(employee) {
-      // Delete employee from the employees array
       employee.editable = false;
       const index = this.employees.indexOf(employee);
       if (index !== -1) {
         this.employees.splice(index, 1);
       }
-      //send delete request to the server
         fetch('/Home/Employees/DeleteEmployee', {
             method: 'POST',
             headers: {
@@ -285,7 +275,6 @@ export default {
       };
     },
     validateNewEmployee() {
-      // Validate newEmployee data (e.g., check for required fields)
       if (
         this.newEmployee.LastName === '' ||
         this.newEmployee.FirstName === '' ||
@@ -301,7 +290,6 @@ export default {
       return true;
     },
     validateEmployee(employee) {
-      // Validate employee data (e.g., check for required fields)
       if (
         employee.LastName === '' ||
         employee.FirstName === '' ||
@@ -317,7 +305,6 @@ export default {
       return true;
     },
     getEmployeeInputWidth(value) {
-      // Calculate and return the width of the input field based on the value length
       return value.length * 10 + 'px';
     },
   },

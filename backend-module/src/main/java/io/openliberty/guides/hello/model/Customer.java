@@ -28,7 +28,6 @@ public class Customer {
     @JoinColumn(name = "CustomerID")
     private Person person;
 
-    // Getters and Setters
     public int getCustomerId() {
         return customerId;
     }

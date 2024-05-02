@@ -26,12 +26,10 @@ public class UpdateRoomServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        //read request
         BufferedReader reader = request.getReader();
         String line = reader.readLine();
         reader.close();
 
-        //create tree 
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root = mapper.readTree(line);
 
@@ -39,12 +37,10 @@ public class UpdateRoomServlet extends HttpServlet {
         EntityManager em = emf.createEntityManager();
         try {
 
-            // find room by id
             TypedQuery<Room> query = em.createNamedQuery("Room.findById", Room.class);
             query.setParameter("id", root.path("RoomID").asInt()); 
             Room room = query.getSingleResult();
         
-            //udate room parameters
             room.updateRoom(
                 root.path("TypeRoom").asText(), 
                 Float.parseFloat(root.path("Cost").asText()),  
@@ -53,7 +49,6 @@ public class UpdateRoomServlet extends HttpServlet {
                 root.path("Beds").asInt()
                 );
 
-            //send room to db 
             em.getTransaction().begin();
             em.merge(room);
             em.getTransaction().commit();

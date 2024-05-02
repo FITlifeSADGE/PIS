@@ -12,7 +12,6 @@
       </thead>
       <tbody>
 
-        <!-- Add new -->
         <tr v-if="addingNew">
           <td><input type="text" style="width: 150px;" v-model="newService.Name" placeholder="Name of service" :class="{ 'required-field-empty': newService.Name === '' }" required></td>
           <td><input type="number" min="0.5" step="0.5" style="width: 50px;" v-model="newService.Cost" :class="{ 'required-field-empty': newService.Cost === '' }" required></td>
@@ -36,7 +35,6 @@
         </tr>
 
 
-        <!-- Filter row -->
         <tr>
           <td><input type="text" style="width: 150px;" v-model="filters.Name"></td>
           <td><input type=number step="0.5" style="width: 50px;" v-model="filters.Cost"></td>
@@ -48,10 +46,9 @@
             </select>
           </td>
           <td><input type="text" style="width: 95%;" v-model="filters.Description"></td>
-          <td></td> <!-- Empty cell for buttons -->
+          <td></td>
         </tr>
 
-        <!-- Data rows -->
         <tr v-for="service in filteredServices" :key="service.ServiceID">
           <td v-if="!service.editable">{{ service.Name }}</td>
           <td v-else><input type="text" style="width: 150px;" v-model="service.Name" :style="{ width: getServiceInputWidth(service.Name) }" :class="{ 'required-field-empty': service.Name === '' }" required></td>
@@ -103,7 +100,6 @@ export default {
   },
   computed: {
     filteredServices() {
-      // filter services if some value is not set filter will ignore that value
       return this.uniqueServices.filter(service => {
         return (
           service.Name.toLowerCase().includes(this.filters.Name.toLowerCase()) &&
@@ -126,11 +122,10 @@ export default {
   }
   },
   mounted() {
-    this.fetchServices(); // load services
-    this.fetchReservationServices(); // load ResevationServices
+    this.fetchServices(); 
+    this.fetchReservationServices(); 
   },
   methods: {
-    // requesting for service data
     async fetchServices() {
       fetch('/Home/Services/GetServices') 
         .then(response => response.json())
@@ -172,9 +167,8 @@ export default {
       if (service.Name && service.Cost && service.Availability) 
       {
         console.log('Updating service:', service);
-        service.editable = false; // clsoe edit window
+        service.editable = false; 
 
-        // send data to server
         fetch('/Home/Services/UpdateService', {
           method: 'POST',
           headers: {
@@ -201,14 +195,13 @@ export default {
     
     deleteService(service) {
       console.log('Deleting service:', service);
-      service.editable = false; // clsoe edit window
+      service.editable = false;
 
       const index = this.services.indexOf(service);
       if (index !== -1) 
       {
         this.services.splice(index, 1);
       }
-      //send service data to delete
       fetch('/Home/Services/DeleteService', {
         method: 'POST',
         headers: {
@@ -229,23 +222,19 @@ export default {
     },
 
     getServiceInputWidth(text) {
-      // Funkcia na získanie šírky textového poľa na základe dĺžky textu
-      return text ? `${text.length * 12}px` : '100px'; // 8px na jeden znak, predvolená šírka je 100px
+      return text ? `${text.length * 12}px` : '100px'; 
     },
     toggleAddNew() {
       this.addingNew = true;
     },
     addNewService() {
 
-      //check if some input is missing
       if (this.newService.Name && this.newService.Cost && this.newService.Availability) 
       {
-        //create new id from max ServiceID
         let maxServiceID = Math.max(...this.services.map(service => service.ServiceID));
         this.newService.ServiceID = maxServiceID + 1;
         this.services.push({ ...this.newService, editable: false });
 
-        //send data for new service
         fetch('/Home/Services/AddService', {
           method: 'POST',
           headers: {
@@ -278,7 +267,6 @@ export default {
         alert('Fill in all red fields in for new Service.');
       }
     },
-    //cancel add
     cancelNewService() {
       this.newService = {
         Name: '',

@@ -31,7 +31,7 @@
       };
     },
     mounted() {
-      this.fetchUserInformation(); // Volanie funkcie na načítanie údajov po načítaní komponentu
+      this.fetchUserInformation();
       window.addEventListener('scroll', this.handleScroll);
     },
     methods: {
@@ -41,7 +41,6 @@
               'Authorization': localStorage.getItem('token'),
             }
         })
-        // Login when token is not valid
         .then(response => {
           if (!response.ok) {
             this.$router.push('/Home/login');
@@ -49,7 +48,7 @@
           return response.json();
         }) 
         .then(data => {
-          this.username = data.username; // Nastavenie údajov do premennej rooms
+          this.username = data.username; 
           this.role = data.role;
         })
         .catch(error => {

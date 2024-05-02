@@ -38,7 +38,6 @@ public class DeleteReservationServlet extends HttpServlet {
         EntityManager em = emf.createEntityManager();
 
         try{
-              // find services by reservation id
             TypedQuery<ReservationService> query2 = em.createNamedQuery("ReservationService.findByReservationId",
                     ReservationService.class);
             query2.setParameter("reservationId", root.path("ReservationID").asInt());
@@ -46,7 +45,6 @@ public class DeleteReservationServlet extends HttpServlet {
 
             System.out.println("Retrieved reservation services: " + reservationServices);
 
-            // remove all services associated with reservation
             for (ReservationService rs : reservationServices) {
                 em.getTransaction().begin();
                 em.remove(rs);
@@ -55,12 +53,10 @@ public class DeleteReservationServlet extends HttpServlet {
             }
 
 
-            //find reservation by id
             TypedQuery<Reservation> query = em.createNamedQuery("Reservation.findById", Reservation.class);
             query.setParameter("id", root.path("ReservationID").asInt());
             Reservation reservation = query.getSingleResult();
 
-            //remove reservation from db
             em.getTransaction().begin();
             em.remove(reservation);
             em.getTransaction().commit();
@@ -78,18 +74,3 @@ public class DeleteReservationServlet extends HttpServlet {
     }
 
 }
-
-
-    //     try {
-    //         // Delete associated services first
-    //         if (root.has("ReservationID")) {
-    //             DatabaseUtil.Delete2(root, "ReservationService", "ReservationID");
-    //         }
-
-    //         // Then delete the reservation itself
-    //         DatabaseUtil.Delete(root, "Reservation", "ReservationID");
-    //     } catch (SQLException e) {
-    //         e.printStackTrace();
-    //     }
-    // }
-

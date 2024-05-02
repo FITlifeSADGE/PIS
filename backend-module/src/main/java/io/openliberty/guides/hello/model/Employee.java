@@ -30,7 +30,6 @@ public class Employee {
     @JoinColumn(name = "EmployeeID")
     private Person person;
 
-    // Getters and Setters
     public int getEmployeeId() {
         return employeeId;
     }

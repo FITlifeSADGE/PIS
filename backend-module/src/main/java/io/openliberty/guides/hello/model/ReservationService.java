@@ -12,12 +12,12 @@ public class ReservationService {
     private ReservationServiceId id;
 
     @ManyToOne
-    @MapsId("reservationId") // Maps the reservationId attribute of ReservationServiceId
+    @MapsId("reservationId") 
     @JoinColumn(name = "ReservationID")
     private Reservation reservation;
 
     @ManyToOne
-    @MapsId("serviceId") // Maps the serviceId attribute of ReservationServiceId
+    @MapsId("serviceId") 
     @JoinColumn(name = "ServiceID")
     private Service service;
 

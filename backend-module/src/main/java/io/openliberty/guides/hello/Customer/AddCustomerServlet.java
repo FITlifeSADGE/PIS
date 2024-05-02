@@ -35,7 +35,6 @@ public class AddCustomerServlet extends HttpServlet {
         String line = reader.readLine();
         reader.close();
 
-        // Logging the received data
         logger.info("Received data: " + line);
 
         ObjectMapper mapper = new ObjectMapper();
@@ -44,14 +43,11 @@ public class AddCustomerServlet extends HttpServlet {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-hibernate-mysql");
         EntityManager em = emf.createEntityManager();
         try{
-            // Create and update new customer
             Customer customer = new Customer();
 
-            // Get the biggest Person ID
             TypedQuery<Integer> query = em.createNamedQuery("Person.findMaxId", Integer.class);
             int newId = query.getSingleResult();
 
-            // Change DateOfBirth to Date
             Date dateOfBirth = Date.valueOf(root.get("DateOfBirth").asText());
 
 
@@ -61,7 +57,6 @@ public class AddCustomerServlet extends HttpServlet {
             customer.setAddress(root.get("Address").asText());
             customer.setSubscription(root.get("Subscription").asBoolean());
 
-            // Create and update new person
             Person person = new Person();
             person.setPersonID(customer.getCustomerId());
             person.setLastName(root.get("LastName").asText());
@@ -72,7 +67,6 @@ public class AddCustomerServlet extends HttpServlet {
             person.setDocumentNumber(root.get("DocumentNumber").asText());
             person.setDateOfBirth(dateOfBirth);
 
-            // Establish the relationship between customer and person
             customer.setPerson(person);
 
             em.getTransaction().begin();
@@ -85,14 +79,12 @@ public class AddCustomerServlet extends HttpServlet {
             response.getWriter().println(mapper.writeValueAsString(customer));
 
 
-              // Logging the successful customer creation
               logger.info("Customer created: " + customer.getCustomerId());
 
         } catch (Exception e) {
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             response.getWriter().println("Error occurred while adding customer: " + e.getMessage());
 
-             // Logging the error
              logger.severe("Error occurred while adding customer: " + e.getMessage());
 
         } finally {

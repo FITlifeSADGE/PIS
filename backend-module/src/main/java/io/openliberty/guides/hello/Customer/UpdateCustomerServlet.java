@@ -37,15 +37,12 @@ public class UpdateCustomerServlet extends HttpServlet {
         JsonNode dateOfBirthNode = root.get("dateOfBirth");
         System.out.println(root);
         if (dateOfBirthNode.isNumber()) {
-            // Převod milisekund na objekt typu Date
             long milliseconds = dateOfBirthNode.asLong();
             Date dateOfBirth = new Date(milliseconds);
 
-            // Formátování objektu typu Date na požadovaný formát (yyyy-MM-dd)
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             String formattedDateOfBirth = dateFormat.format(dateOfBirth);
 
-            // Přidání nového dateOfBirth do rootNode
             ((ObjectNode) root).put("dateOfBirth", formattedDateOfBirth);
         }
 

@@ -40,21 +40,17 @@ public class UpdateEmployeeServlet extends HttpServlet{
         EntityManager em = emf.createEntityManager();
         try {
 
-            // find employee by id
             TypedQuery<Employee> query = em.createNamedQuery("Employee.findById", Employee.class);
             query.setParameter("id", root.path("EmployeeID").asInt()); 
             Employee employee = query.getSingleResult();
 
-            //change Date of Birth to Date
             Date dateOfBirth = Date.valueOf(root.path("DateOfBirth").asText());
             Date workShift = Date.valueOf(root.path("WorkShift").asText());
 
-            // hash password with SHA256
              String password = root.path("Password").asText();
              String hashedPassword = DigestUtils.sha256Hex(password);
 
         
-            //udate employee parameters
             employee.updateEmployee(
                 root.path("LastName").asText(),
                 root.path("FirstName").asText(),
@@ -67,7 +63,6 @@ public class UpdateEmployeeServlet extends HttpServlet{
                 workShift,
                 hashedPassword
                 );
-            //send employee to db 
             em.getTransaction().begin();
             em.merge(employee);
             em.getTransaction().commit();

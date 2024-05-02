@@ -39,22 +39,18 @@ public class DeleteEmployeeServlet  extends HttpServlet{
         try {
 
         
-            // find employee by id
             TypedQuery<Employee> query = em.createNamedQuery("Employee.findById", Employee.class);
             query.setParameter("id", root.path("EmployeeID").asInt()); 
             Employee employee = query.getSingleResult();
 
-            //remove employee from db 
             em.getTransaction().begin();
             em.remove(employee);
             em.getTransaction().commit();
 
-            //find person by id
             TypedQuery<Person> query2 = em.createNamedQuery("Person.findById", Person.class);
             query2.setParameter("id", root.path("EmployeeID").asInt());
             Person person = query2.getSingleResult();
 
-            //remove person from db
             em.getTransaction().begin();
             em.remove(person);
             em.getTransaction().commit();

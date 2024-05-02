@@ -29,19 +29,16 @@ public class AccommodatedCustomersServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException { 
 
-        // Connect to DB
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-hibernate-mysql");
         EntityManager em = emf.createEntityManager();
         try {
 
-            // Create and execute the named query
             TypedQuery<Object[]> query = em.createNamedQuery("Reservation.findCurrentReservations", Object[].class);
             query.setParameter("currentDate", new Date());
             List<Object[]> results = query.getResultList();
 
             JsonArrayBuilder arrayBuilder = Json.createArrayBuilder();
 
-            // Process the results
             for (Object[] result : results) {
                 Reservation reservation = (Reservation) result[0];
                 Person person = (Person) result[2];
@@ -57,13 +54,11 @@ public class AccommodatedCustomersServlet extends HttpServlet {
                 objectBuilder.add("endDate", reservation.getEnd().toString());
                 objectBuilder.add("personID", person.getPersonID());
 
-                // Add the JsonObject to the JsonArray
                 arrayBuilder.add(objectBuilder);
             }
 
             String jsonString = arrayBuilder.build().toString();
 
-            // Send the JSON to the client
             response.setContentType("application/json");
             response.getWriter().write(jsonString);
             response.setStatus(HttpServletResponse.SC_OK);

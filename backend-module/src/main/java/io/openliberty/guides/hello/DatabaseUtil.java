@@ -14,7 +14,6 @@ import java.sql.ResultSet;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
-// Tato třída bude obsahovat metodu pro připojení k databázi
 public class DatabaseUtil {
     public static Connection getConnection() throws SQLException 
     {
@@ -44,8 +43,8 @@ public class DatabaseUtil {
             String[] sqlCommands1 = sqlScript.split(";");
 
             for (String sqlCommand : (sqlCommands1)) {
-                sqlCommand = sqlCommand.trim(); // Odstranění bílých znaků ze začátku a konce řetězce
-                if (!sqlCommand.isEmpty()) { // Ignorovat prázdné příkazy
+                sqlCommand = sqlCommand.trim(); 
+                if (!sqlCommand.isEmpty()) { 
                     statement.execute(sqlCommand);
                 }
             }
@@ -62,8 +61,8 @@ public class DatabaseUtil {
             String[] sqlCommands2 = sqlScript2.split(";");
 
             for (String sqlCommand : (sqlCommands2)) {
-                sqlCommand = sqlCommand.trim(); // Odstranění bílých znaků ze začátku a konce řetězce
-                if (!sqlCommand.isEmpty()) { // Ignorovat prázdné příkazy
+                sqlCommand = sqlCommand.trim(); 
+                if (!sqlCommand.isEmpty()) { 
                     statement.execute(sqlCommand);
                 }
             }
@@ -90,7 +89,6 @@ public class DatabaseUtil {
         System.out.println("Upadate for "+ Enitity);
         try (Connection connection = getConnection()) {
         
-        //ziskanie nazvu stlpcov pre danu entitu
         PreparedStatement preparedStatement = connection.prepareStatement("SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = '"+ Enitity +"';");
         ResultSet NameOfColumns = preparedStatement.executeQuery();
 
@@ -103,13 +101,13 @@ public class DatabaseUtil {
                 sqlQuery.append(columnName).append("=").append(root.path(columnName).asBoolean()).append(",");
             } 
             else {
-                if (!jsonValue.matches("-?\\d+(\\.\\d+)?"))  // Ak sa nejedna o cislo
+                if (!jsonValue.matches("-?\\d+(\\.\\d+)?"))  
                     sqlQuery.append(columnName).append("=").append("\"" + jsonValue + "\"").append(",");
                 else
                     sqlQuery.append(columnName).append("=").append(jsonValue).append(",");
             }
         }
-        sqlQuery.deleteCharAt(sqlQuery.length() - 1); //odstranenie podslednej ciarky
+        sqlQuery.deleteCharAt(sqlQuery.length() - 1);
         sqlQuery.append(" WHERE "+ ID + " = ").append(root.path(ID).asText()).append(";");
 
         PreparedStatement query = connection.prepareStatement(sqlQuery.toString());
@@ -137,7 +135,7 @@ public class DatabaseUtil {
                 String jsonValue = root.path(columnName).asText(); root.path(columnName);
     
                 sql_command3.append(columnName).append(", ");
-                if (!jsonValue.matches("-?\\d+(\\.\\d+)?"))  // Ak sa nejedna o cislo
+                if (!jsonValue.matches("-?\\d+(\\.\\d+)?")) 
                     sql_command4.append("\"" + jsonValue + "\"").append(", ");
                 else
                     sql_command4.append(jsonValue).append(", ");

@@ -3,7 +3,6 @@
         <table>
         <thead>
             <tr>
-                <!-- pokoj, datum, jméno, email, telefon, services -->
             <th>Last Name</th>
             <th>First Name</th>
             <th>Email</th>
@@ -36,18 +35,18 @@
 export default {
 data() {
     return {
-    customers: [], // Array to store customer data
+    customers: [],
     };
 },
 mounted() {
-    this.fetchCustomers(); // Call the function to fetch data upon component load
+    this.fetchCustomers(); 
 },
 methods: {
     fetchCustomers() {
-    fetch('/Home/AccommodatedCustomers/GetAccommodatedCustomers') // Call your servlet to retrieve data from the database
+    fetch('/Home/AccommodatedCustomers/GetAccommodatedCustomers')
         .then(response => response.json())
         .then(data => {
-        this.customers = data; // Set the fetched data to the customers variable
+        this.customers = data; 
         console.log(this.customers);
         })
         .catch(error => {

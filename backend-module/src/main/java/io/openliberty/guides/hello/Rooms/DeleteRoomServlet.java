@@ -38,12 +38,10 @@ public class DeleteRoomServlet extends HttpServlet {
         EntityManager em = emf.createEntityManager();
         try {
 
-            // find room by id
             TypedQuery<Room> query = em.createNamedQuery("Room.findById", Room.class);
             query.setParameter("id", root.path("RoomID").asInt()); 
             Room room = query.getSingleResult();
 
-            //remove room from db 
             em.getTransaction().begin();
             em.remove(room);
             em.getTransaction().commit();

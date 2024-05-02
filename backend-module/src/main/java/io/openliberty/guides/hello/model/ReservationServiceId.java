@@ -14,7 +14,6 @@ public class ReservationServiceId implements Serializable {
     @Column(name = "ServiceID")
     private int serviceId;
 
-    // Constructors, getters, setters, and other methods
     
     public ReservationServiceId() {
     }

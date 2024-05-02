@@ -47,25 +47,19 @@ Time leavingTime;
 EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-hibernate-mysql");
 EntityManager em = emf.createEntityManager();
 try {
-    // generate a unique ID for the reservation
     TypedQuery<Integer> query = em.createQuery("SELECT MAX(r.id) FROM Reservation r", Integer.class);
     Integer maxId = query.getSingleResult();
     int newReservationId = maxId != null ? maxId + 1 : 1;
 
-    // create a new reservation
     Reservation reservation = new Reservation();
 
-    // Make END and START to type Date
     Date start = Date.valueOf(root.path("Start").asText());
     Date end = Date.valueOf(root.path("End").asText());
 
-    // print string value of cost
     System.out.println(root.path("Cost").asText());
 
-    //change string to float
     float cost = Float.parseFloat(root.path("Cost").asText());
     
-    // parse comingTime and leavingTime to java.sql.Time
     try {
         comingTime = new Time(formatter.parse(root.path("ComingTime").asText()).getTime());
         leavingTime = new Time(formatter.parse(root.path("LeavingTime").asText()).getTime());
@@ -75,7 +69,6 @@ try {
         return;
     }
 
-    // populate reservation parameters
     reservation.setReservationId(newReservationId);
     reservation.setCustomerID(root.path("CustomerID").asInt());
     reservation.setRoomID(root.path("RoomID").asInt());
@@ -88,23 +81,19 @@ try {
     reservation.setBusinessGuest(root.path("BusinessGuest").asBoolean());
     reservation.setParking(root.path("Parking").asBoolean());
     
-    // print reservation
     System.out.println("Reservation was created");
     System.out.println(reservation);
 
 
-    // send reservation to db
     em.getTransaction().begin();
     em.persist(reservation);
     em.getTransaction().commit();
 
     System.out.println("Reservation was created");
 
-      // Create a response payload with the newly created reservation
       ObjectMapper responseMapper = new ObjectMapper();
       String responsePayload = responseMapper.writeValueAsString(reservation);
 
-      // Set the response status and write the response payload
       response.setStatus(HttpServletResponse.SC_OK);
       response.getWriter().write(responsePayload);
 

@@ -23,7 +23,6 @@ public class UserInformationServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException { 
                 
 
-        // Check if JWT token exists
         String token = request.getHeader("Authorization");
         if (token.equals("null")) {
             System.out.println("\nNo JWT token found provided\n");
@@ -32,14 +31,12 @@ public class UserInformationServlet extends HttpServlet {
         
         DecodedJWT jwt = JWT.decode(token);
 
-        // Check if JWT token has expired
         Date expiresAt = jwt.getExpiresAt();
         if (expiresAt.before(new Date())) {
             System.out.println("\nJWT token has expired\n");
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "JWT token has expired");
         }
 
-        // Load data from JWT token and send them back to the client
         String username = jwt.getClaim("username").asString();
         String role = jwt.getClaim("role").asString();
 

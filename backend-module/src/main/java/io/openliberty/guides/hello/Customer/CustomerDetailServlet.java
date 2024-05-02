@@ -65,18 +65,15 @@ public class CustomerDetailServlet extends HttpServlet{
                     rows.add(rowData);
                 }
 
-                // Konverzia údajov na JSON reťazec
                 ObjectMapper mapper = new ObjectMapper();
                 String jsonString = mapper.writeValueAsString(rows);
 
-                // Nastavenie typu obsahu a odoslanie JSON reťazca ako odpoveď
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
                 response.getWriter().write(jsonString);
             } 
             catch (SQLException e) {
                 e.printStackTrace();
-                // Spracovanie chyby
             }
     }
 }

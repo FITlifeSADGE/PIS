@@ -25,7 +25,6 @@ public class Service {
     @Column(name = "Description")
     private String description;
 
-    // Getters and Setters
     public int getServiceId() {
         return serviceId;
     }

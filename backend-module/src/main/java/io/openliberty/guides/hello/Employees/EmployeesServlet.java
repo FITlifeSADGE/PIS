@@ -34,7 +34,6 @@ public class EmployeesServlet extends HttpServlet{
         TypedQuery<Employee> query = em.createNamedQuery("Employee.allRows", Employee.class);
         List<Employee> employees = query.getResultList();
 
-        // Transform data 
         List<Map<String, Object>> rows = new ArrayList<>();
         for (Employee employee : employees) {
             Map<String, Object> rowData = new HashMap<>();
@@ -52,11 +51,9 @@ public class EmployeesServlet extends HttpServlet{
             rows.add(rowData);
         }
 
-            // Conversion data to JSON string
             ObjectMapper mapper = new ObjectMapper();
             String jsonString = mapper.writeValueAsString(rows);
 
-            // send json data
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write(jsonString);

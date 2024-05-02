@@ -34,7 +34,6 @@ public class ReservationsServlet extends HttpServlet {
         TypedQuery<Reservation> query = em.createNamedQuery("Reservation.allRows", Reservation.class);
         List<Reservation> reservations = query.getResultList();
 
-        // Transform data
         List<Map<String, Object>> rows = new ArrayList<>();
         for (Reservation reservation : reservations) {
             Map<String, Object> rowData = new HashMap<>();
@@ -52,7 +51,6 @@ public class ReservationsServlet extends HttpServlet {
             rows.add(rowData);
         }
 
-        // Send data
         ObjectMapper mapper = new ObjectMapper();
         response.setContentType("application/json");
         response.getWriter().write(mapper.writeValueAsString(rows));

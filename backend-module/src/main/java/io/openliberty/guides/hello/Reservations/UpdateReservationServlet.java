@@ -48,7 +48,6 @@ Time leavingTime;
         EntityManager em = emf.createEntityManager();
 
         try {
-            // Find reservation by id
             TypedQuery<Reservation> query = em.createNamedQuery("Reservation.findById", Reservation.class);
             query.setParameter("id", root.path("ReservationID").asInt());
             Reservation reservation = query.getSingleResult();
@@ -56,7 +55,6 @@ Time leavingTime;
             System.out.println("Retrieved reservation: " + reservation);
             System.out.println("Updating reservation...");
 
-            // parse comingTime and leavingTime to java.sql.Time
     try {
         comingTime = new Time(formatter.parse(root.path("CommingTime").asText()).getTime());
         leavingTime = new Time(formatter.parse(root.path("LeavingTime").asText()).getTime());
@@ -65,8 +63,6 @@ Time leavingTime;
         response.getWriter().write("Invalid time format");
         return;
     }
-            // Update reservation parameters
-            // Parse JSON data
             Date startDate = Date.valueOf(root.path("Start").asText());
             Date endDate = Date.valueOf(root.path("End").asText());
             float cost = Float.parseFloat(root.path("Cost").asText());
@@ -75,10 +71,8 @@ Time leavingTime;
             boolean parking = root.path("Parking").asInt() == 1;
             int RoomID = root.path("RoomID").asInt();
 
-            // Call updateReservation method
             reservation.updateReservation(startDate, endDate, cost, state, businessGuest, parking, comingTime, leavingTime, RoomID);
 
-            // Send reservation to db
             em.getTransaction().begin();
             em.merge(reservation);
             System.out.println("Committing transaction...");
@@ -87,7 +81,6 @@ Time leavingTime;
 
             System.out.println("Updated reservation: " + reservation);
 
-            // find services by reservation id
             TypedQuery<ReservationService> query2 = em.createNamedQuery("ReservationService.findByReservationId",
                     ReservationService.class);
             query2.setParameter("reservationId", root.path("ReservationID").asInt());
@@ -95,7 +88,6 @@ Time leavingTime;
 
             System.out.println("Retrieved reservation services: " + reservationServices);
 
-            // remove all services associated with reservation
             for (ReservationService rs : reservationServices) {
                 em.getTransaction().begin();
                 em.remove(rs);
@@ -103,25 +95,19 @@ Time leavingTime;
                 System.out.println("Deleted reservation service: " + rs);
             }
 
-            // now add services to reservation by ServiceIDs
             JsonNode services = root.path("ServiceIDs");
             for (JsonNode service : services) {
 
-                // Fetch the associated Service object from the database
                 Service serviceObj = em.find(Service.class, service.asInt());
-                //print service object
                 System.out.println("Service object: " + serviceObj);
 
 
                 ReservationService rs = new ReservationService(root.path("ReservationID").asInt(),
                         service.asInt() );
 
-                // Set the Reservation object to the ReservationService
                 rs.setReservation(reservation);
-                // Set the Service object to the ReservationService
                 rs.setService(serviceObj);
     
-                // Persist the ReservationService
                  em.getTransaction().begin();
                 em.persist(rs);
                 em.getTransaction().commit();

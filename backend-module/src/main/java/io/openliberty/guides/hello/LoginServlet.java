@@ -38,18 +38,15 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException { 
            
-        // Load form data
         ObjectMapper mapper = new ObjectMapper();
         LoginRequest loginRequest = mapper.readValue(request.getInputStream(), LoginRequest.class);
         String username = loginRequest.getUsername();
         String password = hashPassword(loginRequest.getPassword());
 
-        // Connect to DB
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-hibernate-mysql");
         EntityManager em = emf.createEntityManager();
         try {
 
-            // Search for user
             TypedQuery<Employee> query = em.createNamedQuery("Employee.findByEmail", Employee.class);
             query.setParameter("email", username);
 
@@ -57,10 +54,8 @@ public class LoginServlet extends HttpServlet {
             String dbRole = employee.getAssignment();
             String dbPassword = employee.getPassword();
 
-            // Check password
             if (password.equals(dbPassword)){
 
-                // Generate JWT token
                 Algorithm algorithm = Algorithm.HMAC256("abcdefg");
                 String token = JWT.create()
                 .withIssuer("PIS")
@@ -70,7 +65,6 @@ public class LoginServlet extends HttpServlet {
                 .withExpiresAt(new Date(System.currentTimeMillis() + 8 * 60 * 60 * 1000)) // expire in 8 hours
                 .sign(algorithm);
 
-                // Send token to client
                 String jsonString = Json.createObjectBuilder()
                     .add("token", token)
                     .build()
@@ -80,13 +74,11 @@ public class LoginServlet extends HttpServlet {
                 response.getWriter().write(jsonString);
 
             } else {
-                // Password incorrect
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("Incorrect password");
             }
             
         } catch (NoResultException e) {
-            // User not found
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             response.getWriter().write("Incorrect username");
         } finally {

@@ -44,23 +44,18 @@ public class AddEmployeeServlet extends HttpServlet {
         EntityManagerFactory emf = Persistence.createEntityManagerFactory("jpa-hibernate-mysql");
         EntityManager em = emf.createEntityManager();
         try{
-            //create and update new employee
             Employee employee = new Employee();
         
-            //get the biggest Employeeid
             TypedQuery<Integer> query = em.createNamedQuery("Person.findMaxId", Integer.class);
             int newid = query.getSingleResult();
 
-            //print root
             System.out.println("Root:");
             System.out.println(root);
 
 
-            //change Date of Birth to Date
             Date dateOfBirth = Date.valueOf(root.path("DateOfBirth").asText());
             Date workShift = Date.valueOf(root.path("WorkShift").asText());
 
-            //hash password with sha256
             String password = root.path("Password").asText();
             String hashedPassword = DigestUtils.sha256Hex(password);
 
@@ -69,7 +64,6 @@ public class AddEmployeeServlet extends HttpServlet {
             employee.setWorkShift(workShift);
             employee.setPassword(hashedPassword);
 
-            //create and update new person
             Person person = new Person();
             person.setPersonID(newid+1);
             person.setLastName(root.get("LastName").asText());
@@ -80,13 +74,12 @@ public class AddEmployeeServlet extends HttpServlet {
             person.setDocumentNumber(root.get("DocumentNumber").asText());
             person.setDateOfBirth(dateOfBirth);
 
-            //establish relation between employee and person
             employee.setPerson(person);
 
-            em.getTransaction().begin();    //start transakcion
-            em.persist(person);               //send data to db
-            em.persist(employee);               //send data to db
-            em.getTransaction().commit();   //end transaction;
+            em.getTransaction().begin();    
+            em.persist(person);              
+            em.persist(employee);            
+            em.getTransaction().commit();   
 
             response.setStatus(HttpServletResponse.SC_CREATED);
             response.setContentType("application/json");

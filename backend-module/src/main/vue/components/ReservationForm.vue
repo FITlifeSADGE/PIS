@@ -52,7 +52,6 @@
       <button type="submit" :disabled="!isCreateButtonEnabled">Create Reservation</button>
     </form>
 
-     <!-- Display reservation details if successfully created -->
      <div v-if="reservationCreated">
       <h2>Reservation Details</h2>
       <p><strong>Customer Name:</strong> {{ selectedCustomerName }}</p>
@@ -65,7 +64,6 @@
       <p><strong>Business Guest:</strong> {{ reservation.BusinessGuest }}</p>
       <p><strong>Parking:</strong> {{ reservation.Parking }}</p>
 
- <!-- Option to add services -->
  <h3>Add Services</h3>
  <button @click="showModal = true">Select Services</button>
  <router-link to="/Home/Reservations">
@@ -199,7 +197,7 @@ export default {
   mounted() {
     this.fetchCustomers(); 
     this.fetchRooms();
-    this.fetchServices();// Volanie funkcie na načítanie údajov po načítaní komponentu
+    this.fetchServices();
     this.fetchReservations();
   },
   computed: {
@@ -212,12 +210,10 @@ export default {
       let cost = days * room.Cost;
 
       if (this.reservation.BusinessGuest) {
-        // Add additional cost for business guest
         cost += 50;
       }
 
       if (this.reservation.Parking) {
-        // Add additional cost for parking
         cost += 10;
       }
 
@@ -232,10 +228,8 @@ export default {
     return endDate > startDate;
   },
   filteredRooms() {
-      // filter rooms if some value is not set filter will ignore that value
       return this.rooms.filter(room => {
         return (
-          // filter by dates, if is not set satrt and end result is true
           ((this.reservation.Start && this.reservation.End) ? this.checkRoomAvailable(room.RoomID, this.reservations, this.reservation.Start, this.reservation.End) : true )
         );
       });
@@ -257,23 +251,19 @@ export default {
           const data = await response.json();
           console.log('Reservation created successfully');
 
-           // Check the reservationId value
             console.log('Reservation ID:', data.reservationId);
 
           this.ReservationID = data.reservationId;
           console.log('Reservation ID:', this.ReservationID);
 
-          // Clear the form or redirect to another page
           this.reservationCreated = true;
           this.selectedCustomerName = this.customers.find(customer => customer.customerId === this.reservation.CustomerID).person.firstName + ' ' + this.customers.find(customer => customer.customerId === this.reservation.CustomerID).person.lastName;
           this.selectedRoom = this.rooms.find(room => room.RoomID === this.reservation.RoomID).RoomID;
         } else {
           console.error('Failed to create reservation');
-          // Handle error case
         }
       } catch (error) {
         console.error('An error occurred:', error);
-        // Handle error case
       }
     },
 
@@ -282,7 +272,6 @@ export default {
     },
 
     updateReservation(reservation) {
-  // Implementation of reservation update
   reservation.reservationId = this.ReservationID;
   reservation.ReservationID = this.ReservationID;
   reservation.State = 'Pending';
@@ -290,15 +279,12 @@ export default {
   console.log('Updating reservation:', reservation);
   reservation.editable = false; // Close the editing mode
 
-  // Format the date to 'YYYY-MM-DD' format
   reservation.Start = this.formatDate(reservation.Start);
   reservation.End = this.formatDate(reservation.End);
   
-  //format the parking and business guest to integer
   reservation.Parking = reservation.Parking ? 1 : 0;
   reservation.BusinessGuest = reservation.BusinessGuest ? 1 : 0;
 
-  // Send the data to the server
   fetch('/Home/Reservations/UpdateReservation', {
     method: 'POST',
     headers: {
@@ -319,10 +305,9 @@ export default {
 },
 
     fetchCustomers() {
-  fetch('/Home/Customer/GetCustomers') // Replace with the appropriate endpoint URL of your servlet
+  fetch('/Home/Customer/GetCustomers') 
     .then(response => response.json())
     .then(data => {
-      // Set the retrieved customer data to the "customers" variable
       this.customers = data.map(customer => ({ ...customer, editable: false }));
       this.isUniqueEmail(this.newCustomer.Email);
       this.isUniquePhoneNumber(this.newCustomer.PhoneNumber);
@@ -332,10 +317,10 @@ export default {
     });
 },
 fetchRooms() {
-      fetch('/Home/Rooms/GetRooms') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
+      fetch('/Home/Rooms/GetRooms') 
         .then(response => response.json())
         .then(data => {
-          this.rooms = data.map(room => ({ ...room, editable: false })); // Nastavenie údajov do premennej rooms
+          this.rooms = data.map(room => ({ ...room, editable: false }));
         })
         .catch(error => {
           console.error('Error fetching rooms:', error);
@@ -344,10 +329,10 @@ fetchRooms() {
 
 
   fetchServices() {
-      fetch('/Home/Services/GetServices') // Zavolanie vášho servletu, ktorý vráti údaje z databázy
+      fetch('/Home/Services/GetServices') 
         .then(response => response.json())
         .then(data => {
-          this.services = data.map(service => ({ ...service, editable: false })); // Nastavenie údajov do premennej rooms
+          this.services = data.map(service => ({ ...service, editable: false })); 
         })
         .catch(error => {
           console.error('Error fetching services:', error);
@@ -359,7 +344,6 @@ addNewCustomer() {
     },
 
     createCustomer() {
-      // Send a POST request to the servlet to create a new customer
       fetch('/Home/Customer/AddCustomer', {
         method: 'POST',
         headers: {
@@ -369,25 +353,20 @@ addNewCustomer() {
       })
         .then((response) => response.json())
         .then((data) => {
-          // Add the newly created customer to the customers array
           this.customers.push(data);
           
-          // Close the popup form
           this.showNewCustomerForm = false;
 
-          // Set the newly created customer as the selected value in the select element
           this.reservation.CustomerID = data.customerId;
           this.isUniqueEmail(this.newCustomer.Email);
           this.isUniquePhoneNumber(this.newCustomer.PhoneNumber);
         })
         .catch((error) => {
           console.error('Error creating customer:', error);
-          // Handle error case
         });
     },
 
     addReservationServices(){
-      // Send a POST request to the servlet to add a new service to the reservation
       console.log('Selected services:', this.selectedServices);
       console.log('Reservation:', this.reservation);
       if (this.selectedServices.length > 0) {
@@ -417,12 +396,10 @@ addNewCustomer() {
         .then((data) => {
           this.newServiceName = '';
 
-           // Hide the button
           this.showAddServicesButton = false;
         })
         .catch((error) => {
           console.error('Error adding service:', error);
-          // Handle error case
         });
 
     },
@@ -440,9 +417,9 @@ addNewCustomer() {
       if (existingCustomer) {
         this.isCustomerUnique = false;
         this.isEmailUnique = false;
-        return false; // Není unikátní, protože zákazník již existuje
+        return false; 
       } else {
-        return true; // Je unikátní, protože takový zákazník neexistuje
+        return true;
       }
     },
     isUniquePhoneNumber(phoneNumber) {
@@ -452,9 +429,9 @@ addNewCustomer() {
       if (existingCustomer) {
         this.isCustomerUnique = false;
         this.isPhoneNumberUnique = false;
-        return false; // Není unikátní, protože zákazník již existuje
+        return false; 
       } else {
-        return true; // Je unikátní, protože takový zákazník neexistuje
+        return true; 
       }
     },
     formatDate(ReservDate) {
@@ -484,7 +461,7 @@ addNewCustomer() {
       console.log(endDate);
       const parts = startDate.split('-');
       const year = parseInt(parts[0], 10);
-      const month = parseInt(parts[1], 10) - 1; // Months are in JavaScript zero-indexed
+      const month = parseInt(parts[1], 10) - 1;
       const day = parseInt(parts[2], 10);
       const Startdate = new Date(year, month, day).getTime();
 
@@ -563,9 +540,9 @@ addNewCustomer() {
   margin-bottom: 1rem;
 }
 .warning-icon {
-  color: red; /* Nastaví barvu ikony na červenou */
-  margin-left: 5px; /* Přidá malý odstup od inputu */
-  font-size: 18px; /* Zvětší velikost ikony */
+  color: red; 
+  margin-left: 5px; 
+  font-size: 18px;
 }
 
 .modal {

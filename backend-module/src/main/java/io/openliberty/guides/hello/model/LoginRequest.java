@@ -1,6 +1,5 @@
 package io.openliberty.guides.hello.model;
 
-// Define a Java class to represent the JSON payload
 public class LoginRequest {
     private String username;
     private String password;
