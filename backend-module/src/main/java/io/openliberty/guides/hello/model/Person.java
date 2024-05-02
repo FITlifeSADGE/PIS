@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import java.util.Date;
 
 @NamedQuery(name = "Person.findById", query = "SELECT p FROM Person p WHERE p.personID = :id")
+@NamedQuery(name = "Person.findMaxId", query = "SELECT MAX(p.personID) FROM Person p")
 @Entity
 @Table(name = "Person")
 public class Person {

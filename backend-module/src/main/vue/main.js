@@ -7,6 +7,7 @@ import ServicesPage from './components/ServicesPage.vue';
 import Parent from './components/Parent.vue';
 import CustomersPage from './components/CustomersPage.vue';
 import CustomerDetailPage from './components/CustomerDetailPage.vue';
+import EmployeesPage from './components/EmployeesPage.vue';
 
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faEye,faEyeSlash } from '@fortawesome/free-solid-svg-icons';
@@ -99,6 +100,16 @@ const router = new VueRouter({
         {
           path: '',
           component: ReservationForm
+        }
+      ]
+    },
+    {
+      path: '/Home/Employees',
+      component: Parent,
+      children: [
+        {
+          path: '',
+          component: EmployeesPage
         }
       ]
     },

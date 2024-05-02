@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS Employee (
     EmployeeID int not null primary key,
     Assignment varchar(255),
     Password varchar(255),
-    WorkShift date, -- Changed back to date
+    WorkShift date, 
     FOREIGN KEY (EmployeeID) REFERENCES Person(PersonID)
 );
 

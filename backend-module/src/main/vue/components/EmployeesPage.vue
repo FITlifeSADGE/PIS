@@ -1,0 +1,400 @@
+<template>
+  <div class="table-container">
+  <table style="width: 100%; border-collapse: collapse;">
+  <thead>
+  <tr>
+  <th style="width: 150px;">Last Name</th>
+  <th style="width: 150px;">First Name</th>
+  <th style="width: 150px;">Email</th>
+  <th style="width: 150px;">Assignment</th>
+  <th style = "width: 150px;">Phone Preselection</th>
+  <th style="width: 150px;">Phone Number</th>
+  <th style="width: 150px;">Document Number</th>
+  <th style="width: 150px;">Date of Birth</th>
+  <th style="width: 150px;">Work Shift</th>
+  <th style="width: 150px;">Password</th>
+  <th style="width: 80px;">Edit</th>
+  </tr>
+  </thead>
+  <tbody>
+
+        <!-- Add new -->
+        <tr v-if="addingNew">
+          <td><input type="text" style="width: 150px;" v-model="newEmployee.LastName" placeholder="Last Name" :class="{ 'required-field-empty': newEmployee.LastName === '' }" required></td>
+          <td><input type="text" style="width: 150px;" v-model="newEmployee.FirstName" placeholder="First Name" :class="{ 'required-field-empty': newEmployee.FirstName === '' }" required></td>
+          <td><input type="email" style="width: 150px;" v-model="newEmployee.Email" placeholder="Email" :class="{ 'required-field-empty': newEmployee.Email === '' }" required></td>
+          <select v-model="newEmployee.Assignment" style="width: 150px;" :class="{ 'required-field-empty': newEmployee.Assignment === '' }" required>
+              <option value="Manager">Manager</option>
+              <option value="Supervisor">Supervisor</option>
+              <option value="Staff">Staff</option>
+              <option value="Salesperson">Salesperson</option>
+          </select>
+          <td><input type="text" style="width: 150px;" v-model="newEmployee.PhonePreselection" placeholder="Phone Preselection"></td>
+          <td><input type="number" style="width: 150px;" v-model="newEmployee.PhoneNumber" placeholder="Phone Number" :class="{ 'required-field-empty': newEmployee.PhoneNumber === '' }" required></td>
+          <td><input type="text" style="width: 150px;" v-model="newEmployee.DocumentNumber" placeholder="Document Number" :class="{ 'required-field-empty': newEmployee.DocumentNumber === '' }" required></td>
+          <td><input type="date" style="width: 150px;" v-model="newEmployee.DateOfBirth" placeholder="Date of Birth" :class="{ 'required-field-empty': newEmployee.DateOfBirth === '' }" required></td>
+          <td><input type="date" style="width: 150px;" v-model="newEmployee.WorkShift" placeholder="Work Shift"></td>
+          <td><input type="password" style="width: 150px;" v-model="newEmployee.Password" placeholder="Password" :class="{ 'required-field-empty': newEmployee.Password === '' }" required></td>
+          <td>
+            <button @click="addNewEmployee" class="edit-button">OK</button>
+            <button @click="cancelNewEmployee" class="delete-button">Cancel</button>
+          </td>
+        </tr>
+        <tr v-else>
+          <td colspan="5" style="text-align: center;">
+            <button @click="toggleAddNew" class="edit-button">Add New</button>
+          </td>
+        </tr>
+  
+        <!-- Filter row -->
+        <tr>
+          <td><input type="text" style="width: 150px;" v-model="filters.LastName"></td>
+          <td><input type="text" style="width: 150px;" v-model="filters.FirstName"></td>
+          <td><input type="email" style="width: 150px;" v-model="filters.Email"></td>
+          <td><input type="text" style="width: 150px;" v-model="filters.Assignment"></td>
+          <td><input type="number" style="width: 150px;" v-model="filters.PhoneNumber"></td>
+          <td><input type="text" style="width: 150px;" v-model="filters.DocumentNumber"></td>
+          <td></td> <!-- Empty cell for buttons -->
+        </tr>
+  
+        <!-- Data rows -->
+        <tr v-for="employee in filteredEmployees" :key="employee.EmployeeID">
+          <td v-if="!employee.editable">{{ employee.LastName }}</td>
+          <td v-else><input type="text" style="width: 150px;" v-model="employee.LastName" :style="{ width: '150px' }" :class="{ 'required-field-empty': employee.LastName === '' }" required></td>
+          <td v-if="!employee.editable">{{ employee.FirstName }}</td>
+          <td v-else><input type="text" style="width: 150px;" v-model="employee.FirstName" :style="{ width: '150px'}" :class="{ 'required-field-empty': employee.FirstName === '' }" required></td>
+          <td v-if="!employee.editable">{{ employee.Email }}</td>
+          <td v-else><input type="email" style="width: 150px;" v-model="employee.Email" :style="{ width: '150px' }" :class="{ 'required-field-empty': employee.Email === '' }" required></td>
+          <td v-if="!employee.editable">{{ employee.Assignment }}</td>
+          <td v-else>
+            <select v-model="employee.Assignment" style="width: 150px;" :class="{ 'required-field-empty': employee.Assignment === '' }" required>
+              <option value="Manager">Manager</option>
+              <option value="Supervisor">Supervisor</option>
+              <option value="Staff">Staff</option>
+              <option value="Salesperson">Salesperson</option>
+            </select>
+          </td>
+          <td v-if="!employee.editable">{{ employee.PhonePreselection }}</td>
+          <td v-else><input type="text" style="width: 150px;" v-model="employee.PhonePreselection" :style="{ width: '150px' }"></td>
+          <td v-if="!employee.editable">{{ employee.PhoneNumber }}</td>
+          <td v-else><input type="number" style="width: 150px;" v-model="employee.PhoneNumber" :style="{ width: '150px' }" :class="{ 'required-field-empty': employee.PhoneNumber === '' }" required></td>
+          <td v-if="!employee.editable">{{ employee.DocumentNumber }}</td>
+          <td v-else><input type="text" style="width: 150px;" v-model="employee.DocumentNumber" :style="{ width: '150px' }" :class="{ 'required-field-empty': employee.DocumentNumber === '' }" required></td>
+          <td v-if="!employee.editable">{{ formatDate(employee.DateOfBirth) }}</td>
+          <td v-else><input type="date" style="width: 150px;" v-model="employee.DateOfBirth" :style="{ width: '150px' }" :class="{ 'required-field-empty': employee.DateOfBirth === '' }" required></td>
+          <td v-if="!employee.editable">{{ formatDate(employee.WorkShift) }}</td>
+          <td v-else><input type="date" style="width: 150px;" v-model="employee.WorkShift" :style="{ width: '150px' }"></td>
+          <td v-if="!employee.editable">{{ employee.Password }}</td>
+          <td v-else><input type="password" style="width: 150px;" v-model="employee.Password" :style="{ width: '150px' }" :class="{ 'required-field-empty': employee.Password === '' }" required></td>
+          <td>
+            <button v-if="!employee.editable" class="edit-button" @click="toggleEdit(employee)">Edit</button>
+            <button v-else class="ok-button" @click="updateEmployee(employee)">OK</button>
+            <button v-if="employee.editable" class="delete-button" @click="deleteEmployee(employee)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  </template>
+
+<script>
+import Parent from './Parent.vue';  
+
+export default {
+  data() {
+    return {
+      addingNew: false,
+      // prefill new employee with values
+      newEmployee: {
+        LastName: '',
+        FirstName: '',
+        Email: '',
+        Assignment: 'Salesperson',
+        PhoneNumber: '777777777',
+        DocumentNumber: '123456789',
+        DateOfBirth: '1998-01-01',
+        WorkShift: '2024-01-01',
+        Password: '',
+        PhonePreselection: '+120',
+      },
+      filters: {
+        LastName: '',
+        FirstName: '',
+        Email: '',
+        Assignment: '',
+        PhoneNumber: '',
+        DocumentNumber: '',
+      },
+      employees: [], // Your array of employee objects goes here
+    };
+  },
+    mounted() {
+        this.fetchEmployees();
+    },
+  computed: {
+    filteredEmployees() {
+      return this.employees.filter((employee) => {
+        return (
+        employee.LastName.toLowerCase().includes(this.filters.LastName.toLowerCase()) &&
+        employee.FirstName.toLowerCase().includes(this.filters.FirstName.toLowerCase()) &&
+        employee.Email.toLowerCase().includes(this.filters.Email.toLowerCase()) &&
+        employee.Assignment.toLowerCase().includes(this.filters.Assignment.toLowerCase()) &&
+        employee.PhoneNumber.toString().includes(this.filters.PhoneNumber.toString()) &&
+        employee.DocumentNumber.toLowerCase().includes(this.filters.DocumentNumber.toLowerCase()) 
+        );
+      });
+    },
+  },
+  methods: {
+    fetchEmployees() {
+      fetch('/Home/Employees/GetEmployees')
+        .then(response => response.json())
+        .then(data => {
+          this.employees = data.map(employee => ({ ...employee, editable: false }));
+        })
+        .catch(error => {
+          console.error('Error fetching employees:', error);
+        });
+    },
+    toggleAddNew() {
+      this.addingNew = true;
+    },
+    addNewEmployee() {
+      // Validate newEmployee data and add it to the employees array
+      if (this.validateNewEmployee()) {
+        //create new id from max id + 1
+        let maxId = Math.max(...this.employees.map(employee => employee.EmployeeID));
+        this.newEmployee.EmployeeID = maxId + 1;
+        this.employees.push({ ...this.newEmployee, editable: false});
+
+        //send data for new employee to the server
+        fetch('/Home/Employees/AddEmployee', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(this.newEmployee),
+        })
+        .then(response => {
+          if (response.ok) {
+            console.log('Employee added successfully');
+          } else {
+            console.error('Error adding employee');
+          }
+        })
+        .catch(error => {
+          console.error('Error adding employee:', error);
+        });
+        this.clearNewEmployee();
+        this.addingNew = false;
+      }
+      else {
+        alert('Please fill in all required fields.');
+      }
+    },
+    cancelNewEmployee() {
+      this.clearNewEmployee();
+      this.addingNew = false;
+    },
+    toggleEdit(employee) {
+      employee.editable = !employee.editable;
+    },
+    formatDate(ReservDate) {
+      if (!ReservDate) return ''; 
+
+      const dateObj = new Date(ReservDate);
+      const month = dateObj.getMonth() + 1;
+      const day = dateObj.getDate();
+      const year = dateObj.getFullYear();
+
+      const formattedMonth = month < 10 ? `0${month}` : `${month}`;
+      const formattedDay = day < 10 ? `0${day}` : `${day}`;
+
+      return `${year}-${formattedMonth}-${formattedDay}`;
+    },
+    updateEmployee(employee) {
+      // Validate and update employee data
+      if (this.validateEmployee(employee)) {
+        console.log('Employee updated:', employee);
+        employee.editable = false;
+
+        employee.DateOfBirth = this.formatDate(employee.DateOfBirth);
+        employee.WorkShift = this.formatDate(employee.WorkShift);
+
+        //send updated data to the server
+        fetch('/Home/Employees/UpdateEmployee', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(employee),
+        })
+        .then(response => {
+          if (response.ok) {
+            console.log('Employee updated successfully');
+          } else {
+            console.error('Error updating employee');
+          }
+        })
+        .catch(error => {
+          console.error('Error updating employee:', error);
+        });
+      }
+        else {
+            alert('Please fill in all required fields.');
+        }
+    },
+    deleteEmployee(employee) {
+      // Delete employee from the employees array
+      employee.editable = false;
+      const index = this.employees.indexOf(employee);
+      if (index !== -1) {
+        this.employees.splice(index, 1);
+      }
+      //send delete request to the server
+        fetch('/Home/Employees/DeleteEmployee', {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(employee),
+        })
+        .then(response => {
+            if (response.ok) {
+            console.log('Employee deleted successfully');
+            } else {
+            console.error('Error deleting employee');
+            }
+        })
+        .catch(error => {
+            console.error('Error deleting employee:', error);
+        });
+    },
+    clearNewEmployee() {
+      this.newEmployee = {
+        LastName: '',
+        FirstName: '',
+        Email: '',
+        Assignment: '',
+        PhoneNumber: '',
+        DocumentNumber: '',
+        DateOfBirth: '',
+        WorkShift: '',
+        Password: '',
+        PhonePreselection: '',
+      };
+    },
+    validateNewEmployee() {
+      // Validate newEmployee data (e.g., check for required fields)
+      if (
+        this.newEmployee.LastName === '' ||
+        this.newEmployee.FirstName === '' ||
+        this.newEmployee.Email === '' ||
+        this.newEmployee.Assignment === '' ||
+        this.newEmployee.PhoneNumber === '' ||
+        this.newEmployee.DocumentNumber === '' ||
+        this.newEmployee.DateOfBirth === '' ||
+        this.newEmployee.Password === ''
+      ) {
+        return false;
+      }
+      return true;
+    },
+    validateEmployee(employee) {
+      // Validate employee data (e.g., check for required fields)
+      if (
+        employee.LastName === '' ||
+        employee.FirstName === '' ||
+        employee.Email === '' ||
+        employee.Assignment === '' ||
+        employee.PhoneNumber === '' ||
+        employee.DocumentNumber === '' ||
+        employee.DateOfBirth === '' ||
+        employee.Password === ''
+      ) {
+        return false;
+      }
+      return true;
+    },
+    getEmployeeInputWidth(value) {
+      // Calculate and return the width of the input field based on the value length
+      return value.length * 10 + 'px';
+    },
+  },
+};
+</script>
+  
+<style scoped>
+.edit-button{
+  padding: 10px 20px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #2196f3;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+.edit-button:hover {
+  background-color: #13568e;
+}
+.ok-button{
+  padding: 10px 10px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #2196f3;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+.ok-button:hover {
+  background-color: #13568e;
+}
+.delete-button{
+  padding: 10px 10px;
+  margin-bottom: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #f32f21;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
+.delete-button:hover {
+  background-color: #951e16;
+}
+input[type="text"] {
+  padding: 8px; 
+  border: none; 
+  border-radius: 4px; 
+  font-size: 16px; 
+  border: 1px solid #2196F3;
+}
+input[type=number] {
+  padding: 8px; 
+  border: none; 
+  border-radius: 4px; 
+  font-size: 16px; 
+  border: 1px solid #2196F3;
+}
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: inner-spin-button; 
+  appearance: inner-spin-button;
+  color: #2196F3; 
+  font-size: 16px; 
+}
+select{
+  padding: 8px; 
+  border: none; 
+  border-radius: 4px; 
+  font-size: 16px; 
+  border: 1px solid #2196F3;
+}
+
+.required-field-empty {
+    border-color: #ff0000 !important;
+}
+</style>
+  
