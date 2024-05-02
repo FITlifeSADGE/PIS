@@ -231,8 +231,8 @@
           </tr>
           <tr v-for="(customer, index) in customers" :key="'handicap_' + index">
             <th>Handicap:</th><td><select v-model="customer.Handicap">
-              <option value=true>Ano</option>
-              <option value=false>Ne</option>
+              <option value=true>Yes</option>
+              <option value=false>No</option>
             </select></td>
           </tr>
           <tr v-for="(customer, index) in customers" :key="'address_' + index">
@@ -240,13 +240,13 @@
           </tr>
           <tr v-for="(customer, index) in customers" :key="'subscription_' + index">
             <th>Subscription:</th><td><select v-model="customer.Subscription">
-              <option value=true>Přihlášen</option>
-              <option value=false>Odhlášen</option>
+              <option value=true>Subscribed</option>
+              <option value=false>Unsubscribed</option>
             </select></td>
           </tr>
           <tr v-for="(customer, index) in customers" :key="'button_' + index">
             <td colspan="2">
-              <button class="ok-button" @click="updateToggleTable(customer)">Uložit</button>
+              <button class="ok-button" @click="updateToggleTable(customer)">Save</button>
             </td>
           </tr>
         </tbody>
@@ -388,12 +388,12 @@ methods: {
       this.popup = !this.popup;
     }
     else{
-      this.buttonLabel = 'Zrušit změny';
+      this.buttonLabel = 'Stash changes';
       this.editTable = !this.editTable;
     }
   },
   closePopupLeave(){
-    this.buttonLabel = 'Upravit informace';
+    this.buttonLabel = 'Edit information';
     this.editTable = !this.editTable;
     this.popup = !this.popup;
   },
@@ -426,7 +426,7 @@ methods: {
     .catch(error => {
       console.error('Error updating customer:', error);
     });
-    this.buttonLabel = 'Upravit informace';
+    this.buttonLabel = 'Edit information';
     this.editTable = !this.editTable;
   },
   closePopupCheckIn(reservation){
@@ -446,7 +446,6 @@ methods: {
       console.log(this.reservations);
       console.log('Check-In:', this.reservationCheckIn);
     },
-  // ---------------------------------------- FETCH --------------------------------------------------------
   getFormattedDate(days = 0) {
       const today = new Date();
       today.setDate(today.getDate() + days);
@@ -455,6 +454,7 @@ methods: {
       const year = today.getFullYear();
       return `${year}-${month}-${day}`;
     },
+  // ---------------------------------------- FETCH --------------------------------------------------------
   fetchServices() {
     console.log('Fetching services');
     fetch('/Home/Customer/GetServices') 
@@ -584,18 +584,18 @@ methods: {
   formatHandicap(Handicap){
     if (typeof Handicap === 'string') {
       if (Handicap === 'true') {
-        return 'Ano';
+        return 'Yes';
       }
       else {
-        return 'Ne';
+        return 'No';
       }
     }
     if (typeof Handicap === 'boolean') {
       if (Handicap === true) {
-        return 'Ano';
+        return 'Yes';
       }
       else {
-        return 'Ne';
+        return 'No';
       }
     }
   },
@@ -622,18 +622,18 @@ methods: {
   formatSubscription(Subscription){
     if (typeof Subscription === 'string') {
       if (Subscription === 'true') {
-        return 'Přihlášen';
+        return 'Subscribed';
       }
       else {
-        return 'Odhlášen';
+        return 'Unsubscribed';
       }
     }
     if (typeof Subscription === 'boolean') {
       if (Subscription === true) {
-        return 'Přihlášen';
+        return 'Subscribed';
       }
       else {
-        return 'Odhlášen';
+        return 'Unsubscribed';
       }
     }
   },
@@ -679,183 +679,8 @@ methods: {
       }
     }
   },
-  cancelEdit() {
-    fetchCustomers();
-  },
-  removeChanges(){
-    this.editTable = !this.editTable;
-  },
-  // -------------------------------------------- SERVICES ---------------------------------------------------
-  toggleAddNew() {
-      this.addingNew = true;
-     },
- 
-  addNewService() {
-    if (this.newService.Name && this.newService.Cost && this.newService.Availability) 
-    {
 
-      let maxServiceID = Math.max(...this.services.map(service => service.ServiceID));
-      this.newService.ServiceID = maxServiceID + 1;
-
-      this.services.push({ ...this.newService, editable: false });
-
-      fetch('/Home/Services/AddService', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(this.newService),
-      })
-      .then(response => {
-        if (response.ok) {
-          console.log('Service added successfully');
-        } else {
-          throw new Error('Failed to add service');
-        }
-      })
-      .catch(error => {
-        console.error('Error adding service:', error);
-      });
-
-      this.newService = {
-        Name: '',
-        Cost: '10',
-        Availability: 'Available',
-        Description: '',
-        ServiceID: ''
-      };
-      this.addingNew = false;
-      }
-        else 
-      {
-        alert('Fill in all fields in for new Service.');
-      }
-    },
-    cancelNewService() {
-    this.newService = {
-      Name: '',
-      Cost: '10',
-      Availability: 'Available',
-      Description: '',
-      ServiceID: ''
-    };
-    this.addingNew = false;
-  },
-  toggleEdit(service) {
-    console.log('Toggling edit mode for service: ', service);
-    service.editable = !service.editable;
-    console.log('Service in edit mode: ', service.editable);
-  },
-  updateService(service) {
-    console.log('Updating service:', service);
-    service.editable = false;
-    fetch('/Home/Customer/UpdateService', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(service),
-    })
-    .then(response => {
-      if (response.ok) {
-        console.log('Service updated successfully');
-      } else {
-        throw new Error('Failed to update service');
-      }
-    })
-    .catch(error => {
-      console.error('Error updating service:', error);
-    });
-  },
-
-  deleteService(service) {
-    console.log('Deleting service:', service);
-    service.editable = false; 
-
-    const index = this.services.indexOf(service);
-    if (index !== -1) 
-    {
-      this.services.splice(index, 1);
-    }
-    fetch('/Home/Customer/DeleteService', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(service),
-    })
-    .then(response => {
-      if (response.ok) {
-        console.log('Service deleted successfully');
-      } else {
-        throw new Error('Failed to delete Service');
-      }
-    })
-    .catch(error => {
-      console.error('Error deleting Service:', error);
-    });
-  },
-  getServiceInputWidth(text) {
-      return text ? `${text.length * 12}px` : '100px'; 
-  },
   // --------------------- RESERVATION ------------------------
-  toggleAddNewReservation() {
-  this.addingNewReservation = true;
-  },
-  addNewReservation() {
-  if (this.newReservation.Name && this.newReservation.Cost && this.newReservation.Availability) 
-  {
-
-    let maxReservationID = Math.max(...this.reservations.map(reservation => reservation.ReservationID));
-    this.newReservation.ReservationID = maxReservationID + 1;
-
-    this.reservations.push({ ...this.newReservation, editable: false });
-
-    fetch('/Home/Reservations/AddReservation', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(this.newReservation),
-    })
-    .then(response => {
-      if (response.ok) {
-        console.log('Reservation added successfully');
-      } else {
-        throw new Error('Failed to add reservation');
-      }
-    })
-    .catch(error => {
-      console.error('Error adding reservation:', error);
-    });
-
-    this.newReservation = {
-      Name: '',
-      Cost: '10',
-      Availability: 'Pending',
-      Description: '',
-      ReservationID: ''
-    };
-    this.addingNewReservation = false;
-    }
-      else 
-    {
-      alert('Fill in all fields in for new Reservation.');
-    }
-  },
-  cancelNewReservation() {
-  this.newReservation = {
-    Name: '',
-    Cost: '10',
-    Availability: 'Available',
-    Description: '',
-    ReservationID: ''
-  };
-  this.addingNewReservation = false;
-  },
-  toggleEditReservation(reservation) {
-    reservation.editable = !reservation.editable; 
-  },
   updateReservation(reservation) {
     console.log('Updating reservation:', reservation);
     reservation.Start = this.formatDate(reservation.Start);
@@ -888,36 +713,6 @@ methods: {
       return "No";
     }
   },
-  deleteReservation(reservation) {
-    console.log('Deleting reservation:', reservation);
-    reservation.editable = false; 
-
-    const index = this.reservations.indexOf(reservation);
-    if (index !== -1) 
-    {
-      this.reservations.splice(index, 1);
-    }
-    fetch('/Home/Customer/DeleteReservation', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(reservation),
-    })
-    .then(response => {
-      if (response.ok) {
-        console.log('Reservation deleted successfully');
-      } else {
-        throw new Error('Failed to delete Reservation');
-      }
-    })
-    .catch(error => {
-      console.error('Error deleting Reservation:', error);
-    });
-  },
-  getReservationInputWidth(text) {
-      return text ? `${text.length * 12}px` : '100px';
-    },
   getServiceName(serviceId) {
     console.log('Service ID:', serviceId);
     console.log('Services:', this.services_available);
