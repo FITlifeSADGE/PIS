@@ -9,7 +9,11 @@
   
   <script>
   export default {
+    mounted() {
+      this.$router.push('/Home/Rooms');
+    }
   }
+
   </script>
   
   <style scoped>

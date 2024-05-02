@@ -577,10 +577,13 @@ export default {
       });
     },
     filteredReservations() {
+      let filterStart = null;
+      let filterEnd = null;
       if(this.filtersR.Start != null)
-        this.filtersR.Start = this.filterDateFormat(this.filtersR.Start);
+        filterStart = this.filterDateFormat(this.filtersR.Start);
+      
       if(this.filtersR.End != null)
-        this.filtersR.End = this.filterDateFormat(this.filtersR.End);
+        filterEnd = this.filterDateFormat(this.filtersR.End);
       return this.reservations.filter(reservation => {
         while (reservation.CustomerName === undefined) {
           return true;
@@ -588,8 +591,8 @@ export default {
         return (
           reservation.CustomerName.includes(this.filtersR.CustomerName) &&
           reservation.RoomID.toString().includes(this.filtersR.RoomID) &&
-          (!this.filtersR.Start || reservation.Start >= this.filtersR.Start) &&
-          (!this.filtersR.End || reservation.End <= this.filtersR.End) &&
+          (!this.filtersR.Start || reservation.Start >= filterStart) &&
+          (!this.filtersR.End || reservation.End <= filterEnd) &&
           reservation.State.toLowerCase().includes(this.filtersR.State.toLowerCase()) &&
           reservation.Cost >= this.filtersR.Cost &&
           (!this.filtersR.CommingTime || reservation.CommingTime >= this.filtersR.CommingTime) &&
