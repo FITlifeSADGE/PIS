@@ -1,6 +1,6 @@
 <template>
   <div class="table-container">
-    <button class="button" @click="ReturnToAllCustomers">Zpět na seznam</button>
+    <button class="button" @click="ReturnToAllCustomers">Back to all customers</button>
     <button class="button" @click="ToggleTable()">{{ buttonLabel }}</button> 
     
     <div v-if="popup" class="modal">
